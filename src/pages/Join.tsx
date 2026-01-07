@@ -1,15 +1,18 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
-  Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle
+  Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { validateStep, type JoinFormData } from "@/lib/validations";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 const storeCategories = [
@@ -88,6 +91,7 @@ const steps = [
   { id: 3, title: "Category", icon: Building2 },
   { id: 4, title: "Mode", icon: Truck },
   { id: 5, title: "Plan", icon: CreditCard },
+  { id: 6, title: "Account", icon: User },
 ];
 
 const stepVariants = {
@@ -112,13 +116,17 @@ const ErrorMessage = ({ message }: { message?: string }) => {
 };
 
 const Join = () => {
+  const navigate = useNavigate();
+  const { user, signUp } = useAuth();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 6;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
 
-  const [formData, setFormData] = useState<Partial<JoinFormData>>({
+  const [formData, setFormData] = useState<Partial<JoinFormData> & { email?: string; password?: string }>({
     storeName: "",
     ownerName: "",
     mobile: "",
@@ -129,12 +137,32 @@ const Join = () => {
     category: "",
     businessMode: "",
     plan: "",
+    email: "",
+    password: "",
   });
+
+  // Fetch subscription plans
+  useEffect(() => {
+    const fetchPlans = async () => {
+      const { data } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('is_active', true);
+      if (data) setSubscriptionPlans(data);
+    };
+    fetchPlans();
+  }, []);
+
+  // If user is already logged in, skip to plan selection or store creation
+  useEffect(() => {
+    if (user && step < 5) {
+      // User already logged in, they can directly create store
+    }
+  }, [user, step]);
 
   const updateForm = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setTouched((prev) => ({ ...prev, [field]: true }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -145,6 +173,21 @@ const Join = () => {
   };
 
   const validateCurrentStep = () => {
+    if (step === 6) {
+      // Validate email/password for account creation
+      if (!user) {
+        if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          setErrors({ email: "Please enter a valid email address" });
+          return false;
+        }
+        if (!formData.password || formData.password.length < 6) {
+          setErrors({ password: "Password must be at least 6 characters" });
+          return false;
+        }
+      }
+      return true;
+    }
+    
     const result = validateStep(step, formData);
     if (!result.success) {
       setErrors(result.errors);
@@ -157,7 +200,12 @@ const Join = () => {
   const nextStep = () => {
     if (validateCurrentStep()) {
       setDirection(1);
-      setStep((prev) => Math.min(prev + 1, totalSteps));
+      // If user is logged in, skip account step
+      if (step === 5 && user) {
+        handleSubmit();
+      } else {
+        setStep((prev) => Math.min(prev + 1, totalSteps));
+      }
       setTouched({});
     }
   };
@@ -170,8 +218,94 @@ const Join = () => {
   };
 
   const isStepValid = () => {
+    if (step === 6) {
+      return user || (formData.email && formData.password && formData.password.length >= 6);
+    }
     const result = validateStep(step, formData);
     return result.success;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateCurrentStep()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      let userId = user?.id;
+      
+      // If not logged in, create account first
+      if (!user && formData.email && formData.password) {
+        const { error: signUpError } = await signUp(
+          formData.email,
+          formData.password,
+          {
+            full_name: formData.ownerName,
+            phone: formData.mobile,
+            whatsapp: formData.sameAsWhatsapp ? formData.mobile : formData.whatsapp,
+          }
+        );
+        
+        if (signUpError) {
+          if (signUpError.message.includes("already registered")) {
+            setErrors({ email: "This email is already registered. Please login instead." });
+          } else {
+            setErrors({ email: signUpError.message });
+          }
+          setIsSubmitting(false);
+          return;
+        }
+        
+        // Wait for session to be established
+        const { data: sessionData } = await supabase.auth.getSession();
+        userId = sessionData.session?.user?.id;
+        
+        if (!userId) {
+          // If session not immediately available, wait a moment
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const { data: retrySession } = await supabase.auth.getSession();
+          userId = retrySession.session?.user?.id;
+        }
+      }
+      
+      if (!userId) {
+        toast.error("Failed to create account. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Get subscription plan ID
+      const selectedPlan = subscriptionPlans.find(p => p.name === formData.plan);
+      
+      // Create store
+      const { error: storeError } = await supabase
+        .from('stores')
+        .insert({
+          user_id: userId,
+          name: formData.storeName,
+          category: formData.category,
+          business_mode: formData.businessMode,
+          state: formData.state,
+          city: formData.city,
+          subscription_plan_id: selectedPlan?.id,
+          subscription_status: 'trial',
+        });
+      
+      if (storeError) {
+        console.error("Store creation error:", storeError);
+        toast.error("Failed to create store. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      toast.success("Store created successfully! Welcome to BizGrow 360!");
+      navigate("/dashboard");
+      
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -218,8 +352,8 @@ const Join = () => {
             transition={{ delay: 0.1 }}
             className="mb-6 md:mb-8"
           >
-            <div className="flex items-center justify-between max-w-md mx-auto">
-              {steps.map((s, index) => (
+            <div className="flex items-center justify-between max-w-lg mx-auto">
+              {steps.slice(0, user ? 5 : 6).map((s, index) => (
                 <div key={s.id} className="flex items-center">
                   <div className="flex flex-col items-center">
                     <motion.div 
@@ -232,25 +366,25 @@ const Join = () => {
                             : "hsl(var(--primary-foreground) / 0.1)"
                       }}
                       transition={{ duration: 0.3 }}
-                      className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
                         step >= s.id ? "shadow-glow-accent" : ""
                       }`}
                     >
                       {step > s.id ? (
-                        <Check className="w-5 h-5 text-accent-foreground" />
+                        <Check className="w-4 h-4 text-accent-foreground" />
                       ) : (
-                        <s.icon className={`w-5 h-5 ${step === s.id ? "text-accent-foreground" : "text-primary-foreground/50"}`} />
+                        <s.icon className={`w-4 h-4 ${step === s.id ? "text-accent-foreground" : "text-primary-foreground/50"}`} />
                       )}
                     </motion.div>
-                    <span className={`text-xs mt-1.5 hidden md:block transition-colors ${
+                    <span className={`text-[10px] mt-1 hidden md:block transition-colors ${
                       step >= s.id ? "text-primary-foreground" : "text-primary-foreground/40"
                     }`}>
                       {s.title}
                     </span>
                   </div>
-                  {index < steps.length - 1 && (
+                  {index < (user ? 4 : 5) && (
                     <motion.div 
-                      className="w-8 md:w-16 h-0.5 mx-1 md:mx-2"
+                      className="w-6 md:w-12 h-0.5 mx-0.5 md:mx-1"
                       animate={{
                         backgroundColor: step > s.id 
                           ? "hsl(var(--accent))" 
@@ -439,7 +573,6 @@ const Join = () => {
                       </div>
                     </div>
 
-                    {/* Location tip */}
                     <div className="mt-6 p-4 rounded-xl bg-accent/10 border border-accent/20">
                       <p className="text-sm text-muted-foreground">
                         💡 <strong className="text-foreground">Tip:</strong> Your store location helps customers find you easily in local searches.
@@ -672,11 +805,74 @@ const Join = () => {
                       ))}
                     </div>
 
-                    {/* Free trial note */}
                     <div className="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
                       <Clock className="w-5 h-5 text-green-500 shrink-0" />
                       <p className="text-sm text-muted-foreground">
                         <strong className="text-foreground">14-day free trial</strong> included with all plans. No credit card required to start.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 6: Account Creation (only if not logged in) */}
+                {step === 6 && !user && (
+                  <motion.div
+                    key="step6"
+                    custom={direction}
+                    variants={stepVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <div className="text-center mb-6 md:mb-8">
+                      <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
+                        <User className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground" />
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-bold text-card-foreground">Create Your Account</h2>
+                      <p className="text-muted-foreground mt-1 text-sm md:text-base">Almost there! Set up your login credentials</p>
+                    </div>
+
+                    <div className="space-y-4 md:space-y-5">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="email" className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-primary" />
+                          Email Address *
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="you@example.com"
+                          value={formData.email}
+                          onChange={(e) => updateForm("email", e.target.value)}
+                          className={`h-11 md:h-12 ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        />
+                        <ErrorMessage message={errors.email} />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <Label htmlFor="password" className="flex items-center gap-2">
+                          <Lock className="w-4 h-4 text-primary" />
+                          Password *
+                        </Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Create a password (min 6 characters)"
+                          value={formData.password}
+                          onChange={(e) => updateForm("password", e.target.value)}
+                          className={`h-11 md:h-12 ${errors.password ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        />
+                        <ErrorMessage message={errors.password} />
+                      </div>
+                    </div>
+
+                    <div className="mt-6 p-4 rounded-xl bg-secondary/50 border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        Already have an account?{" "}
+                        <Link to="/auth?mode=login&redirect=/join" className="text-primary font-medium hover:underline">
+                          Sign in here
+                        </Link>
                       </p>
                     </div>
                   </motion.div>
@@ -688,14 +884,14 @@ const Join = () => {
                 <Button
                   variant="outline"
                   onClick={prevStep}
-                  disabled={step === 1}
+                  disabled={step === 1 || isSubmitting}
                   className="gap-2 h-11 md:h-12 px-4 md:px-6"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span className="hidden sm:inline">Previous</span>
                 </Button>
                 
-                {step < totalSteps ? (
+                {step < (user ? 5 : totalSteps) ? (
                   <RippleButton
                     onClick={nextStep}
                     className="bg-primary text-primary-foreground gap-2 h-11 md:h-12 px-6 md:px-8"
@@ -705,17 +901,22 @@ const Join = () => {
                   </RippleButton>
                 ) : (
                   <RippleButton
-                    onClick={() => {
-                      if (validateCurrentStep()) {
-                        // Handle form submission
-                        console.log("Form submitted:", formData);
-                      }
-                    }}
-                    className="gradient-accent text-accent-foreground font-bold gap-2 h-11 md:h-12 px-6 md:px-8 shadow-glow-accent"
+                    onClick={step === 5 && user ? handleSubmit : handleSubmit}
+                    disabled={isSubmitting || !isStepValid()}
+                    className="gradient-accent text-accent-foreground font-bold gap-2 h-11 md:h-12 px-6 md:px-8 shadow-glow-accent disabled:opacity-50"
                   >
-                    <Sparkles className="w-4 h-4" />
-                    Start Free Trial
-                    <ArrowRight className="w-4 h-4" />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating Store...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        Start Free Trial
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </RippleButton>
                 )}
               </div>

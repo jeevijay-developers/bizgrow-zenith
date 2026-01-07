@@ -1,5 +1,5 @@
 import { Camera, Share2, ShoppingBag, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { Link } from "react-router-dom";
 import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
@@ -118,10 +118,10 @@ const DigitaliseSection = () => {
 
             {/* CTA */}
             <Link to="/join">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 rounded-xl shadow-lg shadow-primary/20 group whitespace-nowrap">
+              <RippleButton size="xl" variant="glow" className="font-bold group whitespace-nowrap">
                 Get Your Digital Store Now
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </RippleButton>
             </Link>
           </div>
         </AnimatedSection>

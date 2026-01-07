@@ -1,72 +1,86 @@
-import { ExternalLink, Share2, ShoppingCart, Search, Heart, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ExternalLink, Share2, ShoppingCart, Search, Heart, Star, ArrowRight, Link2, Globe, Smartphone, Zap, QrCode } from "lucide-react";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { AnimatedSection } from "@/hooks/useScrollAnimation";
+import { Link } from "react-router-dom";
 
 const CatalogueSection = () => {
   return (
-    <section className="py-16 md:py-24 bg-secondary/30 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,208,102,0.05)_0%,_transparent_70%)]" />
+    <section className="py-20 md:py-32 bg-gradient-to-b from-secondary/30 via-background to-secondary/20 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 right-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+      </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Left - Catalogue Mockup */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left - Enhanced Catalogue Mockup */}
           <AnimatedSection className="relative order-2 lg:order-1" direction="left">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 blur-3xl scale-110 opacity-50" />
+            
             {/* Browser Window Mockup */}
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 max-w-md mx-auto">
+            <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 max-w-md mx-auto">
               {/* Browser Header */}
-              <div className="bg-gray-100 px-4 py-3 flex items-center gap-3 border-b border-gray-200">
-                <div className="flex gap-1.5">
+              <div className="bg-gray-100 px-5 py-4 flex items-center gap-4 border-b border-gray-200">
+                <div className="flex gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
                 </div>
-                <div className="flex-1 bg-white rounded-lg px-3 py-1.5 text-xs text-gray-500 flex items-center gap-2">
-                  <Search className="w-3 h-3" />
-                  <span>sharma-store.bizgrow360.in</span>
+                <div className="flex-1 bg-white rounded-xl px-4 py-2 text-sm text-gray-600 flex items-center gap-2 border border-gray-200">
+                  <Globe className="w-4 h-4 text-green-500" />
+                  <span className="font-medium">sharma-store.bizgrow360.in</span>
                 </div>
-                <Share2 className="w-4 h-4 text-gray-400" />
+                <Share2 className="w-5 h-5 text-gray-400 cursor-pointer hover:text-primary transition-colors" />
               </div>
 
               {/* Catalogue Content */}
-              <div className="p-4 space-y-4">
+              <div className="p-5 space-y-5 bg-gradient-to-b from-white to-gray-50/50">
                 {/* Store Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white font-bold text-lg">
+                <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                       SS
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Sharma Store</h4>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-accent text-accent" />
-                        <span className="text-xs text-gray-500">4.8 • Kirana</span>
+                      <h4 className="font-bold text-gray-900 text-lg">Sharma Store</h4>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="w-3 h-3 fill-accent text-accent" />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">4.8 • Kirana</span>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
-                    Open Now
+                  <div className="bg-green-100 text-green-700 text-sm font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Open
                   </div>
                 </div>
 
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input 
                     type="text" 
                     placeholder="Search products..." 
-                    className="w-full bg-gray-50 rounded-xl pl-10 pr-4 py-2.5 text-sm border border-gray-100 focus:outline-none focus:border-primary/50"
+                    className="w-full bg-gray-100 rounded-xl pl-12 pr-4 py-3 text-sm border-2 border-transparent focus:border-primary/30 focus:bg-white transition-all"
                     readOnly
                   />
                 </div>
 
                 {/* Categories */}
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {["All", "Snacks", "Beverages", "Dairy", "Personal Care"].map((cat, i) => (
                     <button 
                       key={cat} 
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${
-                        i === 0 ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
+                      className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                        i === 0 
+                          ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       {cat}
@@ -77,21 +91,26 @@ const CatalogueSection = () => {
                 {/* Products Grid */}
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { name: "Parle-G Biscuit", price: "₹20", img: "🍪" },
+                    { name: "Parle-G Biscuit", price: "₹20", img: "🍪", badge: "Bestseller" },
                     { name: "Amul Butter", price: "₹55", img: "🧈" },
-                    { name: "Maggi Noodles", price: "₹14", img: "🍜" },
+                    { name: "Maggi Noodles", price: "₹14", img: "🍜", badge: "Popular" },
                     { name: "Tata Tea Gold", price: "₹120", img: "🍵" },
                   ].map((product) => (
-                    <div key={product.name} className="bg-gray-50 rounded-xl p-3 relative group hover:bg-gray-100 transition-colors">
-                      <button className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white shadow flex items-center justify-center">
-                        <Heart className="w-3 h-3 text-gray-400" />
+                    <div key={product.name} className="bg-white rounded-2xl p-3 relative group hover:shadow-lg border border-gray-100 transition-all cursor-pointer">
+                      {product.badge && (
+                        <span className="absolute top-2 left-2 text-[10px] bg-accent text-primary font-bold px-2 py-0.5 rounded-full">
+                          {product.badge}
+                        </span>
+                      )}
+                      <button className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                        <Heart className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500 transition-colors" />
                       </button>
-                      <div className="text-3xl mb-2">{product.img}</div>
-                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-sm font-bold text-primary">{product.price}</span>
-                        <button className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                          <span className="text-white text-xs">+</span>
+                      <div className="text-4xl mb-2 mt-4">{product.img}</div>
+                      <p className="text-sm font-semibold text-gray-900 truncate">{product.name}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-base font-bold text-primary">{product.price}</span>
+                        <button className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-md hover:scale-110 transition-transform">
+                          <span className="text-white text-lg leading-none">+</span>
                         </button>
                       </div>
                     </div>
@@ -99,65 +118,80 @@ const CatalogueSection = () => {
                 </div>
 
                 {/* Cart Bar */}
-                <div className="bg-primary rounded-xl p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5 text-white" />
-                    <span className="text-white text-sm">3 items • ₹189</span>
+                <div className="bg-gradient-to-r from-primary to-primary/90 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                      <ShoppingCart className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-white font-bold">3 items</span>
+                      <p className="text-white/70 text-sm">₹189 total</p>
+                    </div>
                   </div>
-                  <button className="bg-accent text-accent-foreground text-sm font-bold px-4 py-1.5 rounded-lg">
-                    Checkout
+                  <button className="bg-accent text-primary font-bold px-5 py-2.5 rounded-xl shadow-lg hover:shadow-accent/30 transition-shadow">
+                    Checkout →
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Decorative elements */}
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-accent/20 rounded-full blur-2xl" />
-            <div className="absolute -top-6 -right-6 w-20 h-20 bg-primary/20 rounded-full blur-2xl" />
+            {/* Floating QR code */}
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-2xl p-4 float-animation hidden md:block">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <QrCode className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Scan to visit</p>
+                  <p className="text-xs text-gray-500">Share on WhatsApp</p>
+                </div>
+              </div>
+            </div>
           </AnimatedSection>
 
           {/* Right - Content */}
           <AnimatedSection className="text-center lg:text-left order-1 lg:order-2" direction="right" delay={150}>
-            <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-4 py-1.5 mb-6">
-              <ExternalLink className="w-4 h-4 text-accent" />
-              <span className="text-accent-foreground text-sm font-semibold">Shareable Link</span>
+            <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-5 py-2 mb-6 border border-accent/20">
+              <Link2 className="w-4 h-4 text-accent" />
+              <span className="text-accent-foreground text-sm font-bold">Shareable Store Link</span>
             </div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 font-display leading-tight">
-              Your Own Digital
-              <span className="text-primary block">Online Catalogue</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display leading-tight">
+              Your Own
+              <span className="text-primary block">Online Store</span>
             </h2>
 
-            <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-lg mx-auto lg:mx-0">
-              Get a beautiful, professional catalogue with your store's branding. 
-              Share the link on WhatsApp, and customers can browse and order instantly.
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg mx-auto lg:mx-0">
+              Get a beautiful, professional store with your branding. 
+              Share on WhatsApp and customers can browse & order instantly.
             </p>
 
-            {/* Features */}
-            <div className="space-y-4 mb-8">
+            {/* Feature List */}
+            <div className="space-y-5 mb-10">
               {[
-                { title: "Custom Store Link", desc: "yourstore.bizgrow360.in" },
-                { title: "Works Offline", desc: "Customers can browse even without internet" },
-                { title: "WhatsApp Sharing", desc: "One-tap share to customer groups" },
-                { title: "Real-time Updates", desc: "Stock changes reflect instantly" },
+                { icon: Globe, title: "Your Custom Link", desc: "yourstore.bizgrow360.in", color: "from-blue-500 to-cyan-500" },
+                { icon: Smartphone, title: "Works Everywhere", desc: "Mobile-first, blazing fast", color: "from-green-500 to-emerald-500" },
+                { icon: Share2, title: "One-Tap Share", desc: "Share to WhatsApp groups instantly", color: "from-green-600 to-green-700" },
+                { icon: Zap, title: "Real-time Sync", desc: "Stock updates reflect instantly", color: "from-amber-500 to-orange-500" },
               ].map((feature) => (
-                <div key={feature.title} className="flex items-start gap-3 text-left">
-                  <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                <div key={feature.title} className="flex items-start gap-4 text-left">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                    <feature.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">{feature.title}</p>
-                    <p className="text-sm text-muted-foreground">{feature.desc}</p>
+                    <p className="font-bold text-foreground text-lg">{feature.title}</p>
+                    <p className="text-muted-foreground">{feature.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 rounded-xl shadow-lg shadow-primary/20">
-              Create Your Catalogue →
-            </Button>
+            <Link to="/join">
+              <RippleButton size="xl" variant="glow" className="font-bold group">
+                Create Your Store Now
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </RippleButton>
+            </Link>
           </AnimatedSection>
         </div>
       </div>

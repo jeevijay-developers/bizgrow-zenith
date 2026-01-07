@@ -1,4 +1,5 @@
 import { Star, Quote, Play } from "lucide-react";
+import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
 const testimonials = [
   {
@@ -51,7 +52,7 @@ const TestimonialsSection = () => {
     <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-green-100 rounded-full px-4 py-1.5 mb-4">
             <Star className="w-4 h-4 text-green-600 fill-green-600" />
             <span className="text-green-700 text-sm font-semibold">Success Stories</span>
@@ -63,10 +64,10 @@ const TestimonialsSection = () => {
           <p className="text-base md:text-lg text-muted-foreground">
             Join thousands of happy retailers who've transformed their business with BizGrow 360.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto mb-12">
+        <StaggeredContainer className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto mb-12" staggerDelay={150}>
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
@@ -103,10 +104,10 @@ const TestimonialsSection = () => {
               </div>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
 
         {/* Video CTA */}
-        <div className="max-w-2xl mx-auto mb-12">
+        <AnimatedSection className="max-w-2xl mx-auto mb-12" delay={200}>
           <div className="relative bg-gradient-to-br from-primary to-primary/90 rounded-2xl p-6 md:p-8 text-center overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,208,102,0.1)_0%,_transparent_70%)]" />
             <div className="relative z-10">
@@ -117,10 +118,10 @@ const TestimonialsSection = () => {
               <p className="text-white/70 text-sm">See how retailers like you are growing their business</p>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto">
+        <StaggeredContainer className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto" staggerDelay={100}>
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-1">
@@ -129,7 +130,7 @@ const TestimonialsSection = () => {
               <div className="text-muted-foreground text-sm">{stat.label}</div>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
       </div>
     </section>
   );

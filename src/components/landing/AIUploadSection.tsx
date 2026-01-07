@@ -1,4 +1,5 @@
 import { Camera, Sparkles, Check, Zap, Clock, Brain } from "lucide-react";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const features = [
   { icon: Zap, text: "Instant recognition" },
@@ -18,7 +19,7 @@ const AIUploadSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left - Content */}
-          <div className="text-center lg:text-left">
+          <AnimatedSection className="text-center lg:text-left" direction="left">
             <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-6">
               <Sparkles className="w-4 h-4 text-accent" />
               <span className="text-accent text-sm font-semibold">AI-Powered Magic</span>
@@ -57,10 +58,10 @@ const AIUploadSection = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Right - Visual Demo */}
-          <div className="relative">
+          <AnimatedSection className="relative" direction="right" delay={200}>
             {/* Phone Mockup */}
             <div className="relative mx-auto max-w-xs">
               {/* Phone Frame */}
@@ -149,7 +150,7 @@ const AIUploadSection = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

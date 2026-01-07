@@ -1,5 +1,6 @@
 import { ExternalLink, Share2, ShoppingCart, Search, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const CatalogueSection = () => {
   return (
@@ -10,7 +11,7 @@ const CatalogueSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left - Catalogue Mockup */}
-          <div className="relative order-2 lg:order-1">
+          <AnimatedSection className="relative order-2 lg:order-1" direction="left">
             {/* Browser Window Mockup */}
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 max-w-md mx-auto">
               {/* Browser Header */}
@@ -113,10 +114,10 @@ const CatalogueSection = () => {
             {/* Decorative elements */}
             <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-accent/20 rounded-full blur-2xl" />
             <div className="absolute -top-6 -right-6 w-20 h-20 bg-primary/20 rounded-full blur-2xl" />
-          </div>
+          </AnimatedSection>
 
           {/* Right - Content */}
-          <div className="text-center lg:text-left order-1 lg:order-2">
+          <AnimatedSection className="text-center lg:text-left order-1 lg:order-2" direction="right" delay={150}>
             <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-4 py-1.5 mb-6">
               <ExternalLink className="w-4 h-4 text-accent" />
               <span className="text-accent-foreground text-sm font-semibold">Shareable Link</span>
@@ -157,7 +158,7 @@ const CatalogueSection = () => {
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 rounded-xl shadow-lg shadow-primary/20">
               Create Your Catalogue →
             </Button>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

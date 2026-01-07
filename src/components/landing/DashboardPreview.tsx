@@ -10,6 +10,7 @@ import {
   ArrowDownRight,
   Clock
 } from "lucide-react";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const DashboardPreview = () => {
   return (
@@ -19,7 +20,7 @@ const DashboardPreview = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-1.5 mb-4">
             <LayoutDashboard className="w-4 h-4 text-primary" />
             <span className="text-primary text-sm font-semibold">Seller Dashboard</span>
@@ -34,10 +35,10 @@ const DashboardPreview = () => {
             A powerful yet simple dashboard designed for busy retailers. 
             Track orders, manage inventory, and grow your business.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Dashboard Mockup */}
-        <div className="max-w-5xl mx-auto">
+        <AnimatedSection className="max-w-5xl mx-auto" delay={150}>
           <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
             {/* Dashboard Header */}
             <div className="bg-primary px-4 md:px-6 py-4 flex items-center justify-between">
@@ -165,7 +166,7 @@ const DashboardPreview = () => {
           {/* Decorative shadows */}
           <div className="h-4 bg-gray-200/50 rounded-b-2xl mx-4" />
           <div className="h-4 bg-gray-200/30 rounded-b-2xl mx-8" />
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

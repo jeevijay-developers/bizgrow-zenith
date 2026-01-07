@@ -1,6 +1,7 @@
 import { Camera, Share2, ShoppingBag, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
 const steps = [
   {
@@ -45,7 +46,7 @@ const DigitaliseSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-1.5 mb-4">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -63,10 +64,10 @@ const DigitaliseSection = () => {
             No coding. No complicated setup. Just snap, share, and sell. 
             It's that simple with BizGrow 360.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Steps */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+        <StaggeredContainer className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-12" staggerDelay={150}>
           {steps.map((step, index) => (
             <div key={step.title} className="relative group">
               {/* Connector line (hidden on mobile and last item) */}
@@ -100,10 +101,10 @@ const DigitaliseSection = () => {
               </div>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
 
         {/* Benefits + CTA */}
-        <div className="bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-3xl p-6 md:p-10 border border-border">
+        <AnimatedSection className="bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-3xl p-6 md:p-10 border border-border" delay={200}>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             {/* Benefits List */}
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
@@ -123,7 +124,7 @@ const DigitaliseSection = () => {
               </Button>
             </Link>
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

@@ -1,12 +1,13 @@
 import { ArrowRight, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
 const CTASection = () => {
   return (
     <section className="py-20 md:py-28 bg-secondary/30">
       <div className="container mx-auto px-4">
-        <div className="relative max-w-4xl mx-auto">
+        <AnimatedSection className="relative max-w-4xl mx-auto">
           {/* Background Decoration */}
           <div className="absolute inset-0 gradient-primary rounded-3xl opacity-95" />
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/30 rounded-full blur-3xl" />
@@ -50,7 +51,7 @@ const CTASection = () => {
               </a>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

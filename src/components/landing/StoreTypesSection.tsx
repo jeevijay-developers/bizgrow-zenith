@@ -10,6 +10,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
 const storeTypes = [
   {
@@ -83,7 +84,7 @@ const StoreTypesSection = () => {
     <section className="py-16 md:py-24 bg-secondary/30" id="solutions">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-1.5 mb-4">
             <ShoppingBag className="w-4 h-4 text-primary" />
             <span className="text-primary text-sm font-semibold">Built for Every Retailer</span>
@@ -96,10 +97,10 @@ const StoreTypesSection = () => {
             From neighborhood kirana stores to specialty shops, BizGrow 360 adapts 
             to your specific business needs.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Store Types Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <StaggeredContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" staggerDelay={80}>
           {storeTypes.map((store, index) => (
             <div
               key={store.title}
@@ -130,10 +131,10 @@ const StoreTypesSection = () => {
               </div>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
 
         {/* CTA */}
-        <div className="text-center mt-10">
+        <AnimatedSection className="text-center mt-10" delay={300}>
           <p className="text-muted-foreground mb-4 text-sm md:text-base">
             Don't see your business type? <span className="text-primary font-medium">We support all retail categories!</span>
           </p>
@@ -144,7 +145,7 @@ const StoreTypesSection = () => {
             Get Started with Your Store
             <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

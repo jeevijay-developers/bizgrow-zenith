@@ -1,6 +1,7 @@
 import { Check, Sparkles, Zap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
 const plans = [
   {
@@ -73,7 +74,7 @@ const PricingSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-4">
             <Sparkles className="w-4 h-4 text-accent" />
             <span className="text-accent text-sm font-bold">Simple Pricing</span>
@@ -85,10 +86,10 @@ const PricingSection = () => {
             Start with a 14-day free trial. No credit card required. 
             Cancel anytime.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+        <StaggeredContainer className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto" staggerDelay={150}>
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -153,14 +154,14 @@ const PricingSection = () => {
               </Link>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
 
         {/* Trust Note */}
-        <div className="text-center mt-10">
+        <AnimatedSection className="text-center mt-10" delay={300}>
           <p className="text-white/60 text-sm">
             🔒 All plans include SSL security, daily backups, and 99.9% uptime guarantee.
           </p>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

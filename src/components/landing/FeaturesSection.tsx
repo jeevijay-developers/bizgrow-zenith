@@ -12,6 +12,7 @@ import {
   Smartphone,
   Zap
 } from "lucide-react";
+import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
 const features = [
   {
@@ -84,7 +85,7 @@ const FeaturesSection = () => {
     <section className="py-16 md:py-24 bg-background" id="features">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-4 py-1.5 mb-4">
             <Zap className="w-4 h-4 text-accent" />
             <span className="text-accent-foreground text-sm font-bold">Powerful Features</span>
@@ -97,10 +98,10 @@ const FeaturesSection = () => {
             From product listing to billing, we've got every aspect of your retail 
             business covered with intelligent automation.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Features Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+        <StaggeredContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12" staggerDelay={100}>
           {features.map((feature, index) => (
             <div
               key={feature.title}
@@ -128,10 +129,10 @@ const FeaturesSection = () => {
               </p>
             </div>
           ))}
-        </div>
+        </StaggeredContainer>
 
         {/* Additional Features Bar */}
-        <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-2xl p-6 border border-border">
+        <AnimatedSection className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-2xl p-6 border border-border" delay={300}>
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
             <span className="text-sm font-medium text-muted-foreground">Also includes:</span>
             {additionalFeatures.map((feature) => (
@@ -141,7 +142,7 @@ const FeaturesSection = () => {
               </div>
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

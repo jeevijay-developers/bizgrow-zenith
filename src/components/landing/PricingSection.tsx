@@ -1,10 +1,11 @@
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Zap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const plans = [
   {
     name: "Starter",
+    icon: Zap,
     price: "₹499",
     period: "/month",
     description: "Perfect for small shops just getting started",
@@ -18,9 +19,11 @@ const plans = [
     ],
     cta: "Start Free Trial",
     popular: false,
+    color: "from-gray-500 to-gray-600",
   },
   {
     name: "Pro",
+    icon: Sparkles,
     price: "₹999",
     period: "/month",
     description: "For growing businesses with more needs",
@@ -32,13 +35,15 @@ const plans = [
       "Unlimited invoices",
       "GST reports",
       "Analytics dashboard",
-      "Priority support",
+      "Priority WhatsApp support",
     ],
     cta: "Start Free Trial",
     popular: true,
+    color: "from-primary to-purple-700",
   },
   {
     name: "Enterprise",
+    icon: Crown,
     price: "Custom",
     period: "",
     description: "For large retailers and chains",
@@ -53,42 +58,50 @@ const plans = [
     ],
     cta: "Contact Sales",
     popular: false,
+    color: "from-amber-500 to-orange-500",
   },
 ];
 
 const PricingSection = () => {
   return (
-    <section className="py-20 md:py-28 gradient-hero" id="pricing">
-      <div className="container mx-auto px-4">
+    <section className="py-16 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95 relative overflow-hidden" id="pricing">
+      {/* Background effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse,_rgba(255,208,102,0.1)_0%,_transparent_60%)]" />
+        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse,_rgba(255,255,255,0.05)_0%,_transparent_60%)]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-1.5 bg-accent text-accent-foreground rounded-full text-sm font-bold mb-4">
-            Simple Pricing
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-6 font-display">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+          <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-4">
+            <Sparkles className="w-4 h-4 text-accent" />
+            <span className="text-accent text-sm font-bold">Simple Pricing</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 font-display">
             Choose Your Plan
           </h2>
-          <p className="text-lg text-primary-foreground/80">
+          <p className="text-base md:text-lg text-white/70">
             Start with a 14-day free trial. No credit card required. 
             Cancel anytime.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-card rounded-2xl p-8 border-2 transition-all duration-300 hover:scale-105 ${
+              className={`relative bg-white rounded-2xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] ${
                 plan.popular 
-                  ? "border-accent shadow-2xl shadow-accent/20 scale-105" 
-                  : "border-border hover:border-primary/50"
+                  ? "ring-2 ring-accent shadow-2xl shadow-accent/20 md:scale-105" 
+                  : "shadow-xl"
               }`}
             >
               {/* Popular Badge */}
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1 bg-accent text-accent-foreground px-4 py-1.5 rounded-full text-sm font-bold">
+                  <span className="inline-flex items-center gap-1.5 bg-accent text-accent-foreground px-4 py-1.5 rounded-full text-sm font-bold shadow-lg">
                     <Sparkles className="w-4 h-4" />
                     Most Popular
                   </span>
@@ -96,17 +109,20 @@ const PricingSection = () => {
               )}
 
               {/* Plan Header */}
-              <div className="text-center mb-8">
-                <h3 className="text-xl font-semibold text-card-foreground mb-2">
+              <div className="text-center mb-6">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mx-auto mb-4`}>
+                  <plan.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-1">
                   {plan.name}
                 </h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold text-foreground">
+                  <span className="text-3xl md:text-4xl font-bold text-gray-900">
                     {plan.price}
                   </span>
-                  <span className="text-muted-foreground">{plan.period}</span>
+                  <span className="text-gray-500">{plan.period}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-sm text-gray-500 mt-2">
                   {plan.description}
                 </p>
               </div>
@@ -115,21 +131,21 @@ const PricingSection = () => {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 text-green-600" />
                     </div>
-                    <span className="text-card-foreground text-sm">{feature}</span>
+                    <span className="text-gray-700 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               {/* CTA */}
-              <Link to="/join">
+              <Link to="/join" className="block">
                 <Button 
-                  className={`w-full py-6 text-lg font-semibold rounded-xl ${
+                  className={`w-full py-5 text-base font-semibold rounded-xl ${
                     plan.popular 
-                      ? "bg-accent text-accent-foreground hover:bg-accent/90" 
-                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                      ? "bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" 
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-900"
                   }`}
                 >
                   {plan.cta}
@@ -140,9 +156,11 @@ const PricingSection = () => {
         </div>
 
         {/* Trust Note */}
-        <p className="text-center text-primary-foreground/70 mt-12 text-sm">
-          All plans include SSL security, daily backups, and 99.9% uptime guarantee.
-        </p>
+        <div className="text-center mt-10">
+          <p className="text-white/60 text-sm">
+            🔒 All plans include SSL security, daily backups, and 99.9% uptime guarantee.
+          </p>
+        </div>
       </div>
     </section>
   );

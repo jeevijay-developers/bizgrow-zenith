@@ -1,5 +1,5 @@
 import { ArrowRight, Phone, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/hooks/useScrollAnimation";
 
@@ -28,14 +28,14 @@ const CTASection = () => {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link to="/join">
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-lg px-8 py-6 rounded-xl shadow-glow-accent group">
+                <RippleButton size="xl" variant="glow-accent" className="font-bold group">
                   Start Your Free Trial
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                </RippleButton>
               </Link>
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-lg px-8 py-6 rounded-xl">
+              <RippleButton size="xl" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                 Schedule a Demo
-              </Button>
+              </RippleButton>
             </div>
 
             {/* Contact Options */}

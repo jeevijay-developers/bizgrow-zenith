@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { ArrowRight, Bell, MessageCircle, ShoppingCart, Star, Sparkles, Clock, Zap } from "lucide-react";
 import modelImage from "@/assets/bizgrow-model.png";
 
@@ -66,14 +67,14 @@ const HeroSection = () => {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
               <Link to="/join">
-                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base px-6 py-5 rounded-xl shadow-lg shadow-accent/20 group w-full sm:w-auto">
+                <RippleButton size="xl" variant="glow-accent" className="font-bold w-full sm:w-auto group">
                   Start Free — No Card Needed
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                </RippleButton>
               </Link>
-              <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-base px-6 py-5 rounded-xl w-full sm:w-auto">
+              <RippleButton size="xl" variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
                 Watch Demo
-              </Button>
+              </RippleButton>
             </div>
 
             {/* Trust Indicators */}

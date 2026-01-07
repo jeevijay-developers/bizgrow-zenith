@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* BizGrow 360 Design System
-   Primary: Deep Purple #580077
+   Primary: Deep Purple #39004e
    Accent: Yellow #FFCF00
    All colors in HSL format
 */
@@ -20,16 +20,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    /* Deep Purple #580077 = hsl(285, 100%, 23%) */
-    --primary: 285 100% 23%;
+    /* Deep Purple #39004e = hsl(284, 100%, 15%) */
+    --primary: 284 100% 15%;
     --primary-foreground: 0 0% 100%;
 
     /* Lighter purple for secondary */
-    --secondary: 285 40% 96%;
-    --secondary-foreground: 285 100% 23%;
+    --secondary: 284 40% 96%;
+    --secondary-foreground: 284 100% 15%;
 
-    --muted: 285 20% 96%;
-    --muted-foreground: 285 20% 40%;
+    --muted: 284 20% 96%;
+    --muted-foreground: 284 20% 40%;
 
     /* Yellow #FFCF00 = hsl(49, 100%, 50%) */
     --accent: 49 100% 50%;
@@ -38,65 +38,65 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 285 20% 90%;
-    --input: 285 20% 90%;
-    --ring: 285 100% 23%;
+    --border: 284 20% 90%;
+    --input: 284 20% 90%;
+    --ring: 284 100% 15%;
 
     --radius: 0.75rem;
 
     /* Custom BizGrow variables */
-    --purple-dark: 285 100% 18%;
-    --purple-light: 285 60% 70%;
+    --purple-dark: 284 100% 10%;
+    --purple-light: 284 60% 60%;
     --yellow-dark: 45 100% 45%;
     --yellow-light: 50 100% 85%;
 
     /* Sidebar */
-    --sidebar-background: 285 100% 23%;
+    --sidebar-background: 284 100% 15%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 49 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 285 100% 30%;
+    --sidebar-accent: 284 100% 22%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 285 80% 35%;
+    --sidebar-border: 284 80% 25%;
     --sidebar-ring: 49 100% 50%;
   }
 
   .dark {
-    --background: 285 100% 5%;
+    --background: 284 100% 3%;
     --foreground: 0 0% 100%;
 
-    --card: 285 100% 8%;
+    --card: 284 100% 6%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 285 100% 8%;
+    --popover: 284 100% 6%;
     --popover-foreground: 0 0% 100%;
 
     --primary: 49 100% 50%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 285 50% 20%;
+    --secondary: 284 50% 15%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 285 30% 15%;
-    --muted-foreground: 285 20% 70%;
+    --muted: 284 30% 12%;
+    --muted-foreground: 284 20% 70%;
 
-    --accent: 285 100% 23%;
+    --accent: 284 100% 15%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 285 30% 20%;
-    --input: 285 30% 20%;
+    --border: 284 30% 18%;
+    --input: 284 30% 18%;
     --ring: 49 100% 50%;
 
-    --sidebar-background: 285 100% 10%;
+    --sidebar-background: 284 100% 8%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 49 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 285 100% 20%;
+    --sidebar-accent: 284 100% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 285 50% 25%;
+    --sidebar-border: 284 50% 20%;
     --sidebar-ring: 49 100% 50%;
   }
 }
@@ -114,11 +114,11 @@
 
 @layer utilities {
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(285, 100%, 23%) 0%, hsl(285, 100%, 18%) 100%);
+    background: linear-gradient(135deg, hsl(284, 100%, 15%) 0%, hsl(284, 100%, 10%) 100%);
   }
 
   .gradient-hero {
-    background: linear-gradient(180deg, hsl(285, 100%, 23%) 0%, hsl(285, 100%, 15%) 100%);
+    background: linear-gradient(180deg, hsl(284, 100%, 15%) 0%, hsl(284, 100%, 8%) 100%);
   }
 
   .gradient-accent {
@@ -133,7 +133,7 @@
   }
 
   .shadow-glow {
-    box-shadow: 0 0 40px hsl(285 100% 23% / 0.3);
+    box-shadow: 0 0 40px hsl(284 100% 15% / 0.3);
   }
 
   .shadow-glow-accent {

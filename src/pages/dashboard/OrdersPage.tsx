@@ -2,13 +2,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShoppingCart, Search, Filter, Eye, Phone, MessageCircle,
-  Clock, CheckCircle, Truck, Package, XCircle, IndianRupee,
-  Calendar, Download, ChevronDown, MapPin, User
+  Clock, CheckCircle, Truck, Package, XCircle,
+  Calendar, Download, ChevronDown, MapPin, User, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useOutletContext } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -23,73 +27,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { formatDistanceToNow, format } from "date-fns";
 
-const mockOrders = [
-  {
-    id: "ORD-2024-001",
-    customer: { name: "Rahul Sharma", phone: "+91 98765 43210", address: "123 MG Road, Bengaluru" },
-    items: [
-      { name: "Tata Salt 1kg", qty: 2, price: 28 },
-      { name: "Amul Butter 500g", qty: 1, price: 275 },
-    ],
-    total: 331,
-    status: "pending",
-    paymentMethod: "COD",
-    createdAt: "2 hours ago",
-    date: "Today, 10:30 AM"
-  },
-  {
-    id: "ORD-2024-002",
-    customer: { name: "Priya Patel", phone: "+91 87654 32109", address: "456 HSR Layout, Bengaluru" },
-    items: [
-      { name: "Fortune Sunflower Oil 1L", qty: 1, price: 189 },
-      { name: "Maggi Noodles Pack", qty: 3, price: 168 },
-    ],
-    total: 693,
-    status: "confirmed",
-    paymentMethod: "UPI",
-    createdAt: "5 hours ago",
-    date: "Today, 7:30 AM"
-  },
-  {
-    id: "ORD-2024-003",
-    customer: { name: "Amit Kumar", phone: "+91 76543 21098", address: "789 Koramangala, Bengaluru" },
-    items: [
-      { name: "Coca Cola 2L", qty: 4, price: 95 },
-      { name: "Parle-G Biscuits", qty: 10, price: 10 },
-    ],
-    total: 480,
-    status: "out-for-delivery",
-    paymentMethod: "UPI",
-    createdAt: "Yesterday",
-    date: "Yesterday, 3:45 PM"
-  },
-  {
-    id: "ORD-2024-004",
-    customer: { name: "Sneha Gupta", phone: "+91 65432 10987", address: "321 Indiranagar, Bengaluru" },
-    items: [
-      { name: "Amul Milk 1L", qty: 5, price: 65 },
-    ],
-    total: 325,
-    status: "delivered",
-    paymentMethod: "COD",
-    createdAt: "2 days ago",
-    date: "Jan 5, 2024, 9:00 AM"
-  },
-  {
-    id: "ORD-2024-005",
-    customer: { name: "Vikram Singh", phone: "+91 54321 09876", address: "654 Whitefield, Bengaluru" },
-    items: [
-      { name: "Tata Salt 1kg", qty: 1, price: 28 },
-      { name: "Fortune Sunflower Oil 1L", qty: 2, price: 189 },
-    ],
-    total: 406,
-    status: "cancelled",
-    paymentMethod: "UPI",
-    createdAt: "3 days ago",
-    date: "Jan 4, 2024, 2:15 PM"
-  },
-];
+interface DashboardContext {
+  store: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+interface Order {
+  id: string;
+  store_id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_address: string | null;
+  items: Array<{ name: string; qty: number; price: number }>;
+  total_amount: number;
+  status: string;
+  payment_method: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 const getStatusConfig = (status: string) => {
   switch (status) {
@@ -109,23 +69,69 @@ const getStatusConfig = (status: string) => {
 };
 
 const OrdersPage = () => {
-  const [selectedOrder, setSelectedOrder] = useState<typeof mockOrders[0] | null>(null);
+  const { store } = useOutletContext<DashboardContext>();
+  const queryClient = useQueryClient();
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [newStatus, setNewStatus] = useState("");
 
-  const filteredOrders = mockOrders.filter(order => {
+  // Fetch orders
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ["orders", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return [];
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("store_id", store.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as Order[];
+    },
+    enabled: !!store?.id,
+  });
+
+  // Update order status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status })
+        .eq("id", orderId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders", store?.id] });
+      toast.success("Order status updated!");
+      setSelectedOrder(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to update order: " + error.message);
+    },
+  });
+
+  const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.name.toLowerCase().includes(searchQuery.toLowerCase());
+      order.customer_name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === "all" || order.status === activeTab;
     return matchesSearch && matchesTab;
   });
 
   const stats = [
-    { label: "Total Orders", value: mockOrders.length, icon: ShoppingCart, color: "text-primary" },
-    { label: "Pending", value: mockOrders.filter(o => o.status === "pending").length, icon: Clock, color: "text-yellow-600" },
-    { label: "In Progress", value: mockOrders.filter(o => ["confirmed", "out-for-delivery"].includes(o.status)).length, icon: Truck, color: "text-blue-600" },
-    { label: "Delivered", value: mockOrders.filter(o => o.status === "delivered").length, icon: CheckCircle, color: "text-green-600" },
+    { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "text-primary" },
+    { label: "Pending", value: orders.filter(o => o.status === "pending").length, icon: Clock, color: "text-yellow-600" },
+    { label: "In Progress", value: orders.filter(o => ["confirmed", "out-for-delivery"].includes(o.status)).length, icon: Truck, color: "text-blue-600" },
+    { label: "Delivered", value: orders.filter(o => o.status === "delivered").length, icon: CheckCircle, color: "text-green-600" },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -172,8 +178,8 @@ const OrdersPage = () => {
       </div>
 
       {/* Tabs & Filters */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-auto flex-wrap">
             <TabsTrigger value="all">All Orders</TabsTrigger>
             <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -181,119 +187,124 @@ const OrdersPage = () => {
             <TabsTrigger value="out-for-delivery">Delivering</TabsTrigger>
             <TabsTrigger value="delivered">Delivered</TabsTrigger>
           </TabsList>
-          
-          <div className="flex gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search orders..." 
-                className="pl-10 w-64" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" size="icon">
-              <Filter className="w-4 h-4" />
-            </Button>
+        </Tabs>
+        
+        <div className="flex gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search orders..." 
+              className="pl-10 w-64" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
+          <Button variant="outline" size="icon">
+            <Filter className="w-4 h-4" />
+          </Button>
         </div>
+      </div>
 
-        <div className="mt-6">
-          <AnimatePresence mode="wait">
-            {filteredOrders.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="bg-card rounded-xl border border-border p-12 text-center"
-              >
-                <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No orders found</h3>
-                <p className="text-muted-foreground">
-                  {searchQuery ? "Try adjusting your search" : "Orders will appear here when customers place them"}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-3"
-              >
-                {filteredOrders.map((order, index) => {
-                  const statusConfig = getStatusConfig(order.status);
-                  return (
-                    <motion.div
-                      key={order.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      className="bg-card rounded-xl border border-border p-4 hover:border-primary/30 transition-colors cursor-pointer"
-                      onClick={() => setSelectedOrder(order)}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                        {/* Order Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="font-semibold">{order.id}</span>
-                            <Badge className={`${statusConfig.color} text-xs`}>
-                              <statusConfig.icon className="w-3 h-3 mr-1" />
-                              {statusConfig.label}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {order.paymentMethod}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <User className="w-4 h-4" />
-                              {order.customer.name}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Package className="w-4 h-4" />
-                              {order.items.length} items
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {order.createdAt}
-                            </div>
-                          </div>
+      {/* Orders List */}
+      <AnimatePresence mode="wait">
+        {filteredOrders.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="bg-card rounded-xl border border-border p-12 text-center"
+          >
+            <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No orders found</h3>
+            <p className="text-muted-foreground">
+              {searchQuery ? "Try adjusting your search" : "Orders will appear here when customers place them"}
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-3"
+          >
+            {filteredOrders.map((order, index) => {
+              const statusConfig = getStatusConfig(order.status);
+              const items = Array.isArray(order.items) ? order.items : [];
+              return (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03 }}
+                  className="bg-card rounded-xl border border-border p-4 hover:border-primary/30 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setNewStatus(order.status);
+                  }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {/* Order Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
+                        <span className="font-semibold">{order.id.slice(0, 8).toUpperCase()}</span>
+                        <Badge className={`${statusConfig.color} text-xs`}>
+                          <statusConfig.icon className="w-3 h-3 mr-1" />
+                          {statusConfig.label}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {order.payment_method || "COD"}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                        <div className="flex items-center gap-1">
+                          <User className="w-4 h-4" />
+                          {order.customer_name}
                         </div>
-
-                        {/* Price & Actions */}
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-lg font-bold">₹{order.total}</p>
-                            <p className="text-xs text-muted-foreground">{order.date}</p>
-                          </div>
-                          <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-9 w-9">
-                              <Phone className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-9 w-9">
-                              <MessageCircle className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-9 w-9">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <Package className="w-4 h-4" />
+                          {items.length} items
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </Tabs>
+                    </div>
+
+                    {/* Price & Actions */}
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-lg font-bold">₹{order.total_amount}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(order.created_at), "MMM d, h:mm a")}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                          <Phone className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                          <MessageCircle className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              Order {selectedOrder?.id}
+              Order {selectedOrder?.id.slice(0, 8).toUpperCase()}
               {selectedOrder && (
                 <Badge className={`${getStatusConfig(selectedOrder.status).color} text-xs`}>
                   {getStatusConfig(selectedOrder.status).label}
@@ -309,16 +320,18 @@ const OrdersPage = () => {
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-medium">{selectedOrder.customer.name}</span>
+                    <span className="font-medium">{selectedOrder.customer_name}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedOrder.customer.phone}</span>
+                    <span className="text-sm">{selectedOrder.customer_phone}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedOrder.customer.address}</span>
-                  </div>
+                  {selectedOrder.customer_address && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedOrder.customer_address}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -328,7 +341,7 @@ const OrdersPage = () => {
               <div className="space-y-3">
                 <h4 className="font-medium text-sm text-muted-foreground">Order Items</h4>
                 <div className="space-y-2">
-                  {selectedOrder.items.map((item, idx) => (
+                  {(Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between py-2">
                       <div>
                         <p className="font-medium">{item.name}</p>
@@ -341,7 +354,7 @@ const OrdersPage = () => {
                 <Separator />
                 <div className="flex items-center justify-between pt-2">
                   <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold">₹{selectedOrder.total}</span>
+                  <span className="text-xl font-bold">₹{selectedOrder.total_amount}</span>
                 </div>
               </div>
 
@@ -350,7 +363,7 @@ const OrdersPage = () => {
               {/* Actions */}
               <div className="space-y-3">
                 <h4 className="font-medium text-sm text-muted-foreground">Update Status</h4>
-                <Select defaultValue={selectedOrder.status}>
+                <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -373,7 +386,17 @@ const OrdersPage = () => {
                   <Phone className="w-4 h-4" />
                   Call
                 </Button>
-                <Button className="flex-1">Update Order</Button>
+                <Button 
+                  className="flex-1"
+                  disabled={newStatus === selectedOrder.status || updateStatusMutation.isPending}
+                  onClick={() => updateStatusMutation.mutate({ orderId: selectedOrder.id, status: newStatus })}
+                >
+                  {updateStatusMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Update Order"
+                  )}
+                </Button>
               </div>
             </div>
           )}

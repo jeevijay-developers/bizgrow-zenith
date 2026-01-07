@@ -5,7 +5,7 @@ import {
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
   Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock,
   ShoppingCart, Croissant, Milk, Shirt, Palette, Smartphone, Apple, Lightbulb, Pill, BookOpen, Wrench, Package,
-  ChevronRight, BadgeCheck, Rocket
+  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,6 +97,34 @@ const steps = [
   { id: 6, title: "Account", Icon: User },
 ];
 
+// Feature slides for the left panel carousel
+const featureSlides = [
+  {
+    Icon: Camera,
+    title: "AI-Powered Uploads",
+    description: "Just snap a photo and our AI automatically extracts product details, pricing, and more.",
+    gradient: "from-violet-500 to-purple-600",
+  },
+  {
+    Icon: Globe,
+    title: "Beautiful Storefront",
+    description: "Get a professional online store that works on any device. No coding required.",
+    gradient: "from-blue-500 to-cyan-500",
+  },
+  {
+    Icon: Bell,
+    title: "WhatsApp Orders",
+    description: "Receive instant order notifications on WhatsApp. Never miss a customer again.",
+    gradient: "from-green-500 to-emerald-500",
+  },
+  {
+    Icon: BarChart3,
+    title: "Smart Analytics",
+    description: "Track sales, bestsellers, and customer insights with our intuitive dashboard.",
+    gradient: "from-orange-500 to-amber-500",
+  },
+];
+
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
   return (
@@ -115,6 +143,59 @@ const stepVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -20 },
+};
+
+// Feature Carousel Component
+const FeatureCarousel = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % featureSlides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentSlide = featureSlides[activeIndex];
+
+  return (
+    <div className="w-full">
+      {/* Feature Card */}
+      <div className="relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.95 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+          >
+            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${currentSlide.gradient} flex items-center justify-center mb-4 shadow-lg`}>
+              <currentSlide.Icon className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">{currentSlide.title}</h3>
+            <p className="text-white/70 text-sm leading-relaxed">{currentSlide.description}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="flex items-center justify-center gap-2 mt-6">
+        {featureSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveIndex(index)}
+            className={`transition-all duration-300 rounded-full ${
+              index === activeIndex 
+                ? "w-8 h-2 bg-accent" 
+                : "w-2 h-2 bg-white/30 hover:bg-white/50"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const Join = () => {
@@ -286,68 +367,77 @@ const Join = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-[45%] xl:w-[40%] bg-primary relative overflow-hidden">
+      {/* Left Panel - Branding (Centered) */}
+      <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] bg-primary relative overflow-hidden">
+        {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/4 right-0 w-80 h-80 bg-accent/20 rounded-full blur-3xl translate-x-1/2" />
+          <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-purple-light/20 rounded-full blur-3xl -translate-x-1/2" />
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         </div>
         
-        <div className="relative z-10 flex flex-col justify-between p-10 w-full">
-          <Link to="/" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors w-fit">
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Home</span>
+        {/* Content - Vertically Centered */}
+        <div className="relative z-10 flex flex-col w-full h-full p-8 xl:p-12">
+          {/* Header */}
+          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors w-fit group">
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">Back to Home</span>
           </Link>
           
-          <div className="space-y-8">
-            <img src={logoDarkBg} alt="BizGrow 360" className="h-12" />
-            <div>
-              <h1 className="text-4xl xl:text-5xl font-bold text-primary-foreground leading-tight">
-                Launch your
+          {/* Center Content */}
+          <div className="flex-1 flex flex-col justify-center py-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <img src={logoDarkBg} alt="BizGrow 360" className="h-10 mb-8" />
+              
+              <h1 className="text-3xl xl:text-4xl font-bold text-white leading-tight mb-4">
+                Transform your
                 <br />
-                <span className="text-gradient">digital store</span>
+                <span className="text-gradient">retail business</span>
                 <br />
                 in minutes
               </h1>
-              <p className="text-primary-foreground/70 mt-4 text-lg max-w-md">
-                Join 10,000+ retailers who've transformed their business with our platform.
+              
+              <p className="text-white/60 text-base max-w-sm mb-10">
+                Join 10,000+ Indian retailers who've grown their business with our platform.
               </p>
-            </div>
-            
-            <div className="space-y-4">
-              {[
-                "AI-powered product uploads",
-                "WhatsApp order notifications",
-                "Beautiful storefront templates",
-              ].map((feature, i) => (
-                <motion.div
-                  key={feature}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + i * 0.1 }}
-                  className="flex items-center gap-3 text-primary-foreground/90"
-                >
-                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-accent" />
-                  </div>
-                  <span>{feature}</span>
-                </motion.div>
-              ))}
-            </div>
+
+              {/* Feature Carousel */}
+              <FeatureCarousel />
+            </motion.div>
           </div>
           
-          <div className="flex items-center gap-3 text-primary-foreground/60 text-sm">
-            <Shield className="w-4 h-4" />
-            <span>Secure & encrypted</span>
-            <span className="mx-2">•</span>
-            <Clock className="w-4 h-4" />
-            <span>5 minute setup</span>
+          {/* Footer Stats */}
+          <div className="flex items-center gap-6 text-white/50 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-7 h-7 rounded-full bg-white/20 border-2 border-primary flex items-center justify-center">
+                    <Star className="w-3 h-3 text-accent" />
+                  </div>
+                ))}
+              </div>
+              <span>4.9/5 Rating</span>
+            </div>
+            <div className="w-px h-4 bg-white/20" />
+            <div className="flex items-center gap-1.5">
+              <Shield className="w-4 h-4" />
+              <span>Secure</span>
+            </div>
+            <div className="w-px h-4 bg-white/20" />
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4" />
+              <span>5 min setup</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Form */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      {/* Right Panel - Form (Centered) */}
+      <div className="flex-1 flex flex-col min-h-screen bg-background">
         {/* Mobile Header */}
         <header className="lg:hidden flex items-center justify-between p-4 border-b border-border">
           <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -357,52 +447,54 @@ const Join = () => {
           <div className="w-5" />
         </header>
         
-        <div className="flex-1 flex flex-col max-w-xl mx-auto w-full px-4 py-6 lg:py-10">
-          {/* Progress Steps */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              {steps.slice(0, totalSteps).map((s, i) => (
-                <div key={s.id} className="flex items-center">
-                  <motion.div
-                    animate={{ 
-                      scale: step === s.id ? 1 : 0.9,
-                    }}
-                    className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                      step > s.id 
-                        ? "bg-green-500 text-white" 
-                        : step === s.id 
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
-                          : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {step > s.id ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <s.Icon className="w-5 h-5" />
+        {/* Form Container - Vertically Centered */}
+        <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
+          <div className="w-full max-w-md">
+            {/* Progress Steps */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                {steps.slice(0, totalSteps).map((s, i) => (
+                  <div key={s.id} className="flex items-center">
+                    <motion.div
+                      initial={false}
+                      animate={{ 
+                        scale: step === s.id ? 1 : 0.85,
+                      }}
+                      className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                        step > s.id 
+                          ? "bg-green-500 text-white" 
+                          : step === s.id 
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {step > s.id ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <s.Icon className="w-4 h-4" />
+                      )}
+                    </motion.div>
+                    {i < totalSteps - 1 && (
+                      <div className={`w-8 sm:w-12 h-0.5 mx-1 rounded-full transition-colors duration-300 ${
+                        step > s.id ? "bg-green-500" : "bg-muted"
+                      }`} />
                     )}
-                  </motion.div>
-                  {i < totalSteps - 1 && (
-                    <div className={`w-full h-1 mx-1 rounded-full transition-colors duration-300 ${
-                      step > s.id ? "bg-green-500" : "bg-muted"
-                    }`} style={{ width: `calc((100vw - 200px) / ${totalSteps})`, maxWidth: '60px' }} />
-                  )}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Step {step} of {totalSteps}</p>
+                  <h2 className="text-lg font-semibold text-foreground mt-0.5">{currentStep.title}</h2>
                 </div>
-              ))}
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Step {step} of {totalSteps}</p>
-                <h2 className="text-xl font-semibold text-foreground">{currentStep.title}</h2>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                <StepIcon className="w-5 h-5 text-accent" />
+                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                  <StepIcon className="w-5 h-5 text-accent" />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Form Content */}
-          <div className="flex-1">
+            {/* Form Content */}
             <AnimatePresence mode="wait">
               {/* Step 1: Business Identity */}
               {step === 1 && (
@@ -417,50 +509,50 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Business Details</h3>
-                    <p className="text-muted-foreground">Tell us about your store</p>
+                    <p className="text-muted-foreground text-sm">Tell us about your store</p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="storeName" className="text-sm font-medium">Store Name</Label>
                       <div className="relative">
-                        <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="storeName"
                           placeholder="Sharma General Store"
                           value={formData.storeName}
                           onChange={(e) => updateForm("storeName", e.target.value)}
-                          className={`pl-10 h-12 ${errors.storeName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.storeName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         />
                       </div>
                       <ErrorMessage message={errors.storeName} />
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="ownerName" className="text-sm font-medium">Your Name</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="ownerName"
                           placeholder="Rajesh Sharma"
                           value={formData.ownerName}
                           onChange={(e) => updateForm("ownerName", e.target.value)}
-                          className={`pl-10 h-12 ${errors.ownerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.ownerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         />
                       </div>
                       <ErrorMessage message={errors.ownerName} />
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="mobile" className="text-sm font-medium">Mobile Number</Label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="mobile"
                           placeholder="9876543210"
                           value={formData.mobile}
                           onChange={(e) => updateForm("mobile", e.target.value.replace(/\D/g, '').slice(0, 10))}
-                          className={`pl-10 h-12 ${errors.mobile ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.mobile ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                           maxLength={10}
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">+91</span>
@@ -473,11 +565,11 @@ const Join = () => {
                         type="checkbox"
                         checked={formData.sameAsWhatsapp}
                         onChange={(e) => updateForm("sameAsWhatsapp", e.target.checked)}
-                        className="w-5 h-5 rounded border-2 border-muted-foreground accent-primary"
+                        className="w-4 h-4 rounded border-2 border-muted-foreground accent-green-500"
                       />
                       <div className="flex items-center gap-2">
                         <MessageCircle className="w-4 h-4 text-green-500" />
-                        <span className="text-sm">WhatsApp same as mobile</span>
+                        <span className="text-sm text-muted-foreground">WhatsApp same as mobile</span>
                       </div>
                     </label>
                         
@@ -487,17 +579,17 @@ const Join = () => {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="space-y-2 overflow-hidden"
+                          className="space-y-1.5 overflow-hidden"
                         >
                           <Label htmlFor="whatsapp" className="text-sm font-medium">WhatsApp Number</Label>
                           <div className="relative">
-                            <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
+                            <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
                             <Input
                               id="whatsapp"
                               placeholder="9876543210"
                               value={formData.whatsapp}
                               onChange={(e) => updateForm("whatsapp", e.target.value.replace(/\D/g, '').slice(0, 10))}
-                              className={`pl-10 h-12 ${errors.whatsapp ? "border-red-500" : ""}`}
+                              className={`pl-10 h-11 ${errors.whatsapp ? "border-red-500" : ""}`}
                               maxLength={10}
                             />
                           </div>
@@ -522,19 +614,19 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Store Location</h3>
-                    <p className="text-muted-foreground">Help customers find you</p>
+                    <p className="text-muted-foreground text-sm">Help customers find you</p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="state" className="text-sm font-medium">State</Label>
                       <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none z-10" />
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
                         <select
                           id="state"
                           value={formData.state}
                           onChange={(e) => updateForm("state", e.target.value)}
-                          className={`w-full h-12 pl-10 pr-4 rounded-md border bg-background text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${
+                          className={`w-full h-11 pl-10 pr-4 rounded-md border bg-background text-foreground text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${
                             errors.state ? "border-red-500 focus:ring-red-500" : "border-input"
                           }`}
                         >
@@ -543,21 +635,21 @@ const Join = () => {
                             <option key={state} value={state}>{state}</option>
                           ))}
                         </select>
-                        <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground rotate-90 pointer-events-none" />
+                        <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground rotate-90 pointer-events-none" />
                       </div>
                       <ErrorMessage message={errors.state} />
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="city" className="text-sm font-medium">City / Town</Label>
                       <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="city"
                           placeholder="Mumbai, Delhi, Bengaluru..."
                           value={formData.city}
                           onChange={(e) => updateForm("city", e.target.value)}
-                          className={`pl-10 h-12 ${errors.city ? "border-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.city ? "border-red-500" : ""}`}
                         />
                       </div>
                       <ErrorMessage message={errors.city} />
@@ -566,12 +658,12 @@ const Join = () => {
 
                   <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
                     <div className="flex gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
-                        <MapPin className="w-5 h-5 text-accent" />
+                      <div className="w-9 h-9 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                        <MapPin className="w-4 h-4 text-accent" />
                       </div>
                       <div>
                         <p className="font-medium text-foreground text-sm">Local Discovery</p>
-                        <p className="text-sm text-muted-foreground">Your location helps customers find you in local search results</p>
+                        <p className="text-xs text-muted-foreground">Your location helps customers find you in search</p>
                       </div>
                     </div>
                   </div>
@@ -591,40 +683,38 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Store Category</h3>
-                    <p className="text-muted-foreground">What do you sell?</p>
+                    <p className="text-muted-foreground text-sm">What do you sell?</p>
                   </div>
 
-                  {errors.category && (
-                    <ErrorMessage message={errors.category} />
-                  )}
+                  {errors.category && <ErrorMessage message={errors.category} />}
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     {storeCategories.map((cat, index) => (
                       <motion.button
                         key={cat.id}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.03 }}
+                        transition={{ delay: index * 0.02 }}
                         onClick={() => updateForm("category", cat.id)}
-                        className={`relative p-3 rounded-xl text-center transition-all border-2 hover:border-primary/50 ${
+                        className={`relative p-3 rounded-xl text-center transition-all border-2 ${
                           formData.category === cat.id
-                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                            ? "border-primary bg-primary/5"
                             : "border-transparent bg-muted/50 hover:bg-muted"
                         }`}
                       >
-                        <div className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center ${
-                          formData.category === cat.id ? "bg-primary text-primary-foreground" : "bg-muted"
+                        <div className={`w-9 h-9 mx-auto mb-1.5 rounded-lg flex items-center justify-center transition-colors ${
+                          formData.category === cat.id ? "bg-primary text-primary-foreground" : "bg-background"
                         }`}>
-                          <cat.Icon className="w-5 h-5" />
+                          <cat.Icon className="w-4 h-4" />
                         </div>
                         <span className="text-xs font-medium text-foreground block truncate">{cat.label}</span>
                         {formData.category === cat.id && (
                           <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                            className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center"
                           >
-                            <Check className="w-3 h-3 text-white" />
+                            <Check className="w-2.5 h-2.5 text-white" />
                           </motion.div>
                         )}
                       </motion.button>
@@ -646,58 +736,49 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Delivery Mode</h3>
-                    <p className="text-muted-foreground">How do customers get orders?</p>
+                    <p className="text-muted-foreground text-sm">How do customers get orders?</p>
                   </div>
 
-                  {errors.businessMode && (
-                    <ErrorMessage message={errors.businessMode} />
-                  )}
+                  {errors.businessMode && <ErrorMessage message={errors.businessMode} />}
 
                   <div className="space-y-3">
                     {businessModes.map((mode, index) => (
                       <motion.button
                         key={mode.id}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                         onClick={() => updateForm("businessMode", mode.id)}
                         className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
                           formData.businessMode === mode.id
-                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-                            : "border-transparent bg-muted/50 hover:bg-muted hover:border-muted"
+                            ? "border-primary bg-primary/5"
+                            : "border-transparent bg-muted/50 hover:bg-muted"
                         }`}
                       >
-                        <div className="flex items-start gap-4">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                            formData.businessMode === mode.id ? "bg-primary text-primary-foreground" : "bg-muted"
+                        <div className="flex items-start gap-3">
+                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                            formData.businessMode === mode.id ? "bg-primary text-primary-foreground" : "bg-background"
                           }`}>
-                            <mode.Icon className="w-6 h-6" />
+                            <mode.Icon className="w-5 h-5" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-foreground">{mode.title}</h4>
+                              <h4 className="font-semibold text-foreground text-sm">{mode.title}</h4>
                               {mode.recommended && (
                                 <span className="px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-xs font-medium">
-                                  Best Choice
+                                  Best
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground mt-0.5">{mode.description}</p>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {mode.features.map((f) => (
-                                <span key={f} className="text-xs px-2 py-1 rounded-full bg-background text-muted-foreground">
-                                  {f}
-                                </span>
-                              ))}
-                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">{mode.description}</p>
                           </div>
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
                             formData.businessMode === mode.id 
                               ? "border-primary bg-primary" 
                               : "border-muted-foreground/30"
                           }`}>
                             {formData.businessMode === mode.id && (
-                              <Check className="w-4 h-4 text-primary-foreground" />
+                              <Check className="w-3 h-3 text-primary-foreground" />
                             )}
                           </div>
                         </div>
@@ -720,53 +801,50 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Choose Plan</h3>
-                    <p className="text-muted-foreground">14-day free trial included</p>
+                    <p className="text-muted-foreground text-sm">14-day free trial included</p>
                   </div>
 
-                  {errors.plan && (
-                    <ErrorMessage message={errors.plan} />
-                  )}
+                  {errors.plan && <ErrorMessage message={errors.plan} />}
 
                   <div className="space-y-3">
                     {plans.map((plan, index) => (
                       <motion.button
                         key={plan.id}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                         onClick={() => updateForm("plan", plan.id)}
                         className={`w-full p-4 rounded-xl text-left transition-all border-2 relative ${
                           formData.plan === plan.id
-                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                            ? "border-primary bg-primary/5"
                             : plan.popular
-                              ? "border-accent/50 bg-accent/5 hover:border-accent"
+                              ? "border-accent/50 bg-accent/5"
                               : "border-transparent bg-muted/50 hover:bg-muted"
                         }`}
                       >
                         {plan.popular && (
-                          <div className="absolute -top-2.5 left-4 px-2 py-0.5 bg-accent text-accent-foreground text-xs font-bold rounded-full flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" />
+                          <div className="absolute -top-2 left-4 px-2 py-0.5 bg-accent text-accent-foreground text-xs font-bold rounded-full">
                             Popular
                           </div>
                         )}
-                        <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                             formData.plan === plan.id 
                               ? "bg-primary text-primary-foreground" 
                               : plan.popular 
                                 ? "bg-accent text-accent-foreground"
-                                : "bg-muted"
+                                : "bg-background"
                           }`}>
-                            <plan.Icon className="w-6 h-6" />
+                            <plan.Icon className="w-5 h-5" />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-baseline gap-2">
-                              <h4 className="font-semibold text-foreground">{plan.name}</h4>
-                              <span className="text-xl font-bold text-primary">{plan.price}</span>
-                              <span className="text-sm text-muted-foreground">{plan.period}</span>
+                              <h4 className="font-semibold text-foreground text-sm">{plan.name}</h4>
+                              <span className="text-lg font-bold text-primary">{plan.price}</span>
+                              <span className="text-xs text-muted-foreground">{plan.period}</span>
                             </div>
-                            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
-                              {plan.features.slice(0, 3).map((f) => (
+                            <div className="flex flex-wrap gap-x-2 mt-1">
+                              {plan.features.slice(0, 2).map((f) => (
                                 <span key={f} className="text-xs text-muted-foreground flex items-center gap-1">
                                   <Check className="w-3 h-3 text-green-500" />
                                   {f}
@@ -774,13 +852,13 @@ const Join = () => {
                               ))}
                             </div>
                           </div>
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                             formData.plan === plan.id 
                               ? "border-primary bg-primary" 
                               : "border-muted-foreground/30"
                           }`}>
                             {formData.plan === plan.id && (
-                              <Check className="w-4 h-4 text-primary-foreground" />
+                              <Check className="w-3 h-3 text-primary-foreground" />
                             )}
                           </div>
                         </div>
@@ -788,10 +866,10 @@ const Join = () => {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                    <BadgeCheck className="w-5 h-5 text-green-500 shrink-0" />
-                    <p className="text-sm text-muted-foreground">
-                      <span className="font-medium text-foreground">No card required</span> — Start your 14-day free trial today
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <BadgeCheck className="w-4 h-4 text-green-500 shrink-0" />
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground">No card required</span> — Start free today
                     </p>
                   </div>
                 </motion.div>
@@ -810,44 +888,44 @@ const Join = () => {
                 >
                   <div className="space-y-1">
                     <h3 className="text-2xl font-bold text-foreground">Create Account</h3>
-                    <p className="text-muted-foreground">Almost done! Set up your login</p>
+                    <p className="text-muted-foreground text-sm">Almost done! Set up your login</p>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="email"
                           type="email"
                           placeholder="you@example.com"
                           value={formData.email}
                           onChange={(e) => updateForm("email", e.target.value)}
-                          className={`pl-10 h-12 ${errors.email ? "border-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.email ? "border-red-500" : ""}`}
                         />
                       </div>
                       <ErrorMessage message={errors.email} />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="password"
                           type="password"
                           placeholder="Min 6 characters"
                           value={formData.password}
                           onChange={(e) => updateForm("password", e.target.value)}
-                          className={`pl-10 h-12 ${errors.password ? "border-red-500" : ""}`}
+                          className={`pl-10 h-11 ${errors.password ? "border-red-500" : ""}`}
                         />
                       </div>
                       <ErrorMessage message={errors.password} />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-lg bg-muted/50 text-center">
+                  <div className="p-3 rounded-lg bg-muted/50 text-center">
                     <p className="text-sm text-muted-foreground">
                       Already have an account?{" "}
                       <Link to="/auth?mode=login" className="text-primary font-medium hover:underline">
@@ -858,48 +936,48 @@ const Join = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between pt-6 mt-auto border-t border-border">
-            <Button
-              variant="ghost"
-              onClick={prevStep}
-              disabled={step === 1 || isSubmitting}
-              className="gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </Button>
-            
-            {step < totalSteps ? (
+            {/* Navigation */}
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-border">
               <Button
-                onClick={nextStep}
-                disabled={!isStepValid()}
-                className="gap-2 bg-primary hover:bg-primary/90"
+                variant="ghost"
+                onClick={prevStep}
+                disabled={step === 1 || isSubmitting}
+                className="gap-2 h-10"
               >
-                Continue
-                <ArrowRight className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4" />
+                Back
               </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={isSubmitting || !isStepValid()}
-                className="gap-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="w-4 h-4" />
-                    Launch Store
-                  </>
-                )}
-              </Button>
-            )}
+              
+              {step < totalSteps ? (
+                <Button
+                  onClick={nextStep}
+                  disabled={!isStepValid()}
+                  className="gap-2 h-10 bg-primary hover:bg-primary/90 px-6"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !isStepValid()}
+                  className="gap-2 h-10 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Rocket className="w-4 h-4" />
+                      Launch Store
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

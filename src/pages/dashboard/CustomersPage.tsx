@@ -245,10 +245,27 @@ const CustomersPage = () => {
                         </td>
                         <td className="p-4">
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const phone = customer.phone.replace(/\D/g, "");
+                                window.open(`https://wa.me/${phone}?text=Hi ${customer.name}!`, "_blank");
+                              }}
+                            >
                               <MessageCircle className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`tel:${customer.phone}`, "_self");
+                              }}
+                            >
                               <Phone className="w-4 h-4" />
                             </Button>
                             <DropdownMenu>
@@ -258,9 +275,15 @@ const CustomersPage = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem><Eye className="w-4 h-4 mr-2" /> View Profile</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSelectedCustomer(customer)}>
+                                  <Eye className="w-4 h-4 mr-2" /> View Profile
+                                </DropdownMenuItem>
                                 <DropdownMenuItem><ShoppingCart className="w-4 h-4 mr-2" /> View Orders</DropdownMenuItem>
-                                <DropdownMenuItem><Mail className="w-4 h-4 mr-2" /> Send Email</DropdownMenuItem>
+                                {customer.email && (
+                                  <DropdownMenuItem onClick={() => window.open(`mailto:${customer.email}`, "_self")}>
+                                    <Mail className="w-4 h-4 mr-2" /> Send Email
+                                  </DropdownMenuItem>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
@@ -340,11 +363,22 @@ const CustomersPage = () => {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2 text-green-600 border-green-200 hover:bg-green-50"
+                  onClick={() => {
+                    const phone = selectedCustomer.phone.replace(/\D/g, "");
+                    window.open(`https://wa.me/${phone}?text=Hi ${selectedCustomer.name}!`, "_blank");
+                  }}
+                >
                   <MessageCircle className="w-4 h-4" />
                   WhatsApp
                 </Button>
-                <Button variant="outline" className="flex-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => window.open(`tel:${selectedCustomer.phone}`, "_self")}
+                >
                   <Phone className="w-4 h-4" />
                   Call
                 </Button>

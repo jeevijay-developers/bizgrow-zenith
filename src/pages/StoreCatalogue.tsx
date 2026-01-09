@@ -93,10 +93,27 @@ interface CustomerDetails {
 }
 
 const StoreCatalogue = () => {
-  const { storeId } = useParams<{ storeId: string }>();
+  const { storeId: rawStoreId } = useParams<{ storeId: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  
+  // Extract actual store ID - supports both formats:
+  // 1. Full UUID: d3105ef5-8fba-4312-a0b2-93fd6d5f7ab9
+  // 2. Slug format: storename-d3105ef5-8fba-4312-a0b2-93fd6d5f7ab9 (full UUID at end)
+  // We look for a valid UUID pattern at the end of the slug
+  const extractStoreId = (raw: string | undefined): string | undefined => {
+    if (!raw) return undefined;
+    // If it's already a full UUID (36 chars with hyphens)
+    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const match = raw.match(uuidRegex);
+    if (match) return match[0];
+    // Fallback: use the raw value if it looks like a UUID
+    if (raw.length === 36 && raw.includes('-')) return raw;
+    return raw;
+  };
+  
+  const storeId = extractStoreId(rawStoreId);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -125,6 +142,7 @@ const StoreCatalogue = () => {
   const { data: store, isLoading: storeLoading, error: storeError } = useQuery({
     queryKey: ["public-store", storeId],
     queryFn: async () => {
+      if (!storeId) return null;
       const { data, error } = await supabase
         .from("stores")
         .select("*")

@@ -42,7 +42,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/98 backdrop-blur-lg border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary backdrop-blur-lg border-b border-white/10 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
@@ -110,8 +110,9 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden text-white p-2.5 hover:bg-white/20 rounded-lg transition-colors bg-white/10"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -119,43 +120,43 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="lg:hidden py-4 border-t border-white/10 animate-slide-up">
+          <div className="lg:hidden py-4 border-t border-white/20 animate-slide-up bg-primary">
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <div key={link.label}>
                   <a
                     href={link.href}
-                    className="text-white/80 hover:text-white font-medium py-2 px-3 rounded-lg hover:bg-white/5 flex items-center justify-between"
+                    className="text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center justify-between"
                     onClick={() => !link.dropdown && setIsOpen(false)}
                   >
                     {link.label}
-                    {link.dropdown && <ChevronDown className="w-4 h-4" />}
+                    {link.dropdown && <ChevronDown className="w-4 h-4 text-white" />}
                   </a>
                   {link.dropdown && (
-                    <div className="pl-4 mt-1 space-y-1 border-l border-white/10 ml-3">
+                    <div className="pl-4 mt-1 space-y-1 border-l-2 border-accent/50 ml-4 bg-white/5 rounded-r-lg py-2">
                       {link.dropdown.map((item) => (
                         <a
                           key={item.label}
                           href={item.href}
-                          className="text-white/60 hover:text-white text-sm py-1.5 px-3 rounded-lg hover:bg-white/5 flex items-center gap-2"
+                          className="text-white/90 hover:text-white text-sm py-2 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
                           onClick={() => setIsOpen(false)}
                         >
-                          {item.icon && <item.icon className="w-4 h-4" />}
-                          {item.label}
+                          {item.icon && <item.icon className="w-4 h-4 text-accent" />}
+                          <span>{item.label}</span>
                         </a>
                       ))}
                     </div>
                   )}
                 </div>
               ))}
-              <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-white/10">
+              <div className="flex flex-col gap-3 pt-4 mt-3 border-t border-white/20">
                 <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full justify-center">
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold">
                     Login
                   </Button>
                 </Link>
                 <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold w-full">
+                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg">
                     Start Free Trial
                   </Button>
                 </Link>

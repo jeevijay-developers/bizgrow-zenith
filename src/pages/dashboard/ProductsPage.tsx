@@ -45,6 +45,18 @@ interface DashboardContext {
 
 const categories = ["All", "Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household"];
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  compare_price: number | null;
+  category: string | null;
+  stock_quantity: number | null;
+  description: string | null;
+  is_available: boolean | null;
+  image_url: string | null;
+}
+
 const ProductsPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const queryClient = useQueryClient();
@@ -52,6 +64,8 @@ const ProductsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [addProductOpen, setAddProductOpen] = useState(false);
+  const [editProductOpen, setEditProductOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -73,7 +87,7 @@ const ProductsPage = () => {
         .eq("store_id", store.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Product[];
     },
     enabled: !!store?.id,
   });
@@ -113,6 +127,34 @@ const ProductsPage = () => {
     },
   });
 
+  // Edit product mutation
+  const editProductMutation = useMutation({
+    mutationFn: async (product: Partial<Product> & { id: string }) => {
+      const { error } = await supabase
+        .from("products")
+        .update({
+          name: product.name,
+          price: product.price,
+          compare_price: product.compare_price,
+          category: product.category,
+          stock_quantity: product.stock_quantity,
+          description: product.description,
+          is_available: product.is_available,
+        })
+        .eq("id", product.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      toast.success("Product updated successfully!");
+      setEditProductOpen(false);
+      setEditingProduct(null);
+    },
+    onError: (error) => {
+      toast.error("Failed to update product: " + error.message);
+    },
+  });
+
   // Delete product mutation
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: string) => {
@@ -127,6 +169,11 @@ const ProductsPage = () => {
       toast.error("Failed to delete product: " + error.message);
     },
   });
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setEditProductOpen(true);
+  };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -284,6 +331,112 @@ const ProductsPage = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Edit Product Dialog */}
+          <Dialog open={editProductOpen} onOpenChange={setEditProductOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Edit Product</DialogTitle>
+              </DialogHeader>
+              {editingProduct && (
+                <div className="space-y-4 pt-4">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <Label>Product Name *</Label>
+                      <Input 
+                        placeholder="Enter product name" 
+                        value={editingProduct.name}
+                        onChange={(e) => setEditingProduct(prev => prev ? { ...prev, name: e.target.value } : null)}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Price (₹) *</Label>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          value={editingProduct.price}
+                          onChange={(e) => setEditingProduct(prev => prev ? { ...prev, price: parseFloat(e.target.value) || 0 } : null)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Compare Price</Label>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          value={editingProduct.compare_price || ""}
+                          onChange={(e) => setEditingProduct(prev => prev ? { ...prev, compare_price: e.target.value ? parseFloat(e.target.value) : null } : null)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Category</Label>
+                        <Select 
+                          value={editingProduct.category || ""}
+                          onValueChange={(value) => setEditingProduct(prev => prev ? { ...prev, category: value } : null)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.slice(1).map(cat => (
+                              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Stock Quantity</Label>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          value={editingProduct.stock_quantity ?? 0}
+                          onChange={(e) => setEditingProduct(prev => prev ? { ...prev, stock_quantity: parseInt(e.target.value) || 0 } : null)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea 
+                        placeholder="Enter product description..." 
+                        value={editingProduct.description || ""}
+                        onChange={(e) => setEditingProduct(prev => prev ? { ...prev, description: e.target.value } : null)}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label>Available for sale</Label>
+                      <Switch 
+                        checked={editingProduct.is_available ?? true}
+                        onCheckedChange={(checked) => setEditingProduct(prev => prev ? { ...prev, is_available: checked } : null)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 pt-4">
+                    <Button variant="outline" className="flex-1" onClick={() => setEditProductOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      className="flex-1" 
+                      onClick={() => editingProduct && editProductMutation.mutate(editingProduct)}
+                      disabled={!editingProduct.name || editProductMutation.isPending}
+                    >
+                      {editProductMutation.isPending ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -429,7 +582,9 @@ const ProductsPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem><Eye className="w-4 h-4 mr-2" /> View</DropdownMenuItem>
-                          <DropdownMenuItem><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditProduct(product)}>
+                            <Edit className="w-4 h-4 mr-2" /> Edit
+                          </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive"
                             onClick={() => deleteProductMutation.mutate(product.id)}
@@ -515,7 +670,12 @@ const ProductsPage = () => {
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleEditProduct(product)}
+                          >
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button 

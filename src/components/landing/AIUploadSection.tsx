@@ -22,56 +22,56 @@ const AIUploadSection = () => {
         <div className="absolute top-1/2 right-20 w-2 h-2 bg-white/30 rounded-full animate-ping" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-center">
           {/* Left - Content */}
           <AnimatedSection className="text-center lg:text-left" direction="left">
-            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm rounded-full px-5 py-2 mb-6 border border-accent/30">
-              <Sparkles className="w-5 h-5 text-accent" />
-              <span className="text-accent text-sm font-bold">AI-Powered Magic</span>
+            <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm rounded-full px-4 sm:px-5 py-1.5 sm:py-2 mb-4 sm:mb-6 border border-accent/30">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
+              <span className="text-accent text-xs sm:text-sm font-bold">AI-Powered Magic</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-display leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 font-display leading-tight px-2 sm:px-0">
               Just Snap a Photo,
-              <span className="text-accent block mt-2">AI Does Everything</span>
+              <span className="text-accent block mt-1 sm:mt-2">AI Does Everything</span>
             </h2>
 
-            <p className="text-lg md:text-xl text-white/70 mb-8 max-w-lg mx-auto lg:mx-0">
+            <p className="text-base sm:text-lg md:text-xl text-white/70 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0 px-2 sm:px-0">
               Our AI instantly recognizes products from India's largest database. 
               No typing, no manual entry — just click and add.
             </p>
 
             {/* Enhanced Features */}
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-10">
+            <div className="flex flex-wrap gap-2 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-10 px-2 sm:px-0">
               {features.map((feature) => (
-                <div key={feature.text} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-5 py-3 border border-white/15">
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${feature.color} flex items-center justify-center`}>
-                    <feature.icon className="w-4 h-4 text-white" />
+                <div key={feature.text} className="flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-5 py-2 sm:py-3 border border-white/15">
+                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br ${feature.color} flex items-center justify-center`}>
+                    <feature.icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   </div>
-                  <span className="text-white font-medium">{feature.text}</span>
+                  <span className="text-white font-medium text-xs sm:text-base">{feature.text}</span>
                 </div>
               ))}
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0 mb-10">
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto lg:mx-0 mb-6 sm:mb-10">
               {[
                 { value: "10L+", label: "Products in Database" },
                 { value: "99%", label: "Recognition Accuracy" },
                 { value: "<2s", label: "Average Time" },
               ].map((stat) => (
                 <div key={stat.label} className="text-center lg:text-left">
-                  <div className="text-3xl md:text-4xl font-bold text-accent">{stat.value}</div>
-                  <div className="text-sm text-white/60">{stat.label}</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent">{stat.value}</div>
+                  <div className="text-xs sm:text-sm text-white/60">{stat.label}</div>
                 </div>
               ))}
             </div>
 
             {/* CTA */}
-            <Link to="/join">
-              <RippleButton size="xl" variant="glow-accent" className="font-bold group">
+            <Link to="/join" className="inline-block">
+              <RippleButton size="xl" variant="glow-accent" className="font-bold group text-sm sm:text-base">
                 Try AI Upload Free
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </RippleButton>
             </Link>
           </AnimatedSection>

@@ -14,10 +14,10 @@ const Navbar = () => {
       label: "Features",
       href: "#features",
       dropdown: [
-        { label: "Digital Catalogue", href: "#features", icon: Layers, desc: "Beautiful online store" },
-        { label: "AI Product Upload", href: "#features", icon: Sparkles, desc: "Smart recognition" },
-        { label: "WhatsApp Orders", href: "#features", icon: MessageSquare, desc: "Instant notifications" },
-        { label: "Analytics", href: "#features", icon: BarChart3, desc: "Business insights" },
+        { label: "Digital Catalogue", href: "/features/digital-catalogue", icon: Layers, desc: "Beautiful online store" },
+        { label: "AI Product Upload", href: "/features/ai-upload", icon: Sparkles, desc: "Smart recognition" },
+        { label: "WhatsApp Orders", href: "/features/whatsapp-orders", icon: MessageSquare, desc: "Instant notifications" },
+        { label: "Analytics", href: "/features/analytics", icon: BarChart3, desc: "Business insights" },
       ],
     },
     {

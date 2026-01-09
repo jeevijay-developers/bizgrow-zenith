@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, Users, HelpCircle, BookOpen, Phone } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
 
   const navLinks = [
     {
@@ -24,9 +25,9 @@ const Navbar = () => {
       href: "#solutions",
       dropdown: [
         { label: "Kirana Stores", href: "#solutions", icon: ShoppingBag, desc: "Daily essentials" },
-        { label: "Bakeries", href: "#solutions", icon: ShoppingBag, desc: "Fresh bakes" },
+        { label: "Bakeries", href: "#solutions", icon: Store, desc: "Fresh bakes" },
         { label: "Clothing Stores", href: "#solutions", icon: ShoppingBag, desc: "Fashion retail" },
-        { label: "Electronics", href: "#solutions", icon: ShoppingBag, desc: "Gadgets & more" },
+        { label: "Electronics", href: "#solutions", icon: Store, desc: "Gadgets & more" },
       ],
     },
     { label: "Pricing", href: "#pricing" },
@@ -40,6 +41,10 @@ const Navbar = () => {
       ],
     },
   ];
+
+  const toggleMobileDropdown = (label: string) => {
+    setMobileExpanded(prev => prev === label ? null : label);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-primary backdrop-blur-lg border-b border-white/10 shadow-lg">
@@ -98,7 +103,7 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-2">
             <Link to="/auth">
               <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
-                Login
+                Seller Login
               </Button>
             </Link>
             <Link to="/join">
@@ -120,43 +125,65 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="lg:hidden py-4 border-t border-white/20 animate-slide-up bg-primary">
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <div key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center justify-between"
-                    onClick={() => !link.dropdown && setIsOpen(false)}
-                  >
-                    {link.label}
-                    {link.dropdown && <ChevronDown className="w-4 h-4 text-white" />}
-                  </a>
-                  {link.dropdown && (
-                    <div className="pl-4 mt-1 space-y-1 border-l-2 border-accent/50 ml-4 bg-white/5 rounded-r-lg py-2">
-                      {link.dropdown.map((item) => (
-                        <a
-                          key={item.label}
-                          href={item.href}
-                          className="text-white/90 hover:text-white text-sm py-2 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
-                          onClick={() => setIsOpen(false)}
+          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-primary z-50 overflow-y-auto animate-slide-up">
+            <div className="flex flex-col p-4 pb-8">
+              {/* Navigation Links */}
+              <div className="flex flex-col gap-1">
+                {navLinks.map((link) => (
+                  <div key={link.label}>
+                    {link.dropdown ? (
+                      <>
+                        <button
+                          onClick={() => toggleMobileDropdown(link.label)}
+                          className="w-full text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center justify-between"
                         >
-                          {item.icon && <item.icon className="w-4 h-4 text-accent" />}
-                          <span>{item.label}</span>
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className="flex flex-col gap-3 pt-4 mt-3 border-t border-white/20">
+                          <span>{link.label}</span>
+                          <ChevronRight className={`w-5 h-5 text-white transition-transform ${mobileExpanded === link.label ? 'rotate-90' : ''}`} />
+                        </button>
+                        {mobileExpanded === link.label && (
+                          <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-lg py-2">
+                            {link.dropdown.map((item) => (
+                              <a
+                                key={item.label}
+                                href={item.href}
+                                className="text-white/90 hover:text-white text-sm py-2.5 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {item.icon && <item.icon className="w-4 h-4 text-accent" />}
+                                <div>
+                                  <span className="font-medium">{item.label}</span>
+                                  {item.desc && <p className="text-xs text-white/60">{item.desc}</p>}
+                                </div>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.label}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile CTAs */}
+              <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-white/20">
                 <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold">
-                    Login
+                  <Button 
+                    variant="outline" 
+                    className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
+                  >
+                    Seller Login
                   </Button>
                 </Link>
                 <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg">
+                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
                     Start Free Trial
                   </Button>
                 </Link>

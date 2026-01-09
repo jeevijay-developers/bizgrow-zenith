@@ -1,15 +1,16 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Camera, Upload, Sparkles, Image, CheckCircle2, X, 
+  Camera, Upload, Sparkles, Image, CheckCircle2, 
   RefreshCw, Edit, Trash2, Plus, Package, Loader2,
-  Zap, Clock, Target
+  Zap, Clock, Target, ImagePlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -27,13 +28,7 @@ interface DetectedProduct {
   image: string;
 }
 
-const mockDetectedProducts: DetectedProduct[] = [
-  { id: "1", name: "Tata Salt 1kg", price: 28, category: "Groceries", confidence: 95, image: "https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=200&h=200&fit=crop" },
-  { id: "2", name: "Amul Butter 500g", price: 275, category: "Dairy", confidence: 92, image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=200&h=200&fit=crop" },
-  { id: "3", name: "Fortune Oil 1L", price: 189, category: "Groceries", confidence: 88, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200&h=200&fit=crop" },
-];
-
-const categories = ["Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household"];
+const categories = ["Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household", "Electronics", "Clothing"];
 
 const AIUploadPage = () => {
   const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "results">("idle");
@@ -41,6 +36,9 @@ const AIUploadPage = () => {
   const [detectedProducts, setDetectedProducts] = useState<DetectedProduct[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [dragActive, setDragActive] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -52,7 +50,23 @@ const AIUploadPage = () => {
     }
   }, []);
 
-  const simulateUpload = () => {
+  const processFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    const validFiles = Array.from(files).filter(file => 
+      file.type.startsWith('image/')
+    );
+
+    if (validFiles.length === 0) {
+      toast.error("Please upload valid image files");
+      return;
+    }
+
+    // Create preview URLs
+    const imageUrls = validFiles.map(file => URL.createObjectURL(file));
+    setUploadedImages(imageUrls);
+
+    // Start upload simulation
     setUploadState("uploading");
     setUploadProgress(0);
     
@@ -61,16 +75,40 @@ const AIUploadPage = () => {
         if (prev >= 100) {
           clearInterval(interval);
           setUploadState("processing");
+          
+          // Simulate AI processing
           setTimeout(() => {
-            setDetectedProducts(mockDetectedProducts);
-            setSelectedProducts(new Set(mockDetectedProducts.map(p => p.id)));
+            // Generate mock detected products based on uploaded images
+            const mockProducts: DetectedProduct[] = validFiles.map((file, index) => ({
+              id: `prod-${Date.now()}-${index}`,
+              name: `Product ${index + 1}`,
+              price: Math.floor(Math.random() * 500) + 50,
+              category: categories[Math.floor(Math.random() * categories.length)],
+              confidence: Math.floor(Math.random() * 15) + 85,
+              image: imageUrls[index] || "https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=200&h=200&fit=crop"
+            }));
+            
+            setDetectedProducts(mockProducts);
+            setSelectedProducts(new Set(mockProducts.map(p => p.id)));
             setUploadState("results");
+            toast.success(`${mockProducts.length} products detected!`);
           }, 2000);
+          
           return 100;
         }
-        return prev + 10;
+        return prev + 8;
       });
-    }, 200);
+    }, 150);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    processFiles(e.dataTransfer.files);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(e.target.files);
   };
 
   const toggleProductSelection = (id: string) => {
@@ -90,24 +128,57 @@ const AIUploadPage = () => {
     setUploadProgress(0);
     setDetectedProducts([]);
     setSelectedProducts(new Set());
+    setUploadedImages([]);
+    // Revoke object URLs
+    uploadedImages.forEach(url => URL.revokeObjectURL(url));
+  };
+
+  const handleAddToCatalogue = () => {
+    const selectedCount = selectedProducts.size;
+    toast.success(`${selectedCount} products added to catalogue!`);
+    resetUpload();
+  };
+
+  const updateProductField = (id: string, field: keyof DetectedProduct, value: string | number) => {
+    setDetectedProducts(prev => 
+      prev.map(p => p.id === id ? { ...p, [field]: value } : p)
+    );
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto px-4 sm:px-0">
+      {/* Hidden file inputs */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+
       {/* Header */}
       <div className="text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
           <Sparkles className="w-4 h-4" />
           AI-Powered
         </div>
-        <h1 className="text-2xl font-bold">AI Product Upload</h1>
-        <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
+        <h1 className="text-xl sm:text-2xl font-bold">AI Product Upload</h1>
+        <p className="text-muted-foreground mt-2 max-w-lg mx-auto text-sm sm:text-base">
           Snap a photo and let AI extract all product details automatically. Save hours of manual data entry.
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { icon: Zap, label: "Instant Detection", value: "<5 sec" },
           { icon: Target, label: "Accuracy Rate", value: "95%" },
@@ -118,10 +189,10 @@ const AIUploadPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-card rounded-xl border border-border p-4 text-center"
+            className="bg-card rounded-xl border border-border p-3 sm:p-4 text-center"
           >
             <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
-            <p className="text-lg font-bold">{stat.value}</p>
+            <p className="text-base sm:text-lg font-bold">{stat.value}</p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>
           </motion.div>
         ))}
@@ -137,33 +208,37 @@ const AIUploadPage = () => {
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragActive(false);
-              simulateUpload();
-            }}
-            className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all bg-card cursor-pointer ${
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all bg-card ${
               dragActive 
                 ? "border-primary bg-primary/5" 
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={simulateUpload}
           >
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Camera className="w-10 h-10 text-white" />
+            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-light flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <ImagePlus className="w-8 sm:w-10 h-8 sm:h-10 text-white" />
             </div>
             
-            <h3 className="text-xl font-semibold mb-2">Upload Product Images</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Drag and drop images here, or click to browse. Our AI will extract name, price, and details automatically.
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">Upload Product Images</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm sm:text-base">
+              Drag and drop images here, or use the buttons below. Our AI will extract name, price, and details automatically.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="gap-2 h-12"
+                onClick={() => cameraInputRef.current?.click()}
+              >
                 <Camera className="w-5 h-5" />
                 Take Photo
               </Button>
-              <Button size="lg" variant="outline" className="gap-2">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="gap-2 h-12"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Upload className="w-5 h-5" />
                 Upload from Gallery
               </Button>
@@ -181,25 +256,44 @@ const AIUploadPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-card rounded-2xl border border-border p-12 text-center"
+            className="bg-card rounded-2xl border border-border p-8 sm:p-12 text-center"
           >
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-light flex items-center justify-center mx-auto mb-6 shadow-lg">
               {uploadState === "uploading" ? (
-                <Upload className="w-10 h-10 text-white animate-bounce" />
+                <Upload className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-bounce" />
               ) : (
-                <Sparkles className="w-10 h-10 text-white animate-pulse" />
+                <Sparkles className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-pulse" />
               )}
             </div>
 
-            <h3 className="text-xl font-semibold mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">
               {uploadState === "uploading" ? "Uploading Images..." : "AI Analyzing..."}
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-6 text-sm sm:text-base">
               {uploadState === "uploading" 
                 ? "Please wait while we upload your images" 
                 : "Detecting products and extracting details"
               }
             </p>
+
+            {/* Preview uploaded images */}
+            {uploadedImages.length > 0 && (
+              <div className="flex justify-center gap-2 mb-6 flex-wrap">
+                {uploadedImages.slice(0, 4).map((url, idx) => (
+                  <img 
+                    key={idx}
+                    src={url} 
+                    alt={`Upload ${idx + 1}`}
+                    className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
+                  />
+                ))}
+                {uploadedImages.length > 4 && (
+                  <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center text-sm font-medium">
+                    +{uploadedImages.length - 4}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="max-w-xs mx-auto space-y-2">
               <Progress value={uploadState === "uploading" ? uploadProgress : 100} className="h-2" />
@@ -216,10 +310,10 @@ const AIUploadPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {/* Results Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold">Detected Products</h3>
                 <p className="text-sm text-muted-foreground">
@@ -227,11 +321,16 @@ const AIUploadPage = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={resetUpload} className="gap-2">
+                <Button variant="outline" onClick={resetUpload} className="gap-2 flex-1 sm:flex-none">
                   <Plus className="w-4 h-4" />
-                  Upload More
+                  <span className="hidden sm:inline">Upload More</span>
+                  <span className="sm:hidden">More</span>
                 </Button>
-                <Button className="gap-2" disabled={selectedProducts.size === 0}>
+                <Button 
+                  className="gap-2 flex-1 sm:flex-none" 
+                  disabled={selectedProducts.size === 0}
+                  onClick={handleAddToCatalogue}
+                >
                   <Package className="w-4 h-4" />
                   Add {selectedProducts.size} to Catalogue
                 </Button>
@@ -254,11 +353,11 @@ const AIUploadPage = () => {
                 >
                   <div className="flex gap-4">
                     {/* Image */}
-                    <div className="relative">
+                    <div className="relative flex-shrink-0">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-24 h-24 rounded-lg object-cover"
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover"
                       />
                       <button
                         onClick={() => toggleProductSelection(product.id)}
@@ -275,12 +374,14 @@ const AIUploadPage = () => {
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div>
+                    <div className="flex-1 min-w-0 space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
                           <Input
-                            defaultValue={product.name}
-                            className="font-medium border-none p-0 h-auto text-base focus-visible:ring-0"
+                            value={product.name}
+                            onChange={(e) => updateProductField(product.id, 'name', e.target.value)}
+                            className="font-medium border-none p-0 h-auto text-base focus-visible:ring-0 bg-transparent"
+                            placeholder="Product name"
                           />
                           <div className="flex items-center gap-2 mt-1">
                             <Badge variant="secondary" className="text-xs">
@@ -288,14 +389,11 @@ const AIUploadPage = () => {
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Edit className="w-4 h-4" />
-                          </Button>
+                        <div className="flex gap-1 flex-shrink-0">
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-8 w-8 text-destructive"
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => {
                               setDetectedProducts(prev => prev.filter(p => p.id !== product.id));
                               setSelectedProducts(prev => {
@@ -315,13 +413,17 @@ const AIUploadPage = () => {
                           <Label className="text-xs text-muted-foreground">Price (₹)</Label>
                           <Input
                             type="number"
-                            defaultValue={product.price}
+                            value={product.price}
+                            onChange={(e) => updateProductField(product.id, 'price', Number(e.target.value))}
                             className="h-9"
                           />
                         </div>
                         <div className="space-y-1">
                           <Label className="text-xs text-muted-foreground">Category</Label>
-                          <Select defaultValue={product.category.toLowerCase()}>
+                          <Select 
+                            value={product.category.toLowerCase()}
+                            onValueChange={(value) => updateProductField(product.id, 'category', value)}
+                          >
                             <SelectTrigger className="h-9">
                               <SelectValue />
                             </SelectTrigger>
@@ -348,11 +450,11 @@ const AIUploadPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-card rounded-xl border border-border p-6"
+          className="bg-card rounded-xl border border-border p-4 sm:p-6"
         >
           <h3 className="text-lg font-semibold mb-6 text-center">How AI Upload Works</h3>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-3 gap-6">
             {[
               {
                 icon: Camera,
@@ -388,9 +490,9 @@ const AIUploadPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl border border-primary/20 p-6"
+          className="bg-gradient-to-br from-primary/5 to-purple-light/5 rounded-xl border border-primary/20 p-4 sm:p-6"
         >
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <Image className="w-5 h-5 text-primary" />
             </div>

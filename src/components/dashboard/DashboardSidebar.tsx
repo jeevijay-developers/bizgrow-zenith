@@ -60,25 +60,20 @@ export function DashboardSidebar() {
   const collapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center gap-2">
           <img
-            src={logoLightBg}
-            alt="BizGrow 360"
-            className={`transition-all duration-300 dark:hidden ${collapsed ? "h-8 w-8 object-contain object-left" : "h-9"}`}
-          />
-          <img
             src={logoDarkBg}
             alt="BizGrow 360"
-            className={`transition-all duration-300 hidden dark:block ${collapsed ? "h-8 w-8 object-contain object-left" : "h-9"}`}
+            className={`transition-all duration-300 ${collapsed ? "h-8 w-8 object-contain object-left" : "h-9"}`}
           />
         </Link>
       </SidebarHeader>
 
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-sidebar-foreground/60 ${collapsed ? "sr-only" : ""}`}>Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
@@ -87,8 +82,8 @@ export function DashboardSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/dashboard"}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+                      activeClassName="bg-sidebar-primary text-sidebar-primary-foreground font-medium"
                     >
                       <item.icon className="w-5 h-5 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
@@ -101,7 +96,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>Tools</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-sidebar-foreground/60 ${collapsed ? "sr-only" : ""}`}>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {toolsNavItems.map((item) => (
@@ -109,8 +104,8 @@ export function DashboardSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       to={item.url}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+                      activeClassName="bg-sidebar-primary text-sidebar-primary-foreground font-medium"
                     >
                       <item.icon className="w-5 h-5 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
@@ -123,7 +118,7 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>Settings</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-sidebar-foreground/60 ${collapsed ? "sr-only" : ""}`}>Settings</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {settingsNavItems.map((item) => (
@@ -131,8 +126,8 @@ export function DashboardSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       to={item.url}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+                      activeClassName="bg-sidebar-primary text-sidebar-primary-foreground font-medium"
                     >
                       <item.icon className="w-5 h-5 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
@@ -150,7 +145,7 @@ export function DashboardSidebar() {
           variant="ghost"
           size={collapsed ? "icon" : "default"}
           onClick={signOut}
-          className="w-full justify-start text-muted-foreground hover:text-destructive"
+          className="w-full justify-start text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-red-400"
         >
           <LogOut className="w-5 h-5 shrink-0" />
           {!collapsed && <span className="ml-3">Logout</span>}

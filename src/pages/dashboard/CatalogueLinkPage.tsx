@@ -87,7 +87,7 @@ const CatalogueLinkPage = () => {
               <div>
                 <CardTitle className="text-lg">{store.name}</CardTitle>
                 <CardDescription className="capitalize">
-                  {store.category.replace("-", " ")} Store
+                  {(store.category || "").replace("-", " ")} Store
                 </CardDescription>
               </div>
               <Badge variant={store.is_active ? "default" : "secondary"}>

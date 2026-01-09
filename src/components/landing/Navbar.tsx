@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
@@ -24,10 +24,14 @@ const Navbar = () => {
       label: "Solutions",
       href: "#solutions",
       dropdown: [
-        { label: "Kirana Stores", href: "#solutions", icon: ShoppingBag, desc: "Daily essentials" },
-        { label: "Bakeries", href: "#solutions", icon: Store, desc: "Fresh bakes" },
-        { label: "Clothing Stores", href: "#solutions", icon: ShoppingBag, desc: "Fashion retail" },
-        { label: "Electronics", href: "#solutions", icon: Store, desc: "Gadgets & more" },
+        { label: "Kirana Stores", href: "/solutions/kirana", icon: ShoppingBag, desc: "Daily essentials" },
+        { label: "Bakeries", href: "/solutions/bakery", icon: Cake, desc: "Fresh bakes" },
+        { label: "Dairy Shops", href: "/solutions/dairy", icon: Milk, desc: "Milk & products" },
+        { label: "Clothing Stores", href: "/solutions/clothing", icon: Shirt, desc: "Fashion retail" },
+        { label: "Electronics", href: "/solutions/electronics", icon: Smartphone, desc: "Gadgets & more" },
+        { label: "Cosmetics", href: "/solutions/cosmetics", icon: Sparkles, desc: "Beauty products" },
+        { label: "Mobile Shops", href: "/solutions/mobile", icon: Smartphone, desc: "Phones & accessories" },
+        { label: "Fruits & Vegetables", href: "/solutions/fruits-vegetables", icon: Leaf, desc: "Fresh produce" },
       ],
     },
     { label: "Pricing", href: "#pricing" },

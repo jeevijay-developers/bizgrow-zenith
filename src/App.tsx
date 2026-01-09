@@ -31,6 +31,16 @@ import AIUploadFeaturePage from "./pages/features/AIUploadFeaturePage";
 import WhatsAppOrdersPage from "./pages/features/WhatsAppOrdersPage";
 import AnalyticsFeaturePage from "./pages/features/AnalyticsFeaturePage";
 
+// Solution Pages
+import KiranaStorePage from "./pages/solutions/KiranaStorePage";
+import BakeryStorePage from "./pages/solutions/BakeryStorePage";
+import DairyStorePage from "./pages/solutions/DairyStorePage";
+import ClothingStorePage from "./pages/solutions/ClothingStorePage";
+import ElectronicsStorePage from "./pages/solutions/ElectronicsStorePage";
+import CosmeticsStorePage from "./pages/solutions/CosmeticsStorePage";
+import MobileStorePage from "./pages/solutions/MobileStorePage";
+import FruitsVegetablesStorePage from "./pages/solutions/FruitsVegetablesStorePage";
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -87,6 +97,16 @@ const App = () => (
             <Route path="/features/ai-upload" element={<AIUploadFeaturePage />} />
             <Route path="/features/whatsapp-orders" element={<WhatsAppOrdersPage />} />
             <Route path="/features/analytics" element={<AnalyticsFeaturePage />} />
+            
+            {/* Solution Pages */}
+            <Route path="/solutions/kirana" element={<KiranaStorePage />} />
+            <Route path="/solutions/bakery" element={<BakeryStorePage />} />
+            <Route path="/solutions/dairy" element={<DairyStorePage />} />
+            <Route path="/solutions/clothing" element={<ClothingStorePage />} />
+            <Route path="/solutions/electronics" element={<ElectronicsStorePage />} />
+            <Route path="/solutions/cosmetics" element={<CosmeticsStorePage />} />
+            <Route path="/solutions/mobile" element={<MobileStorePage />} />
+            <Route path="/solutions/fruits-vegetables" element={<FruitsVegetablesStorePage />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

@@ -68,22 +68,22 @@ const Navbar = () => {
                 </a>
                 
                 {link.dropdown && activeDropdown === link.label && (
-                  <div className="absolute top-full left-0 pt-2 w-64 animate-fade-in">
-                    <div className="bg-card rounded-xl shadow-2xl border border-border p-2 backdrop-blur-xl">
+                  <div className="absolute top-full left-0 pt-2 w-64 animate-fade-in z-50">
+                    <div className="bg-primary rounded-xl shadow-2xl border border-white/10 p-2 backdrop-blur-xl">
                       {link.dropdown.map((item) => (
                         <a
                           key={item.label}
                           href={item.href}
-                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-secondary transition-colors group"
+                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-white/10 transition-colors group"
                         >
                           {item.icon && (
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                              <item.icon className="w-4 h-4 text-primary" />
+                            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent/30 transition-colors">
+                              <item.icon className="w-4 h-4 text-accent" />
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-card-foreground">{item.label}</p>
-                            {item.desc && <p className="text-xs text-muted-foreground">{item.desc}</p>}
+                            <p className="font-medium text-white">{item.label}</p>
+                            {item.desc && <p className="text-xs text-white/60">{item.desc}</p>}
                           </div>
                         </a>
                       ))}

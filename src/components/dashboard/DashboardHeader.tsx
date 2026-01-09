@@ -1,4 +1,4 @@
-import { Bell, Search, Menu, ChevronDown } from "lucide-react";
+import { Search, Menu, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -12,12 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { NotificationBell } from "./NotificationBell";
 
 interface DashboardHeaderProps {
+  storeId?: string;
   storeName?: string;
 }
 
-export function DashboardHeader({ storeName = "My Store" }: DashboardHeaderProps) {
+export function DashboardHeader({ storeName = "My Store", storeId }: DashboardHeaderProps) {
   const { user, signOut } = useAuth();
 
   const getInitials = (email: string) => {
@@ -42,10 +44,7 @@ export function DashboardHeader({ storeName = "My Store" }: DashboardHeaderProps
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-          </Button>
+          <NotificationBell storeId={storeId} />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

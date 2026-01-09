@@ -1,1 +1,7 @@
 project_id = "utyoswernrcrtlqpuqpx"
+
+[functions.ai-product-detection]
+verify_jwt = false
+
+[functions.create-order]
+verify_jwt = false

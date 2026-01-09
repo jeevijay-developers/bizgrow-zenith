@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  Link2, Copy, ExternalLink, Share2, QrCode, 
+  Link2, Copy, ExternalLink, Share2, 
   Check, Eye, MessageCircle, Facebook, Twitter,
   Smartphone, Monitor, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { QRCodeGenerator } from "@/components/qr/QRCodeGenerator";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useOutletContext } from "react-router-dom";
@@ -199,13 +200,8 @@ const CatalogueLinkPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="w-40 h-40 bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-border">
-                <div className="text-center">
-                  <QrCode className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">QR Code Preview</p>
-                </div>
-              </div>
+            <div className="flex flex-col sm:flex-row items-start gap-6">
+              <QRCodeGenerator url={storeLink} storeName={store.name} />
               <div className="flex-1 space-y-3">
                 <p className="text-sm text-muted-foreground">
                   Customers can scan this QR code to instantly access your digital catalogue. 
@@ -217,10 +213,6 @@ const CatalogueLinkPage = () => {
                   <li>• Flyers and posters</li>
                   <li>• Product packaging</li>
                 </ul>
-                <Button variant="outline" className="gap-2">
-                  <QrCode className="w-4 h-4" />
-                  Download QR Code
-                </Button>
               </div>
             </div>
           </CardContent>

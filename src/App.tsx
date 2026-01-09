@@ -9,6 +9,7 @@ import Join from "./pages/Join";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import StoreCatalogue from "./pages/StoreCatalogue";
+import OrderConfirmation from "./pages/OrderConfirmation";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import ProductsPage from "./pages/dashboard/ProductsPage";
@@ -40,6 +41,13 @@ import ElectronicsStorePage from "./pages/solutions/ElectronicsStorePage";
 import CosmeticsStorePage from "./pages/solutions/CosmeticsStorePage";
 import MobileStorePage from "./pages/solutions/MobileStorePage";
 import FruitsVegetablesStorePage from "./pages/solutions/FruitsVegetablesStorePage";
+
+// Admin Pages
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminStores from "./pages/admin/AdminStores";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +99,7 @@ const App = () => (
             <Route path="/join" element={<Join />} />
             <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
             <Route path="/store/:storeId" element={<StoreCatalogue />} />
+            <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
             
             {/* Feature Pages */}
             <Route path="/features/digital-catalogue" element={<DigitalCataloguePage />} />
@@ -124,6 +133,14 @@ const App = () => (
               <Route path="billing" element={<BillingPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="settings" element={<SettingsPage />} />
+            </Route>
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="stores" element={<AdminStores />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

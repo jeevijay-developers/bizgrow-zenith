@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Join from "./pages/Join";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import StoreCatalogue from "./pages/StoreCatalogue";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import ProductsPage from "./pages/dashboard/ProductsPage";
@@ -21,6 +22,7 @@ import StoreSettingsPage from "./pages/dashboard/StoreSettingsPage";
 import BillingPage from "./pages/dashboard/BillingPage";
 import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
+import CatalogueLinkPage from "./pages/dashboard/CatalogueLinkPage";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +73,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/join" element={<Join />} />
             <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+            <Route path="/store/:storeId" element={<StoreCatalogue />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
@@ -82,6 +85,7 @@ const App = () => (
               <Route path="ai-upload" element={<AIUploadPage />} />
               <Route path="whatsapp" element={<WhatsAppPage />} />
               <Route path="delivery" element={<DeliveryPage />} />
+              <Route path="catalogue-link" element={<CatalogueLinkPage />} />
               <Route path="store-settings" element={<StoreSettingsPage />} />
               <Route path="billing" element={<BillingPage />} />
               <Route path="notifications" element={<NotificationsPage />} />

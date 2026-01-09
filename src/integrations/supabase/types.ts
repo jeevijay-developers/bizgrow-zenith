@@ -203,6 +203,142 @@ export type Database = {
         }
         Relationships: []
       }
+      store_customizations: {
+        Row: {
+          accent_color: string | null
+          announcement_active: boolean | null
+          announcement_text: string | null
+          banner_image_url: string | null
+          banner_subtitle: string | null
+          banner_text: string | null
+          created_at: string
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          layout_style: string | null
+          logo_url: string | null
+          show_banner: boolean | null
+          show_categories: boolean | null
+          show_offers_section: boolean | null
+          show_search: boolean | null
+          store_id: string
+          tagline: string | null
+          theme_color: string | null
+          updated_at: string
+          welcome_message: string | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          announcement_active?: boolean | null
+          announcement_text?: string | null
+          banner_image_url?: string | null
+          banner_subtitle?: string | null
+          banner_text?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          layout_style?: string | null
+          logo_url?: string | null
+          show_banner?: boolean | null
+          show_categories?: boolean | null
+          show_offers_section?: boolean | null
+          show_search?: boolean | null
+          store_id: string
+          tagline?: string | null
+          theme_color?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+          whatsapp_number?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          announcement_active?: boolean | null
+          announcement_text?: string | null
+          banner_image_url?: string | null
+          banner_subtitle?: string | null
+          banner_text?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          layout_style?: string | null
+          logo_url?: string | null
+          show_banner?: boolean | null
+          show_categories?: boolean | null
+          show_offers_section?: boolean | null
+          show_search?: boolean | null
+          store_id?: string
+          tagline?: string | null
+          theme_color?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+          whatsapp_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_customizations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_promotions: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_amount: number | null
+          discount_percentage: number | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          start_date: string | null
+          store_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          start_date?: string | null
+          store_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          start_date?: string | null
+          store_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_promotions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           address: string | null

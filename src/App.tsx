@@ -19,6 +19,7 @@ import AIUploadPage from "./pages/dashboard/AIUploadPage";
 import WhatsAppPage from "./pages/dashboard/WhatsAppPage";
 import DeliveryPage from "./pages/dashboard/DeliveryPage";
 import StoreSettingsPage from "./pages/dashboard/StoreSettingsPage";
+import StoreCustomizationPage from "./pages/dashboard/StoreCustomizationPage";
 import BillingPage from "./pages/dashboard/BillingPage";
 import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
@@ -86,6 +87,7 @@ const App = () => (
               <Route path="whatsapp" element={<WhatsAppPage />} />
               <Route path="delivery" element={<DeliveryPage />} />
               <Route path="catalogue-link" element={<CatalogueLinkPage />} />
+              <Route path="customize-store" element={<StoreCustomizationPage />} />
               <Route path="store-settings" element={<StoreSettingsPage />} />
               <Route path="billing" element={<BillingPage />} />
               <Route path="notifications" element={<NotificationsPage />} />

@@ -25,6 +25,12 @@ import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import CatalogueLinkPage from "./pages/dashboard/CatalogueLinkPage";
 
+// Feature Pages
+import DigitalCataloguePage from "./pages/features/DigitalCataloguePage";
+import AIUploadFeaturePage from "./pages/features/AIUploadFeaturePage";
+import WhatsAppOrdersPage from "./pages/features/WhatsAppOrdersPage";
+import AnalyticsFeaturePage from "./pages/features/AnalyticsFeaturePage";
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -75,6 +81,12 @@ const App = () => (
             <Route path="/join" element={<Join />} />
             <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
             <Route path="/store/:storeId" element={<StoreCatalogue />} />
+            
+            {/* Feature Pages */}
+            <Route path="/features/digital-catalogue" element={<DigitalCataloguePage />} />
+            <Route path="/features/ai-upload" element={<AIUploadFeaturePage />} />
+            <Route path="/features/whatsapp-orders" element={<WhatsAppOrdersPage />} />
+            <Route path="/features/analytics" element={<AnalyticsFeaturePage />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

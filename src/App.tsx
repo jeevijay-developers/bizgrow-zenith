@@ -15,6 +15,12 @@ import OrdersPage from "./pages/dashboard/OrdersPage";
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
 import CustomersPage from "./pages/dashboard/CustomersPage";
 import AIUploadPage from "./pages/dashboard/AIUploadPage";
+import WhatsAppPage from "./pages/dashboard/WhatsAppPage";
+import DeliveryPage from "./pages/dashboard/DeliveryPage";
+import StoreSettingsPage from "./pages/dashboard/StoreSettingsPage";
+import BillingPage from "./pages/dashboard/BillingPage";
+import NotificationsPage from "./pages/dashboard/NotificationsPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +80,12 @@ const App = () => (
               <Route path="customers" element={<CustomersPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="ai-upload" element={<AIUploadPage />} />
+              <Route path="whatsapp" element={<WhatsAppPage />} />
+              <Route path="delivery" element={<DeliveryPage />} />
+              <Route path="store-settings" element={<StoreSettingsPage />} />
+              <Route path="billing" element={<BillingPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

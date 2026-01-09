@@ -14,6 +14,7 @@ import {
   ImagePlus,
   LogOut,
   Link2,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,6 +45,7 @@ const mainNavItems = [
 
 const toolsNavItems = [
   { title: "Catalogue Link", url: "/dashboard/catalogue-link", icon: Link2 },
+  { title: "Customize Store", url: "/dashboard/customize-store", icon: Sparkles },
   { title: "AI Upload", url: "/dashboard/ai-upload", icon: ImagePlus },
   { title: "WhatsApp", url: "/dashboard/whatsapp", icon: MessageCircle },
   { title: "Delivery", url: "/dashboard/delivery", icon: Truck },

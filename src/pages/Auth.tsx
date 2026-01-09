@@ -5,7 +5,7 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle } from "lucide
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RippleButton } from "@/components/ui/ripple-button";
+
 import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
@@ -242,7 +242,7 @@ const Auth = () => {
                 </motion.div>
               )}
 
-              <RippleButton
+              <Button
                 type="submit"
                 disabled={isLoading}
                 className="w-full h-11 bg-primary text-primary-foreground font-medium"
@@ -255,7 +255,7 @@ const Auth = () => {
                 ) : (
                   isLogin ? "Sign In" : "Create Account"
                 )}
-              </RippleButton>
+              </Button>
             </form>
 
             {/* Toggle mode */}

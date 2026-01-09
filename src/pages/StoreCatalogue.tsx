@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Store, MapPin, Phone, ShoppingCart, Search, Filter, 
-  Grid3X3, List, Heart, Share2, ArrowLeft, Package,
-  MessageCircle, Clock, Star, Instagram, Facebook, Gift, Percent
+  MapPin, Search, Grid3X3, List, Share2, ArrowLeft, Package,
+  MessageCircle, Clock, Instagram, Facebook, Gift, Star, Heart,
+  ShoppingBag, Sparkles, ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,9 +92,9 @@ const StoreCatalogue = () => {
         .select("*")
         .eq("id", storeId)
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
       if (error) throw error;
-      return data as StoreInfo;
+      return data as StoreInfo | null;
     },
     enabled: !!storeId,
   });
@@ -162,15 +162,28 @@ const StoreCatalogue = () => {
       return a.name.localeCompare(b.name);
     });
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success("Store link copied to clipboard!");
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: store?.name,
+          text: `Check out ${store?.name} on BizGrow 360!`,
+          url: window.location.href,
+        });
+      } catch {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success("Store link copied!");
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Store link copied!");
+    }
   };
 
   const handleWhatsAppOrder = (product: Product) => {
     if (!store) return;
     const phone = customization?.whatsapp_number?.replace(/\D/g, "") || "";
-    const message = `Hi! I'm interested in ordering:\n\n*${product.name}*\nPrice: ₹${product.price}\n\nFrom: ${store.name}`;
+    const message = `Hi! I'm interested in ordering:\n\n🛒 *${product.name}*\n💰 Price: ₹${product.price}\n\nFrom: ${store.name}`;
     const whatsappUrl = phone 
       ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
       : `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -183,12 +196,12 @@ const StoreCatalogue = () => {
 
   if (storeLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
         <div className="container mx-auto px-4 py-8">
-          <Skeleton className="h-32 w-full mb-8" />
+          <Skeleton className="h-48 w-full rounded-2xl mb-8" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <Skeleton key={i} className="h-64 w-full" />
+              <Skeleton key={i} className="h-72 w-full rounded-2xl" />
             ))}
           </div>
         </div>
@@ -198,63 +211,75 @@ const StoreCatalogue = () => {
 
   if (storeError || !store) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Package className="w-16 h-16 text-muted-foreground mx-auto" />
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-4 p-8"
+        >
+          <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto">
+            <Package className="w-12 h-12 text-muted-foreground" />
+          </div>
           <h1 className="text-2xl font-bold">Store Not Found</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground max-w-sm">
             This store doesn't exist or is currently unavailable.
           </p>
           <Link to="/">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
               Go Home
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Announcement Bar */}
-      {customization?.announcement_active && customization?.announcement_text && (
-        <div 
-          className="text-white text-center py-2 px-4 text-sm font-medium"
-          style={{ backgroundColor: themeColor }}
-        >
-          {customization.announcement_text}
-        </div>
-      )}
+      <AnimatePresence>
+        {customization?.announcement_active && customization?.announcement_text && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="text-white text-center py-2.5 px-4 text-sm font-medium overflow-hidden"
+            style={{ background: `linear-gradient(90deg, ${themeColor}, ${accentColor})` }}
+          >
+            <Sparkles className="w-4 h-4 inline mr-2" />
+            {customization.announcement_text}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               {customization?.logo_url ? (
-                <img src={customization.logo_url} alt={store.name} className="h-8" />
+                <img src={customization.logo_url} alt={store.name} className="h-9 object-contain" />
               ) : (
-                <img src={logoDarkBg} alt="BizGrow 360" className="h-8" />
+                <img src={logoDarkBg} alt="BizGrow 360" className="h-9" />
               )}
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {customization?.instagram_url && (
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" size="icon" className="rounded-full" asChild>
                   <a href={customization.instagram_url} target="_blank" rel="noopener noreferrer">
                     <Instagram className="w-5 h-5" />
                   </a>
                 </Button>
               )}
               {customization?.facebook_url && (
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" size="icon" className="rounded-full" asChild>
                   <a href={customization.facebook_url} target="_blank" rel="noopener noreferrer">
                     <Facebook className="w-5 h-5" />
                   </a>
                 </Button>
               )}
-              <Button variant="ghost" size="icon" onClick={handleShare}>
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={handleShare}>
                 <Share2 className="w-5 h-5" />
               </Button>
             </div>
@@ -262,135 +287,192 @@ const StoreCatalogue = () => {
         </div>
       </header>
 
-      {/* Store Banner */}
+      {/* Hero Banner */}
       {(customization?.show_banner !== false) && (
-        <div 
-          className="relative py-12 md:py-16 overflow-hidden"
-          style={{
-            background: customization?.banner_image_url 
-              ? `url(${customization.banner_image_url}) center/cover` 
-              : `linear-gradient(135deg, ${themeColor}, ${accentColor})`
-          }}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="container mx-auto px-4 relative">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col md:flex-row items-start md:items-center gap-6"
-            >
-              <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-white/20 shadow-xl">
-                <AvatarImage src={customization?.logo_url || ""} />
-                <AvatarFallback className="text-2xl font-bold" style={{ backgroundColor: themeColor, color: "white" }}>
-                  {store.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 text-white">
-                <h1 className="text-2xl md:text-4xl font-bold">{customization?.banner_text || store.name}</h1>
-                <p className="text-lg opacity-90 mt-1">{customization?.banner_subtitle || customization?.tagline || ""}</p>
-                <div className="flex flex-wrap items-center gap-3 mt-3">
-                  <Badge variant="secondary" className="capitalize bg-white/20 text-white border-0">
-                    {(store.category || "").replace("-", " ")}
-                  </Badge>
-                  <span className="flex items-center gap-1 text-sm">
-                    <MapPin className="w-4 h-4" />
-                    {store.city}, {store.state}
-                  </span>
-                  <span className="flex items-center gap-1 text-sm">
-                    <Clock className="w-4 h-4" />
-                    {(store.business_mode || "").replace("-", " + ").replace(/\b\w/g, l => l.toUpperCase())}
-                  </span>
+          <div 
+            className="relative py-16 md:py-24"
+            style={{
+              background: customization?.banner_image_url 
+                ? `url(${customization.banner_image_url}) center/cover` 
+                : `linear-gradient(135deg, ${themeColor} 0%, ${accentColor} 100%)`
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+            <div className="container mx-auto px-4 relative">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left"
+              >
+                <Avatar className="h-24 w-24 md:h-28 md:w-28 border-4 border-white/30 shadow-2xl ring-4 ring-white/10">
+                  <AvatarImage src={customization?.logo_url || ""} />
+                  <AvatarFallback 
+                    className="text-3xl font-bold text-white"
+                    style={{ background: `linear-gradient(135deg, ${themeColor}, ${accentColor})` }}
+                  >
+                    {store.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 text-white">
+                  <motion.h1 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-3xl md:text-5xl font-bold tracking-tight"
+                  >
+                    {customization?.banner_text || store.name}
+                  </motion.h1>
+                  {(customization?.banner_subtitle || customization?.tagline) && (
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-lg md:text-xl opacity-90 mt-2"
+                    >
+                      {customization?.banner_subtitle || customization?.tagline}
+                    </motion.p>
+                  )}
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4"
+                  >
+                    <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm capitalize px-3 py-1">
+                      {(store.category || "").replace("-", " ")}
+                    </Badge>
+                    <span className="flex items-center gap-1.5 text-sm text-white/90">
+                      <MapPin className="w-4 h-4" />
+                      {store.city}, {store.state}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm text-white/90">
+                      <Clock className="w-4 h-4" />
+                      {(store.business_mode || "").replace("-", " + ").replace(/\b\w/g, l => l.toUpperCase())}
+                    </span>
+                  </motion.div>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  onClick={handleShare}
-                  className="bg-white/20 hover:bg-white/30 text-white border-0"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </Button>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Welcome Message */}
       {customization?.welcome_message && (
-        <div className="bg-muted/50 py-4">
-          <div className="container mx-auto px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-muted/50 border-b"
+        >
+          <div className="container mx-auto px-4 py-4">
             <p className="text-center text-muted-foreground">{customization.welcome_message}</p>
           </div>
+        </motion.div>
+      )}
+
+      {/* Promotions Carousel */}
+      {customization?.show_offers_section !== false && promotions.length > 0 && (
+        <div className="container mx-auto px-4 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-5">
+              <Gift className="w-6 h-6" style={{ color: themeColor }} />
+              Special Offers
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </h2>
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+              {promotions.map((promo, index) => (
+                <motion.div
+                  key={promo.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex-shrink-0 w-72 snap-start"
+                >
+                  <div 
+                    className="relative p-5 rounded-2xl overflow-hidden h-full"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${themeColor}15, ${accentColor}15)`,
+                      border: `2px solid ${themeColor}30`
+                    }}
+                  >
+                    <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-20"
+                      style={{ background: `radial-gradient(circle, ${themeColor}, transparent)`, transform: 'translate(30%, -30%)' }}
+                    />
+                    {promo.discount_percentage && (
+                      <Badge 
+                        className="text-white mb-3 text-sm px-3 py-1"
+                        style={{ backgroundColor: themeColor }}
+                      >
+                        {promo.discount_percentage}% OFF
+                      </Badge>
+                    )}
+                    <h3 className="font-bold text-lg">{promo.title}</h3>
+                    {promo.description && (
+                      <p className="text-sm text-muted-foreground mt-2">{promo.description}</p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       )}
 
-      {/* Promotions/Offers Section */}
-      {customization?.show_offers_section !== false && promotions.length > 0 && (
-        <div className="container mx-auto px-4 py-6">
-          <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-            <Gift className="w-5 h-5" style={{ color: themeColor }} />
-            Special Offers
-          </h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-            {promotions.map((promo) => (
-              <motion.div
-                key={promo.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex-shrink-0 w-64 p-4 rounded-xl border-2 border-dashed"
-                style={{ borderColor: themeColor, backgroundColor: `${themeColor}10` }}
+      {/* Category Pills */}
+      {customization?.show_categories !== false && categories.length > 0 && (
+        <div className="container mx-auto px-4 pb-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <Button
+              variant={selectedCategory === "all" ? "default" : "outline"}
+              size="sm"
+              className="rounded-full flex-shrink-0"
+              style={selectedCategory === "all" ? { backgroundColor: themeColor } : {}}
+              onClick={() => setSelectedCategory("all")}
+            >
+              All Products
+            </Button>
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={selectedCategory === cat ? "default" : "outline"}
+                size="sm"
+                className="rounded-full flex-shrink-0 capitalize"
+                style={selectedCategory === cat ? { backgroundColor: themeColor } : {}}
+                onClick={() => setSelectedCategory(cat)}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  {promo.discount_percentage && (
-                    <Badge style={{ backgroundColor: themeColor }} className="text-white">
-                      {promo.discount_percentage}% OFF
-                    </Badge>
-                  )}
-                </div>
-                <h3 className="font-semibold">{promo.title}</h3>
-                {promo.description && (
-                  <p className="text-sm text-muted-foreground mt-1">{promo.description}</p>
-                )}
-              </motion.div>
+                {cat.replace("-", " ")}
+              </Button>
             ))}
           </div>
         </div>
       )}
 
       {/* Search and Filters */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4">
         {customization?.show_search !== false && (
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-12 h-12 rounded-xl bg-muted/50 border-0 focus-visible:ring-2"
+                style={{ '--tw-ring-color': themeColor } as React.CSSProperties}
               />
             </div>
             <div className="flex gap-2">
-              {customization?.show_categories !== false && (
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-36">
+                <SelectTrigger className="w-44 h-12 rounded-xl bg-muted/50 border-0">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -399,10 +481,11 @@ const StoreCatalogue = () => {
                   <SelectItem value="price-high">Price: High to Low</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="hidden sm:flex gap-1 border rounded-lg p-1">
+              <div className="hidden sm:flex gap-1 bg-muted/50 rounded-xl p-1">
                 <Button 
                   variant={viewMode === "grid" ? "secondary" : "ghost"} 
                   size="icon"
+                  className="rounded-lg"
                   onClick={() => setViewMode("grid")}
                 >
                   <Grid3X3 className="w-4 h-4" />
@@ -410,6 +493,7 @@ const StoreCatalogue = () => {
                 <Button 
                   variant={viewMode === "list" ? "secondary" : "ghost"} 
                   size="icon"
+                  className="rounded-lg"
                   onClick={() => setViewMode("list")}
                 >
                   <List className="w-4 h-4" />
@@ -420,25 +504,33 @@ const StoreCatalogue = () => {
         )}
 
         {/* Products Count */}
-        <p className="text-sm text-muted-foreground mb-4">
-          Showing {filteredProducts.length} of {products.length} products
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{filteredProducts.length}</span> products found
+          </p>
+        </div>
 
         {/* Products Grid */}
         {productsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <Skeleton key={i} className="h-64 w-full rounded-xl" />
+              <Skeleton key={i} className="h-72 w-full rounded-2xl" />
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-16">
-            <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-20"
+          >
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+              <ShoppingBag className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h3 className="text-lg font-semibold">No products found</h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-1">
               {searchQuery ? "Try a different search term" : "This store hasn't added any products yet"}
             </p>
-          </div>
+          </motion.div>
         ) : (
           <div className={
             viewMode === "grid" 
@@ -450,54 +542,60 @@ const StoreCatalogue = () => {
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.03 }}
+                whileHover={{ y: -4 }}
                 className={
                   viewMode === "grid"
-                    ? "bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all group"
-                    : "bg-card rounded-xl border border-border p-4 flex gap-4 hover:shadow-lg transition-all"
+                    ? "bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group"
+                    : "bg-card rounded-2xl border border-border/50 p-4 flex gap-4 shadow-sm hover:shadow-xl transition-all duration-300"
                 }
               >
                 {viewMode === "grid" ? (
                   <>
-                    <div className="aspect-square bg-muted relative overflow-hidden">
+                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
                       {product.image_url ? (
                         <img 
                           src={product.image_url} 
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-12 h-12 text-muted-foreground/50" />
+                          <Package className="w-16 h-16 text-muted-foreground/30" />
                         </div>
                       )}
                       {product.compare_price && product.compare_price > product.price && (
-                        <Badge className="absolute top-2 left-2" style={{ backgroundColor: themeColor }}>
+                        <Badge 
+                          className="absolute top-3 left-3 text-white shadow-lg"
+                          style={{ backgroundColor: themeColor }}
+                        >
                           {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
                         </Badge>
                       )}
                       {product.stock_quantity !== null && product.stock_quantity <= 5 && product.stock_quantity > 0 && (
-                        <Badge variant="secondary" className="absolute top-2 right-2">
+                        <Badge variant="secondary" className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm">
                           Only {product.stock_quantity} left
                         </Badge>
                       )}
                     </div>
                     <div className="p-4">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 font-medium">
                         {product.category?.replace("-", " ") || "General"}
                       </p>
-                      <h3 className="font-semibold line-clamp-2 min-h-[2.5rem]">{product.name}</h3>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-lg font-bold" style={{ color: themeColor }}>₹{product.price}</span>
+                      <h3 className="font-semibold line-clamp-2 min-h-[2.75rem] leading-snug">{product.name}</h3>
+                      <div className="flex items-baseline gap-2 mt-2">
+                        <span className="text-xl font-bold" style={{ color: themeColor }}>
+                          ₹{product.price.toLocaleString()}
+                        </span>
                         {product.compare_price && product.compare_price > product.price && (
                           <span className="text-sm text-muted-foreground line-through">
-                            ₹{product.compare_price}
+                            ₹{product.compare_price.toLocaleString()}
                           </span>
                         )}
                       </div>
                       <Button 
                         size="sm" 
-                        className="w-full mt-3 gap-2"
+                        className="w-full mt-4 gap-2 rounded-xl h-10 font-medium"
                         style={{ backgroundColor: themeColor }}
                         onClick={() => handleWhatsAppOrder(product)}
                       >
@@ -508,7 +606,7 @@ const StoreCatalogue = () => {
                   </>
                 ) : (
                   <>
-                    <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden">
+                    <div className="w-28 h-28 bg-gradient-to-br from-muted to-muted/50 rounded-xl flex-shrink-0 overflow-hidden">
                       {product.image_url ? (
                         <img 
                           src={product.image_url} 
@@ -517,30 +615,31 @@ const StoreCatalogue = () => {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-8 h-8 text-muted-foreground/50" />
+                          <Package className="w-10 h-10 text-muted-foreground/30" />
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                    <div className="flex-1 min-w-0 py-1">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
                         {product.category?.replace("-", " ") || "General"}
                       </p>
-                      <h3 className="font-semibold">{product.name}</h3>
+                      <h3 className="font-semibold mt-1">{product.name}</h3>
                       {product.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-1">{product.description}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{product.description}</p>
                       )}
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="font-bold" style={{ color: themeColor }}>₹{product.price}</span>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-lg font-bold" style={{ color: themeColor }}>
+                          ₹{product.price.toLocaleString()}
+                        </span>
                         {product.compare_price && product.compare_price > product.price && (
                           <span className="text-sm text-muted-foreground line-through">
-                            ₹{product.compare_price}
+                            ₹{product.compare_price.toLocaleString()}
                           </span>
                         )}
                       </div>
                     </div>
                     <Button 
-                      size="sm" 
-                      className="gap-2 self-center"
+                      className="gap-2 self-center rounded-xl"
                       style={{ backgroundColor: themeColor }}
                       onClick={() => handleWhatsAppOrder(product)}
                     >
@@ -556,15 +655,15 @@ const StoreCatalogue = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t mt-12 py-8">
+      <footer className="bg-muted/30 border-t mt-16 py-10">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             Powered by{" "}
-            <Link to="/" className="font-medium hover:underline" style={{ color: themeColor }}>
+            <Link to="/" className="font-semibold hover:underline" style={{ color: themeColor }}>
               BizGrow 360
             </Link>
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-2">
             Create your own digital store catalogue today!
           </p>
         </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { 
   Palette, Image, Type, MessageCircle, Megaphone, Layout,
   Save, Loader2, Eye, Instagram, Facebook, Phone, Sparkles,
-  Gift, Tag, Percent, Plus, Trash2
+  Gift, Tag, Percent, Plus, Trash2, Upload, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOutletContext, Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Select,
   SelectContent,
@@ -89,8 +90,13 @@ const themeColors = [
 
 const StoreCustomizationPage = () => {
   const { store } = useOutletContext<DashboardContext>();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [newPromo, setNewPromo] = useState({
     title: "",
     description: "",
@@ -160,6 +166,79 @@ const StoreCustomizationPage = () => {
       setFormData({ ...defaultCustomization, store_id: store.id });
     }
   }, [customization, store?.id]);
+
+  // Upload image to storage
+  const uploadImage = async (file: File, type: "banner" | "logo") => {
+    if (!user?.id) throw new Error("Not authenticated");
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${type}-${Date.now()}.${fileExt}`;
+    const filePath = `${user.id}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('store-assets')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('store-assets')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setUploadingBanner(true);
+    try {
+      const url = await uploadImage(file, "banner");
+      setFormData(prev => ({ ...prev, banner_image_url: url }));
+      toast.success("Banner uploaded!");
+    } catch (error: any) {
+      toast.error("Failed to upload: " + error.message);
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Logo must be less than 2MB");
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const url = await uploadImage(file, "logo");
+      setFormData(prev => ({ ...prev, logo_url: url }));
+      toast.success("Logo uploaded!");
+    } catch (error: any) {
+      toast.error("Failed to upload: " + error.message);
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   // Save customization
   const saveMutation = useMutation({
@@ -333,16 +412,51 @@ const StoreCustomizationPage = () => {
 
               {formData.show_banner && (
                 <>
-                  <div className="space-y-2">
-                    <Label>Banner Image URL</Label>
-                    <Input
-                      value={formData.banner_image_url || ""}
-                      onChange={(e) => setFormData(prev => ({ ...prev, banner_image_url: e.target.value }))}
-                      placeholder="https://example.com/banner.jpg"
+                  {/* Banner Image Upload */}
+                  <div className="space-y-3">
+                    <Label>Banner Image</Label>
+                    <input
+                      type="file"
+                      ref={bannerInputRef}
+                      onChange={handleBannerUpload}
+                      accept="image/*"
+                      className="hidden"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Recommended: 1200x400px. Leave empty for gradient background.
-                    </p>
+                    {formData.banner_image_url ? (
+                      <div className="relative rounded-xl overflow-hidden">
+                        <img 
+                          src={formData.banner_image_url} 
+                          alt="Banner" 
+                          className="w-full h-40 object-cover"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={() => setFormData(prev => ({ ...prev, banner_image_url: null }))}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div 
+                        onClick={() => bannerInputRef.current?.click()}
+                        className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${formData.theme_color}20, ${formData.accent_color}20)` 
+                        }}
+                      >
+                        {uploadingBanner ? (
+                          <Loader2 className="w-8 h-8 mx-auto animate-spin text-muted-foreground" />
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-sm font-medium">Click to upload banner</p>
+                            <p className="text-xs text-muted-foreground">Recommended: 1200x400px, Max 5MB</p>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -499,14 +613,52 @@ const StoreCustomizationPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Logo URL</Label>
-                <Input
-                  value={formData.logo_url || ""}
-                  onChange={(e) => setFormData(prev => ({ ...prev, logo_url: e.target.value }))}
-                  placeholder="https://example.com/logo.png"
+              {/* Logo Upload */}
+              <div className="space-y-3">
+                <Label>Store Logo</Label>
+                <input
+                  type="file"
+                  ref={logoInputRef}
+                  onChange={handleLogoUpload}
+                  accept="image/*"
+                  className="hidden"
                 />
+                <div className="flex items-center gap-4">
+                  {formData.logo_url ? (
+                    <div className="relative">
+                      <img 
+                        src={formData.logo_url} 
+                        alt="Logo" 
+                        className="w-20 h-20 object-contain rounded-xl border"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6"
+                        onClick={() => setFormData(prev => ({ ...prev, logo_url: null }))}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div 
+                      onClick={() => logoInputRef.current?.click()}
+                      className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                    >
+                      {uploadingLogo ? (
+                        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                      )}
+                    </div>
+                  )}
+                  <div className="text-sm text-muted-foreground">
+                    <p>Upload your store logo</p>
+                    <p className="text-xs">200x200px recommended, Max 2MB</p>
+                  </div>
+                </div>
               </div>
+
               <div className="space-y-2">
                 <Label>Store Tagline</Label>
                 <Input

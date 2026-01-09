@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Camera, Upload, Sparkles, Image, CheckCircle2, 
   RefreshCw, Edit, Trash2, Plus, Package, Loader2,
-  Zap, Clock, Target, ImagePlus
+  Zap, Clock, Target, ImagePlus, AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useOutletContext } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -26,17 +28,29 @@ interface DetectedProduct {
   category: string;
   confidence: number;
   image: string;
+  description?: string;
+  brand?: string;
+}
+
+interface DashboardContext {
+  store: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 const categories = ["Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household", "Electronics", "Clothing"];
 
 const AIUploadPage = () => {
+  const { store } = useOutletContext<DashboardContext>();
   const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "results">("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectedProducts, setDetectedProducts] = useState<DetectedProduct[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isAddingToCatalogue, setIsAddingToCatalogue] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,6 +63,15 @@ const AIUploadPage = () => {
       setDragActive(false);
     }
   }, []);
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
 
   const processFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -65,40 +88,71 @@ const AIUploadPage = () => {
     // Create preview URLs
     const imageUrls = validFiles.map(file => URL.createObjectURL(file));
     setUploadedImages(imageUrls);
+    setUploadedFiles(validFiles);
 
-    // Start upload simulation
+    // Start upload
     setUploadState("uploading");
     setUploadProgress(0);
     
-    const interval = setInterval(() => {
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploadState("processing");
-          
-          // Simulate AI processing
-          setTimeout(() => {
-            // Generate mock detected products based on uploaded images
-            const mockProducts: DetectedProduct[] = validFiles.map((file, index) => ({
-              id: `prod-${Date.now()}-${index}`,
-              name: `Product ${index + 1}`,
-              price: Math.floor(Math.random() * 500) + 50,
-              category: categories[Math.floor(Math.random() * categories.length)],
-              confidence: Math.floor(Math.random() * 15) + 85,
-              image: imageUrls[index] || "https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=200&h=200&fit=crop"
-            }));
-            
-            setDetectedProducts(mockProducts);
-            setSelectedProducts(new Set(mockProducts.map(p => p.id)));
-            setUploadState("results");
-            toast.success(`${mockProducts.length} products detected!`);
-          }, 2000);
-          
-          return 100;
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
         }
-        return prev + 8;
+        return prev + 10;
       });
-    }, 150);
+    }, 200);
+
+    try {
+      // Convert images to base64 and send to AI
+      const base64Images = await Promise.all(validFiles.map(fileToBase64));
+      
+      setUploadProgress(100);
+      setUploadState("processing");
+
+      // Call AI edge function
+      const { data, error } = await supabase.functions.invoke('ai-product-detection', {
+        body: { images: base64Images }
+      });
+
+      clearInterval(progressInterval);
+
+      if (error) {
+        console.error("AI detection error:", error);
+        toast.error("Failed to analyze images. Please try again.");
+        setUploadState("idle");
+        return;
+      }
+
+      if (data?.products && data.products.length > 0) {
+        // Map AI results with uploaded images
+        const detectedWithImages: DetectedProduct[] = data.products.map((product: any, index: number) => ({
+          id: `prod-${Date.now()}-${index}`,
+          name: product.name || `Product ${index + 1}`,
+          price: product.price || 0,
+          category: product.category || "Groceries",
+          confidence: product.confidence || 85,
+          image: imageUrls[index] || imageUrls[0],
+          description: product.description,
+          brand: product.brand
+        }));
+
+        setDetectedProducts(detectedWithImages);
+        setSelectedProducts(new Set(detectedWithImages.map(p => p.id)));
+        setUploadState("results");
+        toast.success(`${detectedWithImages.length} products detected!`);
+      } else {
+        toast.error("No products detected. Try with a clearer image.");
+        setUploadState("idle");
+      }
+    } catch (err) {
+      console.error("Processing error:", err);
+      clearInterval(progressInterval);
+      toast.error("Failed to process images. Please try again.");
+      setUploadState("idle");
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -128,15 +182,76 @@ const AIUploadPage = () => {
     setUploadProgress(0);
     setDetectedProducts([]);
     setSelectedProducts(new Set());
-    setUploadedImages([]);
     // Revoke object URLs
     uploadedImages.forEach(url => URL.revokeObjectURL(url));
+    setUploadedImages([]);
+    setUploadedFiles([]);
   };
 
-  const handleAddToCatalogue = () => {
-    const selectedCount = selectedProducts.size;
-    toast.success(`${selectedCount} products added to catalogue!`);
-    resetUpload();
+  const handleAddToCatalogue = async () => {
+    if (!store) {
+      toast.error("Store not found. Please try again.");
+      return;
+    }
+
+    const selectedProductsList = detectedProducts.filter(p => selectedProducts.has(p.id));
+    if (selectedProductsList.length === 0) {
+      toast.error("Please select at least one product.");
+      return;
+    }
+
+    setIsAddingToCatalogue(true);
+
+    try {
+      // Upload images to storage and create products
+      for (const product of selectedProductsList) {
+        const fileIndex = detectedProducts.indexOf(product);
+        const file = uploadedFiles[fileIndex] || uploadedFiles[0];
+        
+        let imageUrl = null;
+
+        // Upload image to storage
+        if (file) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, file);
+
+          if (!uploadError && uploadData) {
+            const { data: publicUrl } = supabase.storage
+              .from('product-images')
+              .getPublicUrl(uploadData.path);
+            imageUrl = publicUrl.publicUrl;
+          }
+        }
+
+        // Insert product into database
+        const { error: insertError } = await supabase.from('products').insert({
+          store_id: store.id,
+          name: product.name,
+          price: product.price,
+          category: product.category.toLowerCase(),
+          description: product.description || null,
+          image_url: imageUrl,
+          is_available: true,
+          stock_quantity: 100
+        });
+
+        if (insertError) {
+          console.error("Error adding product:", insertError);
+        }
+      }
+
+      toast.success(`${selectedProductsList.length} products added to catalogue!`);
+      resetUpload();
+    } catch (err) {
+      console.error("Error adding to catalogue:", err);
+      toast.error("Failed to add products. Please try again.");
+    } finally {
+      setIsAddingToCatalogue(false);
+    }
   };
 
   const updateProductField = (id: string, field: keyof DetectedProduct, value: string | number) => {
@@ -328,11 +443,20 @@ const AIUploadPage = () => {
                 </Button>
                 <Button 
                   className="gap-2 flex-1 sm:flex-none" 
-                  disabled={selectedProducts.size === 0}
+                  disabled={selectedProducts.size === 0 || isAddingToCatalogue}
                   onClick={handleAddToCatalogue}
                 >
-                  <Package className="w-4 h-4" />
-                  Add {selectedProducts.size} to Catalogue
+                  {isAddingToCatalogue ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <Package className="w-4 h-4" />
+                      Add {selectedProducts.size} to Catalogue
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

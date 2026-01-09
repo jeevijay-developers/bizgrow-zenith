@@ -13,6 +13,7 @@ import {
   Truck,
   ImagePlus,
   LogOut,
+  Link2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,6 +43,7 @@ const mainNavItems = [
 ];
 
 const toolsNavItems = [
+  { title: "Catalogue Link", url: "/dashboard/catalogue-link", icon: Link2 },
   { title: "AI Upload", url: "/dashboard/ai-upload", icon: ImagePlus },
   { title: "WhatsApp", url: "/dashboard/whatsapp", icon: MessageCircle },
   { title: "Delivery", url: "/dashboard/delivery", icon: Truck },

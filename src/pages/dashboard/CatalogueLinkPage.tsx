@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { 
   Link2, Copy, ExternalLink, Share2, 
   Check, Eye, MessageCircle, Facebook, Twitter,
-  Smartphone, Monitor, RefreshCw
+  Smartphone, Monitor, RefreshCw, QrCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -6,7 +6,7 @@ import {
   MessageCircle, Clock, Instagram, Gift, Heart,
   ShoppingBag, Sparkles, Plus, Minus, X, ShoppingCart,
   Truck, Store, ChevronDown, Star, Zap, TrendingUp,
-  User, Phone, Home, Check
+  User, Phone, Home, Check, ChevronRight, Filter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -279,25 +279,29 @@ const StoreCatalogue = () => {
     window.open(whatsappUrl, "_blank");
   };
 
-  // Theme colors from customization
-  const themeColor = customization?.theme_color || "#10b981";
-  const accentColor = customization?.accent_color || "#f59e0b";
-
   // Check if delivery is available
   const hasDelivery = store?.business_mode?.includes("delivery");
   const hasTakeaway = !store?.business_mode?.includes("delivery") || store?.business_mode?.includes("shop");
 
+  // Premium loading skeleton
   if (storeLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <div className="px-4 py-6">
-          <Skeleton className="h-44 w-full rounded-3xl mb-6" />
-          <div className="flex gap-2 mb-4">
-            {[1,2,3,4].map(i => <Skeleton key={i} className="h-9 w-20 rounded-full" />)}
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="px-4 py-6 space-y-6">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-14 w-14 rounded-2xl" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-3 w-24" />
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <Skeleton className="h-48 w-full rounded-3xl" />
+          <div className="flex gap-3">
+            {[1,2,3,4].map(i => <Skeleton key={i} className="h-10 w-24 rounded-full" />)}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-64 w-full rounded-2xl" />
+              <Skeleton key={i} className="h-72 w-full rounded-3xl" />
             ))}
           </div>
         </div>
@@ -305,23 +309,30 @@ const StoreCatalogue = () => {
     );
   }
 
+  // Store not found
   if (storeError || !store) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-6">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-4"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-6 max-w-sm"
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mx-auto shadow-inner">
-            <Package className="w-12 h-12 text-gray-400" />
+          <motion.div 
+            className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mx-auto shadow-xl"
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 4 }}
+          >
+            <Store className="w-14 h-14 text-primary/50" />
+          </motion.div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Store Not Found</h1>
+            <p className="text-muted-foreground mt-2">
+              This store doesn't exist or is currently unavailable.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Store Not Found</h1>
-          <p className="text-gray-500">
-            This store doesn't exist or is currently unavailable.
-          </p>
           <Link to="/">
-            <Button className="mt-4 rounded-full px-6">
+            <Button className="rounded-full px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
               Go Home
             </Button>
           </Link>
@@ -331,7 +342,13 @@ const StoreCatalogue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-32">
+    <div className="min-h-screen bg-gradient-to-br from-primary/3 via-background to-accent/5 pb-36">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 -right-20 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Announcement Bar */}
       <AnimatePresence>
         {customization?.announcement_active && customization?.announcement_text && (
@@ -339,54 +356,78 @@ const StoreCatalogue = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="text-white text-center py-2.5 px-4 text-xs font-medium overflow-hidden"
-            style={{ background: `linear-gradient(90deg, ${themeColor}, ${accentColor})` }}
+            className="relative overflow-hidden"
           >
-            <Sparkles className="w-3 h-3 inline mr-1.5 animate-pulse" />
-            {customization.announcement_text}
+            <div className="bg-gradient-to-r from-primary via-primary/90 to-primary text-primary-foreground text-center py-3 px-4 text-sm font-medium">
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="flex items-center justify-center gap-2"
+              >
+                <Sparkles className="w-4 h-4 text-accent" />
+                <span>{customization.announcement_text}</span>
+                <Sparkles className="w-4 h-4 text-accent" />
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-sm">
+      {/* Premium Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Avatar className="h-11 w-11 ring-2 ring-offset-2 shadow-md ring-emerald-500">
-              <AvatarImage src={customization?.logo_url || ""} />
-              <AvatarFallback 
-                className="text-sm font-bold text-white"
-                style={{ background: `linear-gradient(135deg, ${themeColor}, ${accentColor})` }}
-              >
-                {store.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Avatar className="h-12 w-12 ring-2 ring-primary/20 ring-offset-2 ring-offset-background shadow-lg">
+                <AvatarImage src={customization?.logo_url || ""} className="object-cover" />
+                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-sm font-bold">
+                  {store.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </motion.div>
             <div className="min-w-0">
-              <h1 className="font-bold text-gray-900 truncate">{store.name}</h1>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span className="flex items-center gap-0.5">
+              <h1 className="font-bold text-foreground text-lg truncate">{store.name}</h1>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
                   {store.city}
                 </span>
-                <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span className="flex items-center gap-0.5">
-                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  4.8
+                <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                <span className="flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-accent text-accent" />
+                  <span className="font-semibold text-foreground">4.8</span>
                 </span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {customization?.instagram_url && (
-              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-pink-50" asChild>
-                <a href={customization.instagram_url} target="_blank" rel="noopener noreferrer">
-                  <Instagram className="w-5 h-5 text-pink-500" />
-                </a>
-              </Button>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-10 w-10 rounded-full bg-pink-50 hover:bg-pink-100 dark:bg-pink-500/10 dark:hover:bg-pink-500/20" 
+                  asChild
+                >
+                  <a href={customization.instagram_url} target="_blank" rel="noopener noreferrer">
+                    <Instagram className="w-5 h-5 text-pink-500" />
+                  </a>
+                </Button>
+              </motion.div>
             )}
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-gray-100" onClick={handleShare}>
-              <Share2 className="w-5 h-5 text-gray-600" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-10 w-10 rounded-full bg-muted hover:bg-muted/80" 
+                onClick={handleShare}
+              >
+                <Share2 className="w-5 h-5 text-muted-foreground" />
+              </Button>
+            </motion.div>
           </div>
         </div>
       </header>
@@ -394,50 +435,51 @@ const StoreCatalogue = () => {
       {/* Hero Banner */}
       {(customization?.show_banner !== false) && (
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="mx-4 mt-4"
         >
-          <div 
-            className="relative rounded-3xl overflow-hidden shadow-xl"
-            style={{ aspectRatio: "16/9" }}
-          >
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: "16/8" }}>
+            {/* Background */}
             <div 
               className="absolute inset-0"
               style={{
                 background: customization?.banner_image_url 
                   ? `url(${customization.banner_image_url}) center/cover` 
-                  : `linear-gradient(135deg, ${themeColor} 0%, ${accentColor} 100%)`
+                  : `linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.8) 50%, hsl(var(--accent)) 100%)`
               }}
             />
+            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-              <motion.h2 
+            {/* Decorative elements */}
+            <div className="absolute top-4 right-4 w-20 h-20 bg-accent/20 rounded-full blur-2xl" />
+            <div className="absolute bottom-8 left-8 w-16 h-16 bg-primary/30 rounded-full blur-xl" />
+            
+            {/* Content */}
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-2xl font-bold drop-shadow-lg"
+                transition={{ delay: 0.2 }}
               >
-                {customization?.banner_text || `Welcome to ${store.name}`}
-              </motion.h2>
-              {(customization?.banner_subtitle || customization?.tagline) && (
-                <motion.p 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-sm opacity-90 mt-1 drop-shadow"
-                >
-                  {customization?.banner_subtitle || customization?.tagline}
-                </motion.p>
-              )}
-              <div className="flex items-center gap-2 mt-3">
-                <Badge className="bg-white/20 backdrop-blur-sm text-white border-0 text-xs px-3 py-1 capitalize">
+                <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
+                  {customization?.banner_text || `Welcome to ${store.name}`}
+                </h2>
+                {(customization?.banner_subtitle || customization?.tagline) && (
+                  <p className="text-sm md:text-base text-white/90 mt-2 drop-shadow">
+                    {customization?.banner_subtitle || customization?.tagline}
+                  </p>
+                )}
+              </motion.div>
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                <Badge className="bg-white/20 backdrop-blur-md text-white border-white/20 px-4 py-1.5 text-xs font-medium capitalize">
                   {(store.category || "").replace("-", " ")}
                 </Badge>
                 {hasDelivery && (
-                  <Badge className="bg-green-500/90 text-white border-0 text-xs px-3 py-1">
-                    <Truck className="w-3 h-3 mr-1" />
-                    Delivery
+                  <Badge className="bg-green-500/90 backdrop-blur-md text-white border-0 px-4 py-1.5 text-xs font-medium">
+                    <Truck className="w-3.5 h-3.5 mr-1.5" />
+                    Free Delivery
                   </Badge>
                 )}
               </div>
@@ -447,68 +489,65 @@ const StoreCatalogue = () => {
       )}
 
       {/* Quick Stats */}
-      <div className="flex gap-3 px-4 mt-4 overflow-x-auto pb-1 scrollbar-hide">
-        <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-2.5 rounded-2xl flex-shrink-0 border border-emerald-100">
-          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
-            <Package className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <p className="text-xs text-emerald-600 font-medium">{products.length}+ Products</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2.5 rounded-2xl flex-shrink-0 border border-amber-100">
-          <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <p className="text-xs text-amber-600 font-medium">Fast Service</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-2.5 rounded-2xl flex-shrink-0 border border-purple-100">
-          <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-            <Star className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <p className="text-xs text-purple-600 font-medium">Top Rated</p>
-          </div>
-        </div>
+      <div className="flex gap-3 px-4 mt-5 overflow-x-auto pb-2 scrollbar-hide">
+        {[
+          { icon: Package, label: `${products.length}+ Items`, color: "from-emerald-500 to-teal-500", bg: "from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10" },
+          { icon: Zap, label: "Quick Service", color: "from-amber-500 to-orange-500", bg: "from-amber-50 to-orange-50 dark:from-amber-500/10 dark:to-orange-500/10" },
+          { icon: Star, label: "Top Rated", color: "from-primary to-primary/80", bg: "from-primary/10 to-primary/5" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={`flex items-center gap-3 bg-gradient-to-r ${stat.bg} px-4 py-3 rounded-2xl flex-shrink-0 border border-border/50 shadow-sm`}
+          >
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
+              <stat.icon className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-foreground whitespace-nowrap">{stat.label}</span>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Promotions Carousel */}
+      {/* Promotions */}
       {customization?.show_offers_section !== false && promotions.length > 0 && (
-        <div className="mt-5">
-          <div className="flex items-center justify-between px-4 mb-3">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <Gift className="w-5 h-5" style={{ color: accentColor }} />
+        <div className="mt-6">
+          <div className="flex items-center justify-between px-4 mb-4">
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Gift className="w-5 h-5 text-accent" />
               Special Offers
             </h3>
-            <span className="text-xs text-gray-500">{promotions.length} offers</span>
+            <Badge variant="secondary" className="text-xs">{promotions.length} active</Badge>
           </div>
-          <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory scrollbar-hide">
+          <div className="flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory scrollbar-hide">
             {promotions.map((promo, index) => (
               <motion.div
                 key={promo.id}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-72 snap-start"
+                className="flex-shrink-0 w-80 snap-start"
               >
-                <div 
-                  className="relative p-5 rounded-2xl h-full overflow-hidden"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${themeColor}, ${accentColor})`,
-                  }}
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <div className="relative text-white">
+                <div className="relative p-6 rounded-3xl h-full overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl">
+                  {/* Decorative circles */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+                  
+                  <div className="relative text-primary-foreground">
                     {promo.discount_percentage && (
-                      <Badge className="bg-white text-gray-900 text-sm font-bold mb-2">
-                        {promo.discount_percentage}% OFF
-                      </Badge>
+                      <motion.div
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                      >
+                        <Badge className="bg-accent text-accent-foreground text-base font-bold px-4 py-1 mb-3 shadow-lg">
+                          {promo.discount_percentage}% OFF
+                        </Badge>
+                      </motion.div>
                     )}
-                    <h4 className="font-bold text-lg">{promo.title}</h4>
+                    <h4 className="font-bold text-xl">{promo.title}</h4>
                     {promo.description && (
-                      <p className="text-sm opacity-90 mt-1 line-clamp-2">{promo.description}</p>
+                      <p className="text-sm opacity-90 mt-2 line-clamp-2">{promo.description}</p>
                     )}
                   </div>
                 </div>
@@ -518,50 +557,49 @@ const StoreCatalogue = () => {
         </div>
       )}
 
-      {/* Shop By Deals - Only show if there are discounted products */}
+      {/* Hot Deals Section */}
       {discountedProducts.length > 0 && (
         <div className="mt-6">
-          <div className="flex items-center justify-between px-4 mb-3">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+          <div className="flex items-center justify-between px-4 mb-4">
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-red-500" />
               Hot Deals
             </h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs text-gray-500 h-8"
-              onClick={() => setSelectedCategory("all")}
-            >
-              See all
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1">
+              See all <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
-          <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
-            {discountedProducts.slice(0, 5).map((product, index) => (
+          <div className="flex gap-4 overflow-x-auto px-4 pb-3 scrollbar-hide">
+            {discountedProducts.slice(0, 6).map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex-shrink-0 w-36"
+                className="flex-shrink-0 w-40"
               >
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100">
+                <div className="bg-card rounded-3xl border border-border shadow-lg overflow-hidden group">
+                  <div className="aspect-square relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
                     {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                      <img 
+                        src={product.image_url} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-10 h-10 text-gray-200" />
+                        <Package className="w-12 h-12 text-muted-foreground/30" />
                       </div>
                     )}
-                    <Badge className="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2">
+                    <Badge className="absolute top-2 left-2 bg-red-500 text-white text-[11px] px-2.5 py-1 font-bold shadow-lg">
                       {Math.round((1 - product.price / (product.compare_price || product.price)) * 100)}% OFF
                     </Badge>
                   </div>
                   <div className="p-3">
-                    <p className="text-xs font-medium text-gray-900 line-clamp-1">{product.name}</p>
-                    <div className="flex items-baseline gap-1 mt-1">
-                      <span className="text-sm font-bold" style={{ color: themeColor }}>₹{product.price}</span>
-                      <span className="text-xs text-gray-400 line-through">₹{product.compare_price}</span>
+                    <p className="text-sm font-semibold text-foreground line-clamp-1">{product.name}</p>
+                    <div className="flex items-baseline gap-2 mt-1.5">
+                      <span className="text-base font-bold text-primary">₹{product.price}</span>
+                      <span className="text-xs text-muted-foreground line-through">₹{product.compare_price}</span>
                     </div>
                   </div>
                 </div>
@@ -573,204 +611,219 @@ const StoreCatalogue = () => {
 
       {/* Search Bar */}
       {customization?.show_search !== false && (
-        <div className="px-4 mt-5">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="px-4 mt-6"
+        >
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder="Search for products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 rounded-2xl bg-gray-50 border-0 text-base placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-primary"
+              className="pl-12 pr-4 h-14 rounded-2xl bg-card border-border text-base shadow-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Category Pills */}
       {customization?.show_categories !== false && categories.length > 0 && (
-        <div className="mt-4 px-4">
+        <div className="mt-5 px-4">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <Button
-              variant={selectedCategory === "all" ? "default" : "outline"}
-              size="sm"
-              className={`rounded-full flex-shrink-0 h-10 px-5 text-sm font-medium transition-all ${
-                selectedCategory === "all" ? "shadow-lg" : "border-gray-200"
-              }`}
-              style={selectedCategory === "all" ? { backgroundColor: themeColor } : {}}
-              onClick={() => setSelectedCategory("all")}
-            >
-              All Items
-            </Button>
-            {categories.map(cat => (
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
-                key={cat}
-                variant={selectedCategory === cat ? "default" : "outline"}
+                variant={selectedCategory === "all" ? "default" : "outline"}
                 size="sm"
-                className={`rounded-full flex-shrink-0 h-10 px-5 text-sm font-medium capitalize transition-all ${
-                  selectedCategory === cat ? "shadow-lg" : "border-gray-200"
+                className={`rounded-full flex-shrink-0 h-11 px-6 text-sm font-semibold transition-all ${
+                  selectedCategory === "all" 
+                    ? "bg-primary text-primary-foreground shadow-lg" 
+                    : "border-border bg-card hover:bg-muted"
                 }`}
-                style={selectedCategory === cat ? { backgroundColor: themeColor } : {}}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => setSelectedCategory("all")}
               >
-                {cat.replace("-", " ")}
+                All Items
               </Button>
+            </motion.div>
+            {categories.map(cat => (
+              <motion.div key={cat} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant={selectedCategory === cat ? "default" : "outline"}
+                  size="sm"
+                  className={`rounded-full flex-shrink-0 h-11 px-6 text-sm font-semibold capitalize transition-all ${
+                    selectedCategory === cat 
+                      ? "bg-primary text-primary-foreground shadow-lg" 
+                      : "border-border bg-card hover:bg-muted"
+                  }`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat.replace("-", " ")}
+                </Button>
+              </motion.div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Products Header */}
-      <div className="flex items-center justify-between px-4 mt-5 mb-3">
-        <h3 className="text-base font-bold text-gray-900">
-          {selectedCategory === "all" ? "All Products" : selectedCategory.replace("-", " ")}
-          <span className="text-gray-400 font-normal ml-2 text-sm">({filteredProducts.length})</span>
-        </h3>
-      </div>
-
-      {/* Products Grid - 2 Column */}
-      <div className="px-4">
-        {productsLoading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-64 w-full rounded-2xl" />
-            ))}
+      {/* Products Section */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between px-4 mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-foreground">
+              {selectedCategory === "all" ? "All Products" : selectedCategory.replace("-", " ")}
+            </h3>
+            <p className="text-sm text-muted-foreground">{filteredProducts.length} items available</p>
           </div>
-        ) : filteredProducts.length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag className="w-10 h-10 text-gray-300" />
+        </div>
+
+        {/* Products Grid */}
+        <div className="px-4">
+          {productsLoading ? (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <Skeleton key={i} className="h-72 w-full rounded-3xl" />
+              ))}
             </div>
-            <h3 className="font-semibold text-gray-900">No products found</h3>
-            <p className="text-sm text-gray-500 mt-1">
-              {searchQuery ? "Try a different search term" : "Check back soon!"}
-            </p>
-          </motion.div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filteredProducts.map((product, index) => {
-              const itemQty = getCartItemQuantity(product.id);
-              const isFavorite = favorites.has(product.id);
-              
-              return (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                >
-                  {/* Product Image */}
-                  <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
-                    {product.image_url ? (
-                      <img 
-                        src={product.image_url} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-14 h-14 text-gray-200" />
-                      </div>
-                    )}
-                    
-                    {/* Discount Badge */}
-                    {product.compare_price && product.compare_price > product.price && (
-                      <Badge 
-                        className="absolute top-2 left-2 text-white text-[10px] px-2 py-0.5 font-semibold"
-                        style={{ backgroundColor: "#ef4444" }}
-                      >
-                        {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
-                      </Badge>
-                    )}
+          ) : filteredProducts.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-20"
+            >
+              <div className="w-24 h-24 rounded-3xl bg-muted flex items-center justify-center mx-auto mb-4">
+                <ShoppingBag className="w-12 h-12 text-muted-foreground/50" />
+              </div>
+              <h3 className="font-bold text-lg text-foreground">No products found</h3>
+              <p className="text-muted-foreground mt-2">
+                {searchQuery ? "Try a different search term" : "Check back soon for new arrivals!"}
+              </p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {filteredProducts.map((product, index) => {
+                const itemQty = getCartItemQuantity(product.id);
+                const isFavorite = favorites.has(product.id);
+                
+                return (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    whileHover={{ y: -4 }}
+                    className="group"
+                  >
+                    <div className="bg-card rounded-3xl border border-border shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
+                      {/* Product Image */}
+                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+                        {product.image_url ? (
+                          <img 
+                            src={product.image_url} 
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="w-16 h-16 text-muted-foreground/20" />
+                          </div>
+                        )}
+                        
+                        {/* Discount Badge */}
+                        {product.compare_price && product.compare_price > product.price && (
+                          <Badge className="absolute top-3 left-3 bg-red-500 text-white text-[11px] px-2.5 py-1 font-bold shadow-lg">
+                            {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                          </Badge>
+                        )}
 
-                    {/* Favorite Button */}
-                    <button
-                      onClick={() => toggleFavorite(product.id)}
-                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform"
-                    >
-                      <Heart 
-                        className={`w-4 h-4 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}`} 
-                      />
-                    </button>
-
-                    {/* Add to Cart Button */}
-                    {itemQty === 0 ? (
-                      <Button
-                        size="icon"
-                        className="absolute bottom-2 right-2 h-10 w-10 rounded-full shadow-lg active:scale-95 transition-transform"
-                        style={{ backgroundColor: themeColor }}
-                        onClick={() => addToCart(product)}
-                      >
-                        <Plus className="w-5 h-5 text-white" />
-                      </Button>
-                    ) : (
-                      <div 
-                        className="absolute bottom-2 right-2 flex items-center gap-1 bg-white rounded-full shadow-lg px-1 py-1"
-                        style={{ border: `2px solid ${themeColor}` }}
-                      >
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 rounded-full hover:bg-gray-100"
-                          onClick={() => updateCartQuantity(product.id, -1)}
+                        {/* Favorite Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => toggleFavorite(product.id)}
+                          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
                         >
-                          <Minus className="w-4 h-4" />
-                        </Button>
-                        <span className="w-6 text-center font-bold text-sm">{itemQty}</span>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 rounded-full hover:bg-gray-100"
-                          onClick={() => updateCartQuantity(product.id, 1)}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                          <Heart 
+                            className={`w-4 h-4 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} 
+                          />
+                        </motion.button>
 
-                  {/* Product Info */}
-                  <div className="p-3">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">
-                      {product.category?.replace("-", " ") || "General"}
-                    </p>
-                    <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 mt-0.5 min-h-[2.5rem] leading-tight">
-                      {product.name}
-                    </h3>
-                    {product.description && (
-                      <p className="text-xs text-gray-500 line-clamp-1 mt-1">{product.description}</p>
-                    )}
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="text-lg font-bold" style={{ color: themeColor }}>
-                        ₹{product.price.toLocaleString()}
-                      </span>
-                      {product.compare_price && product.compare_price > product.price && (
-                        <span className="text-xs text-gray-400 line-through">
-                          ₹{product.compare_price.toLocaleString()}
-                        </span>
-                      )}
+                        {/* Add to Cart */}
+                        <div className="absolute bottom-3 right-3">
+                          {itemQty === 0 ? (
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                              <Button
+                                size="icon"
+                                className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl"
+                                onClick={() => addToCart(product)}
+                              >
+                                <Plus className="w-5 h-5" />
+                              </Button>
+                            </motion.div>
+                          ) : (
+                            <div className="flex items-center gap-0.5 bg-card rounded-full shadow-xl border-2 border-primary p-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 rounded-full hover:bg-muted"
+                                onClick={() => updateCartQuantity(product.id, -1)}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <span className="w-7 text-center font-bold text-sm text-foreground">{itemQty}</span>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 rounded-full hover:bg-muted"
+                                onClick={() => updateCartQuantity(product.id, 1)}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="p-4">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                          {product.category?.replace("-", " ") || "General"}
+                        </p>
+                        <h3 className="font-semibold text-sm text-foreground line-clamp-2 mt-1 min-h-[2.5rem] leading-snug">
+                          {product.name}
+                        </h3>
+                        {product.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-1.5">{product.description}</p>
+                        )}
+                        <div className="flex items-baseline gap-2 mt-3">
+                          <span className="text-xl font-bold text-primary">
+                            ₹{product.price.toLocaleString()}
+                          </span>
+                          {product.compare_price && product.compare_price > product.price && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              ₹{product.compare_price.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer */}
-      <footer className="mt-12 py-8 px-4 text-center">
-        <p className="text-xs text-gray-400">
-          Powered by{" "}
-          <Link to="/" className="font-semibold text-gray-600 hover:underline">
+      <footer className="mt-16 py-8 px-4 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50">
+          <span className="text-xs text-muted-foreground">Powered by</span>
+          <Link to="/" className="font-bold text-sm text-primary hover:underline">
             BizGrow 360
           </Link>
-        </p>
+        </div>
       </footer>
 
       {/* Floating Cart Button */}
@@ -780,31 +833,39 @@ const StoreCatalogue = () => {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]"
+            className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-xl border-t border-border shadow-2xl"
           >
             <Sheet open={cartOpen} onOpenChange={setCartOpen}>
               <SheetTrigger asChild>
-                <Button 
-                  className="w-full h-14 rounded-2xl text-white font-semibold gap-3 text-base shadow-xl active:scale-[0.98] transition-transform"
-                  style={{ backgroundColor: themeColor }}
-                >
-                  <div className="relative">
-                    <ShoppingCart className="w-6 h-6" />
-                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs font-bold" style={{ color: themeColor }}>
-                      {cartCount}
-                    </span>
-                  </div>
-                  <span>View Cart</span>
-                  <span className="ml-auto font-bold">₹{cartTotal.toLocaleString()}</span>
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-4 text-base shadow-xl"
+                  >
+                    <div className="relative">
+                      <ShoppingCart className="w-6 h-6" />
+                      <motion.span 
+                        key={cartCount}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-xs font-bold"
+                      >
+                        {cartCount}
+                      </motion.span>
+                    </div>
+                    <span>View Cart</span>
+                    <span className="ml-auto text-lg font-bold">₹{cartTotal.toLocaleString()}</span>
+                  </Button>
+                </motion.div>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl p-0">
                 <div className="flex flex-col h-full">
-                  <SheetHeader className="p-4 pb-3 border-b border-gray-100">
-                    <SheetTitle className="flex items-center gap-2 text-lg">
-                      <ShoppingCart className="w-5 h-5" />
+                  <SheetHeader className="p-5 pb-4 border-b border-border">
+                    <SheetTitle className="flex items-center gap-3 text-xl">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <ShoppingCart className="w-5 h-5 text-primary" />
+                      </div>
                       Your Cart
-                      <Badge variant="secondary" className="ml-2">{cartCount} items</Badge>
+                      <Badge variant="secondary" className="ml-auto text-sm px-3 py-1">{cartCount} items</Badge>
                     </SheetTitle>
                   </SheetHeader>
                   
@@ -815,27 +876,29 @@ const StoreCatalogue = () => {
                           <motion.div 
                             key={item.id} 
                             layout
-                            className="flex gap-3 p-3 bg-gray-50 rounded-2xl"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex gap-4 p-4 bg-muted/50 rounded-2xl"
                           >
-                            <div className="w-20 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+                            <div className="w-20 h-20 bg-card rounded-xl overflow-hidden flex-shrink-0 border border-border shadow-sm">
                               {item.image_url ? (
                                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Package className="w-8 h-8 text-gray-200" />
+                                  <Package className="w-8 h-8 text-muted-foreground/30" />
                                 </div>
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm text-gray-900 line-clamp-1">{item.name}</h4>
-                              <p className="text-sm font-bold mt-1" style={{ color: themeColor }}>
+                              <h4 className="font-semibold text-sm text-foreground line-clamp-1">{item.name}</h4>
+                              <p className="text-base font-bold text-primary mt-1">
                                 ₹{item.price.toLocaleString()}
                               </p>
-                              <div className="flex items-center gap-1 mt-2">
+                              <div className="flex items-center gap-2 mt-2">
                                 <Button 
                                   size="icon" 
                                   variant="outline" 
-                                  className="h-8 w-8 rounded-full border-gray-200"
+                                  className="h-8 w-8 rounded-full"
                                   onClick={() => updateCartQuantity(item.id, -1)}
                                 >
                                   <Minus className="w-3 h-3" />
@@ -844,168 +907,170 @@ const StoreCatalogue = () => {
                                 <Button 
                                   size="icon" 
                                   variant="outline" 
-                                  className="h-8 w-8 rounded-full border-gray-200"
+                                  className="h-8 w-8 rounded-full"
                                   onClick={() => updateCartQuantity(item.id, 1)}
                                 >
                                   <Plus className="w-3 h-3" />
                                 </Button>
                               </div>
                             </div>
-                            <div className="flex flex-col items-end justify-between">
-                              <Button 
-                                size="icon" 
-                                variant="ghost" 
-                                className="h-8 w-8 text-gray-400 hover:text-red-500"
-                                onClick={() => removeFromCart(item.id)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                              <p className="font-bold text-gray-900">
-                                ₹{(item.price * item.quantity).toLocaleString()}
-                              </p>
-                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => removeFromCart(item.id)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
                           </motion.div>
                         ))}
                       </div>
-                      <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
-                        <div className="flex items-center justify-between text-lg">
-                          <span className="text-gray-500">Subtotal</span>
-                          <span className="font-bold text-gray-900">₹{cartTotal.toLocaleString()}</span>
+                      
+                      {/* Cart Footer */}
+                      <div className="border-t border-border p-4 space-y-4 bg-card">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Subtotal</span>
+                          <span className="text-xl font-bold text-foreground">₹{cartTotal.toLocaleString()}</span>
                         </div>
                         <Button 
-                          className="w-full h-14 rounded-2xl text-white font-semibold text-base shadow-lg"
-                          style={{ backgroundColor: themeColor }}
+                          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base shadow-lg"
                           onClick={() => setCheckoutOpen(true)}
                         >
                           Proceed to Checkout
-                          <ChevronDown className="w-5 h-5 ml-2 rotate-[-90deg]" />
+                          <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
                       </div>
                     </>
                   ) : (
                     <>
+                      {/* Checkout Form */}
                       <div className="flex-1 overflow-y-auto p-4 space-y-5">
-                        {/* Delivery Mode Selection */}
-                        <div>
-                          <Label className="text-sm font-semibold text-gray-700 mb-3 block">Select Order Type</Label>
+                        <Button 
+                          variant="ghost" 
+                          className="gap-2 text-muted-foreground"
+                          onClick={() => setCheckoutOpen(false)}
+                        >
+                          <ChevronDown className="w-4 h-4 rotate-90" />
+                          Back to cart
+                        </Button>
+
+                        {/* Delivery Mode */}
+                        <div className="space-y-3">
+                          <Label className="text-sm font-semibold">How would you like to receive your order?</Label>
                           <RadioGroup 
                             value={deliveryMode} 
                             onValueChange={(v) => setDeliveryMode(v as "takeaway" | "delivery")}
                             className="grid grid-cols-2 gap-3"
                           >
                             {hasTakeaway && (
-                              <Label
-                                htmlFor="takeaway"
-                                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                                  deliveryMode === "takeaway" 
-                                    ? "border-current bg-opacity-5" 
-                                    : "border-gray-200 bg-gray-50"
-                                }`}
-                                style={deliveryMode === "takeaway" ? { borderColor: themeColor, backgroundColor: `${themeColor}10` } : {}}
-                              >
+                              <div>
                                 <RadioGroupItem value="takeaway" id="takeaway" className="sr-only" />
-                                <Store className="w-8 h-8" style={{ color: deliveryMode === "takeaway" ? themeColor : "#9ca3af" }} />
-                                <span className="font-semibold text-sm">Store Pickup</span>
-                                {deliveryMode === "takeaway" && (
-                                  <Check className="w-5 h-5 absolute top-2 right-2" style={{ color: themeColor }} />
-                                )}
-                              </Label>
+                                <Label
+                                  htmlFor="takeaway"
+                                  className={`flex flex-col items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                                    deliveryMode === "takeaway" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                                  }`}
+                                >
+                                  <Store className={`w-6 h-6 mb-2 ${deliveryMode === "takeaway" ? "text-primary" : "text-muted-foreground"}`} />
+                                  <span className={`text-sm font-medium ${deliveryMode === "takeaway" ? "text-primary" : ""}`}>Store Pickup</span>
+                                </Label>
+                              </div>
                             )}
                             {hasDelivery && (
-                              <Label
-                                htmlFor="delivery"
-                                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all relative ${
-                                  deliveryMode === "delivery" 
-                                    ? "border-current bg-opacity-5" 
-                                    : "border-gray-200 bg-gray-50"
-                                }`}
-                                style={deliveryMode === "delivery" ? { borderColor: themeColor, backgroundColor: `${themeColor}10` } : {}}
-                              >
+                              <div>
                                 <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
-                                <Truck className="w-8 h-8" style={{ color: deliveryMode === "delivery" ? themeColor : "#9ca3af" }} />
-                                <span className="font-semibold text-sm">Home Delivery</span>
-                                {deliveryMode === "delivery" && (
-                                  <Check className="w-5 h-5 absolute top-2 right-2" style={{ color: themeColor }} />
-                                )}
-                              </Label>
+                                <Label
+                                  htmlFor="delivery"
+                                  className={`flex flex-col items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                                    deliveryMode === "delivery" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                                  }`}
+                                >
+                                  <Truck className={`w-6 h-6 mb-2 ${deliveryMode === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
+                                  <span className={`text-sm font-medium ${deliveryMode === "delivery" ? "text-primary" : ""}`}>Home Delivery</span>
+                                </Label>
+                              </div>
                             )}
                           </RadioGroup>
                         </div>
 
                         {/* Customer Details */}
                         <div className="space-y-4">
-                          <Label className="text-sm font-semibold text-gray-700">Your Details</Label>
-                          <div className="space-y-3">
+                          <Label className="text-sm font-semibold">Your Details</Label>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="name" className="text-xs text-muted-foreground">Full Name *</Label>
                             <div className="relative">
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                               <Input
-                                placeholder="Your name *"
+                                id="name"
+                                placeholder="Enter your name"
                                 value={customerDetails.name}
-                                onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
-                                className="pl-12 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                onChange={(e) => setCustomerDetails(p => ({...p, name: e.target.value}))}
+                                className="pl-11 h-12 rounded-xl"
                               />
                             </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="phone" className="text-xs text-muted-foreground">Phone Number *</Label>
                             <div className="relative">
-                              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                               <Input
-                                placeholder="Phone number *"
+                                id="phone"
                                 type="tel"
+                                placeholder="Enter phone number"
                                 value={customerDetails.phone}
-                                onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
-                                className="pl-12 h-12 rounded-xl bg-gray-50 border-gray-200"
+                                onChange={(e) => setCustomerDetails(p => ({...p, phone: e.target.value}))}
+                                className="pl-11 h-12 rounded-xl"
                               />
                             </div>
-                            {deliveryMode === "delivery" && (
+                          </div>
+
+                          {deliveryMode === "delivery" && (
+                            <div className="space-y-2">
+                              <Label htmlFor="address" className="text-xs text-muted-foreground">Delivery Address *</Label>
                               <div className="relative">
-                                <Home className="absolute left-4 top-4 w-5 h-5 text-gray-400" />
+                                <Home className="absolute left-4 top-4 w-4 h-4 text-muted-foreground" />
                                 <Textarea
-                                  placeholder="Delivery address *"
+                                  id="address"
+                                  placeholder="Enter full address"
                                   value={customerDetails.address}
-                                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
-                                  className="pl-12 min-h-[80px] rounded-xl bg-gray-50 border-gray-200 resize-none"
+                                  onChange={(e) => setCustomerDetails(p => ({...p, address: e.target.value}))}
+                                  className="pl-11 min-h-[100px] rounded-xl resize-none"
                                 />
                               </div>
-                            )}
+                            </div>
+                          )}
+
+                          <div className="space-y-2">
+                            <Label htmlFor="notes" className="text-xs text-muted-foreground">Special Instructions (optional)</Label>
                             <Textarea
-                              placeholder="Special instructions (optional)"
+                              id="notes"
+                              placeholder="Any special requests..."
                               value={customerDetails.notes}
-                              onChange={(e) => setCustomerDetails(prev => ({ ...prev, notes: e.target.value }))}
-                              className="min-h-[60px] rounded-xl bg-gray-50 border-gray-200 resize-none"
+                              onChange={(e) => setCustomerDetails(p => ({...p, notes: e.target.value}))}
+                              className="min-h-[80px] rounded-xl resize-none"
                             />
                           </div>
                         </div>
-
-                        {/* Order Summary */}
-                        <div className="bg-gray-50 rounded-2xl p-4 space-y-2">
-                          <h4 className="font-semibold text-gray-700">Order Summary</h4>
-                          {cart.map(item => (
-                            <div key={item.id} className="flex justify-between text-sm">
-                              <span className="text-gray-600">{item.name} × {item.quantity}</span>
-                              <span className="font-medium">₹{(item.price * item.quantity).toLocaleString()}</span>
-                            </div>
-                          ))}
-                          <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between text-base">
-                            <span className="font-semibold">Total</span>
-                            <span className="font-bold" style={{ color: themeColor }}>₹{cartTotal.toLocaleString()}</span>
-                          </div>
-                        </div>
                       </div>
-                      <div className="p-4 border-t border-gray-100 space-y-3 bg-white">
+
+                      {/* Checkout Footer */}
+                      <div className="border-t border-border p-4 space-y-4 bg-card">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Total Amount</span>
+                          <span className="text-2xl font-bold text-foreground">₹{cartTotal.toLocaleString()}</span>
+                        </div>
                         <Button 
-                          variant="outline"
-                          className="w-full h-12 rounded-xl"
-                          onClick={() => setCheckoutOpen(false)}
-                        >
-                          Back to Cart
-                        </Button>
-                        <Button 
-                          className="w-full h-14 rounded-2xl text-white font-semibold text-base gap-2 shadow-lg"
-                          style={{ backgroundColor: "#25D366" }}
+                          className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-semibold text-base shadow-lg gap-3"
                           onClick={handleWhatsAppCheckout}
                         >
                           <MessageCircle className="w-5 h-5" />
                           Order via WhatsApp
                         </Button>
+                        <p className="text-xs text-muted-foreground text-center">
+                          You'll be redirected to WhatsApp to complete your order
+                        </p>
                       </div>
                     </>
                   )}

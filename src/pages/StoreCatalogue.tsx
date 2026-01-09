@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Search, Share2, Package,
   MessageCircle, Clock, Instagram, Gift, Heart,
   ShoppingBag, Sparkles, Plus, Minus, X, ShoppingCart,
   Truck, Store, ChevronDown, Star, Zap, TrendingUp,
-  User, Phone, Home, Check, ChevronRight, Filter
+  User, Phone, Home, Check, ChevronRight, Filter, Loader2
 } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -93,11 +94,12 @@ interface CustomerDetails {
 
 const StoreCatalogue = () => {
   const { storeId } = useParams<{ storeId: string }>();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState<"takeaway" | "delivery">("takeaway");
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: "",
@@ -106,6 +108,18 @@ const StoreCatalogue = () => {
     notes: ""
   });
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Use persistent cart hook
+  const {
+    cart,
+    addToCart: addToCartHook,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    getItemQuantity,
+    cartTotal,
+    cartCount,
+  } = useCart(storeId);
 
   // Fetch store info
   const { data: store, isLoading: storeLoading, error: storeError } = useQuery({
@@ -183,38 +197,15 @@ const StoreCatalogue = () => {
   // Products with discounts
   const discountedProducts = products.filter(p => p.compare_price && p.compare_price > p.price);
 
-  // Cart functions
-  const getCartItemQuantity = (productId: string) => {
-    return cart.find(item => item.id === productId)?.quantity || 0;
-  };
-
+  // Cart wrapper function to show toast
   const addToCart = (product: Product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
+    addToCartHook({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
     });
     toast.success(`Added to cart`, { duration: 1500 });
-  };
-
-  const updateCartQuantity = (productId: string, delta: number) => {
-    setCart(prev => {
-      return prev.map(item => {
-        if (item.id === productId) {
-          const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : item;
-        }
-        return item;
-      }).filter(item => item.quantity > 0);
-    });
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
   };
 
   const toggleFavorite = (productId: string) => {
@@ -225,12 +216,9 @@ const StoreCatalogue = () => {
       } else {
         newSet.add(productId);
       }
-      return newSet;
+    return newSet;
     });
   };
-
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -250,8 +238,8 @@ const StoreCatalogue = () => {
     }
   };
 
-  const handleWhatsAppCheckout = () => {
-    if (!store || cart.length === 0) return;
+  const handleCheckout = async () => {
+    if (!store || !storeId || cart.length === 0) return;
     if (!customerDetails.name || !customerDetails.phone) {
       toast.error("Please fill your name and phone number");
       return;
@@ -261,22 +249,65 @@ const StoreCatalogue = () => {
       return;
     }
 
-    const phone = customization?.whatsapp_number?.replace(/\D/g, "") || "";
-    
-    const itemsList = cart.map(item => 
-      `• ${item.name} x${item.quantity} = ₹${(item.price * item.quantity).toLocaleString()}`
-    ).join("\n");
-    
-    const orderType = deliveryMode === "delivery" ? "🚚 Home Delivery" : "🏪 Store Pickup";
-    const addressLine = deliveryMode === "delivery" ? `\n📍 *Delivery Address:*\n${customerDetails.address}` : "";
-    const notesLine = customerDetails.notes ? `\n📝 *Notes:* ${customerDetails.notes}` : "";
-    
-    const message = `🛒 *New Order from ${store.name}*\n\n${orderType}\n\n*Items:*\n${itemsList}\n\n💰 *Total: ₹${cartTotal.toLocaleString()}*\n\n👤 *Customer:* ${customerDetails.name}\n📞 *Phone:* ${customerDetails.phone}${addressLine}${notesLine}`;
-    
-    const whatsappUrl = phone 
-      ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-      : `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
+    setIsSubmitting(true);
+
+    try {
+      // Call the create-order edge function
+      const { data, error } = await supabase.functions.invoke("create-order", {
+        body: {
+          store_id: storeId,
+          customer_name: customerDetails.name,
+          customer_phone: customerDetails.phone,
+          customer_address: deliveryMode === "delivery" ? customerDetails.address : null,
+          items: cart.map((item) => ({
+            product_id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image_url: item.image_url,
+          })),
+          total_amount: cartTotal,
+          notes: customerDetails.notes || null,
+          payment_method: "COD",
+        },
+      });
+
+      if (error) throw error;
+
+      const orderId = data?.order?.id;
+
+      // Optionally send WhatsApp message
+      const phone = customization?.whatsapp_number?.replace(/\D/g, "") || "";
+      if (phone) {
+        const itemsList = cart
+          .map(
+            (item) =>
+              `• ${item.name} x${item.quantity} = ₹${(item.price * item.quantity).toLocaleString()}`
+          )
+          .join("\n");
+
+        const orderType = deliveryMode === "delivery" ? "🚚 Home Delivery" : "🏪 Store Pickup";
+        const addressLine =
+          deliveryMode === "delivery" ? `\n📍 *Delivery Address:*\n${customerDetails.address}` : "";
+        const notesLine = customerDetails.notes ? `\n📝 *Notes:* ${customerDetails.notes}` : "";
+
+        const message = `🛒 *New Order from ${store.name}*\n\n${orderType}\n\n*Items:*\n${itemsList}\n\n💰 *Total: ₹${cartTotal.toLocaleString()}*\n\n👤 *Customer:* ${customerDetails.name}\n📞 *Phone:* ${customerDetails.phone}${addressLine}${notesLine}`;
+
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, "_blank");
+      }
+
+      // Clear cart and navigate to confirmation
+      clearCart();
+      setCartOpen(false);
+      setCheckoutOpen(false);
+      navigate(`/order-confirmation/${orderId}`);
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error(error.message || "Failed to place order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Check if delivery is available
@@ -702,7 +733,7 @@ const StoreCatalogue = () => {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {filteredProducts.map((product, index) => {
-                const itemQty = getCartItemQuantity(product.id);
+                const itemQty = getItemQuantity(product.id);
                 const isFavorite = favorites.has(product.id);
                 
                 return (
@@ -767,7 +798,7 @@ const StoreCatalogue = () => {
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 rounded-full hover:bg-muted"
-                                onClick={() => updateCartQuantity(product.id, -1)}
+                                onClick={() => updateQuantity(product.id, -1)}
                               >
                                 <Minus className="w-4 h-4" />
                               </Button>
@@ -776,7 +807,7 @@ const StoreCatalogue = () => {
                                 size="icon"
                                 variant="ghost"
                                 className="h-8 w-8 rounded-full hover:bg-muted"
-                                onClick={() => updateCartQuantity(product.id, 1)}
+                                onClick={() => updateQuantity(product.id, 1)}
                               >
                                 <Plus className="w-4 h-4" />
                               </Button>
@@ -899,7 +930,7 @@ const StoreCatalogue = () => {
                                   size="icon" 
                                   variant="outline" 
                                   className="h-8 w-8 rounded-full"
-                                  onClick={() => updateCartQuantity(item.id, -1)}
+                                  onClick={() => updateQuantity(item.id, -1)}
                                 >
                                   <Minus className="w-3 h-3" />
                                 </Button>
@@ -908,7 +939,7 @@ const StoreCatalogue = () => {
                                   size="icon" 
                                   variant="outline" 
                                   className="h-8 w-8 rounded-full"
-                                  onClick={() => updateCartQuantity(item.id, 1)}
+                                  onClick={() => updateQuantity(item.id, 1)}
                                 >
                                   <Plus className="w-3 h-3" />
                                 </Button>
@@ -1062,14 +1093,24 @@ const StoreCatalogue = () => {
                           <span className="text-2xl font-bold text-foreground">₹{cartTotal.toLocaleString()}</span>
                         </div>
                         <Button 
-                          className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-semibold text-base shadow-lg gap-3"
-                          onClick={handleWhatsAppCheckout}
+                          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base shadow-lg gap-3"
+                          onClick={handleCheckout}
+                          disabled={isSubmitting}
                         >
-                          <MessageCircle className="w-5 h-5" />
-                          Order via WhatsApp
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Placing Order...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-5 h-5" />
+                              Place Order
+                            </>
+                          )}
                         </Button>
                         <p className="text-xs text-muted-foreground text-center">
-                          You'll be redirected to WhatsApp to complete your order
+                          {customization?.whatsapp_number ? "Order will be sent via WhatsApp" : "Order will be saved to the store"}
                         </p>
                       </div>
                     </>

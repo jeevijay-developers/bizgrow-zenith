@@ -96,9 +96,11 @@ const Navbar = () => {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-2">
-            <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
-              Login
-            </Button>
+            <Link to="/auth">
+              <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
+                Login
+              </Button>
+            </Link>
             <Link to="/join">
               <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-5 rounded-lg shadow-lg shadow-accent/20">
                 Start Free Trial
@@ -147,10 +149,12 @@ const Navbar = () => {
                 </div>
               ))}
               <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-white/10">
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full justify-center">
-                  Login
-                </Button>
-                <Link to="/join" className="w-full">
+                <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full justify-center">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
                   <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold w-full">
                     Start Free Trial
                   </Button>

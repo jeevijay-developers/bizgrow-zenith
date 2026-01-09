@@ -23,13 +23,28 @@ interface DashboardContext {
   } | null;
 }
 
+// Generate store slug from name (lowercase, remove special chars, replace spaces with hyphens)
+const generateStoreSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .slice(0, 20);
+};
+
 const CatalogueLinkPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const [copied, setCopied] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"mobile" | "desktop">("mobile");
 
+  // For now, use the current origin. In production with custom domain, this would be bizgrow360.com
   const baseUrl = window.location.origin;
-  const storeLink = store ? `${baseUrl}/store/${store.id}` : "";
+  const storeSlug = store ? generateStoreSlug(store.name) : '';
+  // Create a friendly URL with store slug + full UUID for reliable lookup
+  const storeLink = store ? `${baseUrl}/s/${storeSlug}-${store.id}` : "";
+  
+  // Preview link uses the full store ID for internal preview
+  const previewLink = store ? `${baseUrl}/store/${store.id}` : "";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(storeLink);
@@ -260,7 +275,7 @@ const CatalogueLinkPage = () => {
               previewDevice === "mobile" ? "w-64 h-[480px]" : "w-full h-[400px]"
             }`}>
               <iframe
-                src={storeLink}
+                src={previewLink}
                 className="w-full h-full"
                 title="Store Preview"
               />
@@ -268,7 +283,7 @@ const CatalogueLinkPage = () => {
             <div className="flex justify-center mt-4">
               <Button variant="outline" size="sm" onClick={() => {
                 const iframe = document.querySelector('iframe');
-                if (iframe) iframe.src = storeLink;
+                if (iframe) iframe.src = previewLink;
               }}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh Preview

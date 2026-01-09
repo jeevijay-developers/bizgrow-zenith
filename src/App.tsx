@@ -99,6 +99,8 @@ const App = () => (
             <Route path="/join" element={<Join />} />
             <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
             <Route path="/store/:storeId" element={<StoreCatalogue />} />
+            {/* Support slug-based URLs like /s/storename-d3105ef5 */}
+            <Route path="/s/:storeId" element={<StoreCatalogue />} />
             <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
             
             {/* Feature Pages */}

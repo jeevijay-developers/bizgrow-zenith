@@ -8,6 +8,7 @@ interface UseRealtimeOrdersOptions {
   enabled?: boolean;
   onNewOrder?: (order: unknown) => void;
   playSound?: boolean;
+  sendDesktopNotification?: (title: string, options?: NotificationOptions) => void;
 }
 
 // Audio notification using Web Audio API
@@ -41,6 +42,7 @@ export function useRealtimeOrders({
   enabled = true,
   onNewOrder,
   playSound = true,
+  sendDesktopNotification,
 }: UseRealtimeOrdersOptions) {
   const queryClient = useQueryClient();
   const isFirstMount = useRef(true);
@@ -54,15 +56,26 @@ export function useRealtimeOrders({
       }
 
       const newOrder = payload.new;
+      const customerName = (newOrder.customer_name as string) || "Customer";
+      const totalAmount = newOrder.total_amount as number;
       
       // Play notification sound
       if (playSound) {
         playNotificationSound();
       }
 
+      // Send desktop notification
+      if (sendDesktopNotification) {
+        sendDesktopNotification("🛒 New Order Received!", {
+          body: `Order from ${customerName}${totalAmount ? ` - ₹${totalAmount.toFixed(2)}` : ""}`,
+          tag: `order-${newOrder.id}`,
+          requireInteraction: true,
+        });
+      }
+
       // Show toast notification
       toast.success("New Order Received!", {
-        description: `Order from ${newOrder.customer_name || "Customer"}`,
+        description: `Order from ${customerName}`,
         duration: 5000,
       });
 
@@ -76,7 +89,7 @@ export function useRealtimeOrders({
         onNewOrder(newOrder);
       }
     },
-    [storeId, playSound, onNewOrder, queryClient]
+    [storeId, playSound, onNewOrder, queryClient, sendDesktopNotification]
   );
 
   const handleOrderUpdate = useCallback(

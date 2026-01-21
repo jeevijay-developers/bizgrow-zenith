@@ -15,6 +15,7 @@ import {
   LogOut,
   Link2,
   Sparkles,
+  Receipt,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,6 +38,7 @@ import logoLightBg from "@/assets/logo-light-bg.png";
 
 const mainNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "POS Billing", url: "/dashboard/pos", icon: Receipt },
   { title: "Orders", url: "/dashboard/orders", icon: ShoppingCart },
   { title: "Products", url: "/dashboard/products", icon: Package },
   { title: "Customers", url: "/dashboard/customers", icon: Users },

@@ -85,6 +85,74 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          created_at: string | null
+          customer_address: string | null
+          customer_name: string
+          customer_phone: string | null
+          discount_amount: number | null
+          discount_percentage: number | null
+          gst_amount: number | null
+          gst_percentage: number | null
+          id: string
+          invoice_number: string
+          items: Json
+          order_id: string | null
+          payment_method: string | null
+          payment_status: string | null
+          store_id: string
+          subtotal: number
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string | null
+          customer_address?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          gst_amount?: number | null
+          gst_percentage?: number | null
+          id?: string
+          invoice_number: string
+          items?: Json
+          order_id?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          store_id: string
+          subtotal?: number
+          total_amount?: number
+        }
+        Update: {
+          created_at?: string | null
+          customer_address?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          gst_amount?: number | null
+          gst_percentage?: number | null
+          id?: string
+          invoice_number?: string
+          items?: Json
+          order_id?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          store_id?: string
+          subtotal?: number
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -135,9 +203,11 @@ export type Database = {
           customer_address: string | null
           customer_name: string
           customer_phone: string
+          delivery_mode: string | null
           id: string
           items: Json
           notes: string | null
+          order_type: string | null
           payment_method: string | null
           status: string
           store_id: string
@@ -149,9 +219,11 @@ export type Database = {
           customer_address?: string | null
           customer_name: string
           customer_phone: string
+          delivery_mode?: string | null
           id?: string
           items?: Json
           notes?: string | null
+          order_type?: string | null
           payment_method?: string | null
           status?: string
           store_id: string
@@ -163,9 +235,11 @@ export type Database = {
           customer_address?: string | null
           customer_name?: string
           customer_phone?: string
+          delivery_mode?: string | null
           id?: string
           items?: Json
           notes?: string | null
+          order_type?: string | null
           payment_method?: string | null
           status?: string
           store_id?: string

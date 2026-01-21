@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Search, MapPin, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, MapPin, X, Store } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface BlinkitHeaderProps {
@@ -21,41 +21,63 @@ const BlinkitHeader = ({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 bg-background border-b border-border">
+    <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
       {/* Top Bar */}
-      <div className="flex items-center gap-3 px-3 py-2 bg-primary">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-primary via-primary to-primary/95">
         {logoUrl ? (
-          <img 
+          <motion.img 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             src={logoUrl} 
             alt={storeName} 
-            className="h-7 w-7 rounded-lg object-cover bg-background"
+            className="h-8 w-8 rounded-xl object-cover bg-background shadow-md ring-2 ring-white/20"
           />
         ) : (
-          <div className="h-7 w-7 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-xs">
-              {storeName.charAt(0)}
-            </span>
-          </div>
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="h-8 w-8 rounded-xl bg-primary-foreground/15 backdrop-blur-sm flex items-center justify-center shadow-md ring-2 ring-white/20"
+          >
+            <Store className="h-4 w-4 text-primary-foreground" />
+          </motion.div>
         )}
         <div className="flex-1 min-w-0">
-          <h1 className="text-primary-foreground font-semibold text-sm truncate">{storeName}</h1>
+          <motion.h1 
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="text-primary-foreground font-bold text-sm truncate tracking-tight"
+          >
+            {storeName}
+          </motion.h1>
           {storeLocation && (
-            <div className="flex items-center gap-1 text-primary-foreground/70">
+            <motion.div 
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.05 }}
+              className="flex items-center gap-1 text-primary-foreground/80"
+            >
               <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
-              <span className="text-[10px] truncate">{storeLocation}</span>
-            </div>
+              <span className="text-[10px] truncate font-medium">{storeLocation}</span>
+            </motion.div>
           )}
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="px-3 py-2">
+      <div className="px-3 py-2.5">
         <motion.div 
-          className={`relative flex items-center bg-muted rounded-lg transition-all ${
-            isFocused ? "ring-1 ring-primary bg-background" : ""
+          animate={{ 
+            boxShadow: isFocused 
+              ? "0 4px 20px -4px hsl(var(--primary) / 0.2)" 
+              : "0 1px 3px 0 rgba(0, 0, 0, 0.05)"
+          }}
+          className={`relative flex items-center bg-muted/60 rounded-xl transition-all duration-200 ${
+            isFocused ? "ring-2 ring-primary/30 bg-background" : ""
           }`}
         >
-          <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className={`absolute left-3 h-4 w-4 transition-colors duration-200 ${
+            isFocused ? "text-primary" : "text-muted-foreground"
+          }`} />
           <Input
             type="text"
             value={searchQuery}
@@ -63,17 +85,22 @@ const BlinkitHeader = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder="Search products..."
-            className="pl-8 pr-8 py-2 h-8 bg-transparent border-none text-xs placeholder:text-muted-foreground focus-visible:ring-0"
+            className="pl-9 pr-9 py-2.5 h-9 bg-transparent border-none text-xs placeholder:text-muted-foreground/70 focus-visible:ring-0 font-medium"
           />
           
-          {searchQuery && (
-            <button
-              onClick={() => onSearchChange("")}
-              className="absolute right-2 p-0.5 hover:bg-muted-foreground/20 rounded-full"
-            >
-              <X className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-          )}
+          <AnimatePresence>
+            {searchQuery && (
+              <motion.button
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                onClick={() => onSearchChange("")}
+                className="absolute right-2.5 p-1 hover:bg-muted rounded-full transition-colors"
+              >
+                <X className="h-3.5 w-3.5 text-muted-foreground" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </header>

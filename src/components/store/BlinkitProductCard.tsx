@@ -1,5 +1,6 @@
-import { Heart, Plus, Minus, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Heart, Plus, Minus, Sparkles, Eye, Tag, Package, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 interface Product {
@@ -56,9 +57,11 @@ const BlinkitProductCard = ({
   onViewDetails,
   index,
 }: BlinkitProductCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
   const isOutOfStock = product.is_available === false || product.stock_quantity === 0;
   const discountPercent = getDiscountPercent(product.price, product.compare_price);
   const productTags = extractProductInfo(product.description);
+  const savings = product.compare_price ? product.compare_price - product.price : 0;
 
   return (
     <motion.div
@@ -66,8 +69,67 @@ const BlinkitProductCard = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.25, delay: index * 0.02, ease: "easeOut" }}
       whileHover={{ y: -2, boxShadow: "0 8px 24px -8px hsl(var(--primary) / 0.15)" }}
-      className="group bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-lg overflow-hidden flex flex-col h-full transition-all duration-300"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="group bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-lg overflow-hidden flex flex-col h-full transition-all duration-300 relative"
     >
+      {/* Quick View Tooltip */}
+      <AnimatePresence>
+        {isHovered && !isOutOfStock && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 5, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute -top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+          >
+            <div className="bg-foreground/95 backdrop-blur-md text-background px-3 py-2 rounded-xl shadow-xl border border-border/20 min-w-[140px]">
+              {/* Arrow */}
+              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground/95 rotate-45" />
+              
+              <div className="relative space-y-1.5">
+                {/* Quick View Header */}
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-primary-foreground/80 border-b border-white/10 pb-1.5">
+                  <Eye className="h-3 w-3" />
+                  Quick View
+                </div>
+                
+                {/* Category */}
+                {product.category && (
+                  <div className="flex items-center gap-1.5 text-[9px]">
+                    <Tag className="h-2.5 w-2.5 text-primary" />
+                    <span className="capitalize">{product.category}</span>
+                  </div>
+                )}
+                
+                {/* Stock Status */}
+                {product.stock_quantity !== null && (
+                  <div className="flex items-center gap-1.5 text-[9px]">
+                    <Package className="h-2.5 w-2.5 text-primary" />
+                    <span>
+                      {product.stock_quantity > 10 
+                        ? "In Stock" 
+                        : product.stock_quantity > 0 
+                          ? `Only ${product.stock_quantity} left!`
+                          : "Out of Stock"
+                      }
+                    </span>
+                  </div>
+                )}
+                
+                {/* Savings */}
+                {savings > 0 && (
+                  <div className="flex items-center gap-1.5 text-[9px]">
+                    <Zap className="h-2.5 w-2.5 text-accent" />
+                    <span className="text-accent font-semibold">Save ₹{savings}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Image Container */}
       <div 
         className="relative aspect-square bg-gradient-to-br from-muted/30 to-muted/60 cursor-pointer overflow-hidden"
@@ -98,6 +160,18 @@ const BlinkitProductCard = ({
           >
             <Sparkles className="h-2.5 w-2.5" />
             {discountPercent}% OFF
+          </motion.div>
+        )}
+
+        {/* Low Stock Indicator */}
+        {product.stock_quantity !== null && product.stock_quantity > 0 && product.stock_quantity <= 5 && !isOutOfStock && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="absolute bottom-2 left-2 z-10 flex items-center gap-1 bg-accent text-accent-foreground text-[8px] font-bold px-1.5 py-0.5 rounded-full"
+          >
+            <Zap className="h-2 w-2" />
+            {product.stock_quantity} left
           </motion.div>
         )}
 
@@ -190,6 +264,22 @@ const BlinkitProductCard = ({
             ))}
           </div>
         )}
+
+        {/* Category Badge (Visible on hover) */}
+        <AnimatePresence>
+          {isHovered && product.category && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mb-1"
+            >
+              <span className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded capitalize">
+                {product.category}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Product Name */}
         <h3 className="font-medium text-foreground text-xs leading-snug line-clamp-2 mb-1.5 group-hover:text-primary transition-colors">

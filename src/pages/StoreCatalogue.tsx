@@ -35,6 +35,7 @@ import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
 import RecentlyViewedSection from "@/components/store/RecentlyViewedSection";
 import StoreFooter from "@/components/store/StoreFooter";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useWishlist } from "@/hooks/useWishlist";
 
 interface Product {
   id: string;
@@ -125,7 +126,7 @@ const StoreCatalogue = () => {
     address: "",
     notes: ""
   });
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  // Removed local favorites state - now using useWishlist hook
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -157,6 +158,9 @@ const StoreCatalogue = () => {
 
   // Recently viewed hook
   const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed(storeId);
+
+  // Wishlist hook - persists to database for logged-in users
+  const { isFavorite, toggleFavorite } = useWishlist({ storeId });
 
   // Fetch store info
   const { data: store, isLoading: storeLoading, error: storeError } = useQuery({
@@ -272,17 +276,7 @@ const StoreCatalogue = () => {
     toast.success(`Added to cart`, { duration: 1500 });
   };
 
-  const toggleFavorite = (productId: string) => {
-    setFavorites(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
+  // toggleFavorite is now provided by useWishlist hook
 
   const handleWhatsAppChat = () => {
     if (!customization?.whatsapp_number) {
@@ -461,7 +455,7 @@ const StoreCatalogue = () => {
                     key={product.id}
                     product={product}
                     quantity={getItemQuantity(product.id)}
-                    isFavorite={favorites.has(product.id)}
+                    isFavorite={isFavorite(product.id)}
                     onAddToCart={() => addToCart(product)}
                     onUpdateQuantity={(delta) => updateQuantity(product.id, getItemQuantity(product.id) + delta)}
                     onToggleFavorite={() => toggleFavorite(product.id)}
@@ -497,7 +491,7 @@ const StoreCatalogue = () => {
         quantity={selectedProduct ? getItemQuantity(selectedProduct.id) : 0}
         onAddToCart={() => selectedProduct && addToCart(selectedProduct)}
         onUpdateQuantity={(delta) => selectedProduct && updateQuantity(selectedProduct.id, getItemQuantity(selectedProduct.id) + delta)}
-        isFavorite={selectedProduct ? favorites.has(selectedProduct.id) : false}
+        isFavorite={selectedProduct ? isFavorite(selectedProduct.id) : false}
         onToggleFavorite={() => selectedProduct && toggleFavorite(selectedProduct.id)}
         whatsappNumber={customization?.whatsapp_number}
         storeName={store.name}

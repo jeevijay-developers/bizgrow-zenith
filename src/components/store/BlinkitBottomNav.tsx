@@ -35,9 +35,9 @@ const BlinkitBottomNav = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             onClick={onBackToTop}
-            className="fixed bottom-24 right-4 z-40 p-3 bg-white rounded-full shadow-lg border border-gray-200 md:hidden"
+            className="fixed bottom-24 right-4 z-40 p-3 bg-background rounded-full shadow-lg border border-border md:hidden"
           >
-            <ChevronUp className="h-5 w-5 text-gray-700" />
+            <ChevronUp className="h-5 w-5 text-foreground" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -46,7 +46,7 @@ const BlinkitBottomNav = ({
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-area-pb md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-pb md:hidden"
       >
         {/* Cart Preview Bar (when items in cart) */}
         <AnimatePresence>
@@ -55,16 +55,16 @@ const BlinkitBottomNav = ({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="border-b border-gray-100 overflow-hidden"
+              className="border-b border-border overflow-hidden"
             >
               <button
                 onClick={onCartClick}
-                className="w-full flex items-center justify-between px-4 py-3 bg-emerald-500 text-white"
+                className="w-full flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground"
               >
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <ShoppingBag className="h-5 w-5" />
-                    <span className="absolute -top-1 -right-1 bg-white text-emerald-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                       {cartCount > 9 ? "9+" : cartCount}
                     </span>
                   </div>
@@ -107,9 +107,9 @@ const BlinkitBottomNav = ({
           <Button
             onClick={onWhatsAppClick}
             size="icon"
-            className="h-12 w-12 rounded-full bg-emerald-500 hover:bg-emerald-600 shadow-lg -mt-6"
+            className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg -mt-6"
           >
-            <MessageCircle className="h-5 w-5 text-white" />
+            <MessageCircle className="h-5 w-5 text-primary-foreground" />
           </Button>
         </div>
       </motion.div>
@@ -133,22 +133,22 @@ const NavItem = ({
   <button
     onClick={onClick}
     className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-all ${
-      isActive ? "text-emerald-600" : "text-gray-500"
+      isActive ? "text-primary" : "text-muted-foreground"
     }`}
   >
     <div className="relative">
       <div className={`p-1.5 rounded-xl transition-colors ${
-        isActive ? "bg-emerald-50" : ""
+        isActive ? "bg-primary/10" : ""
       }`}>
-        <Icon className={`h-5 w-5 ${isActive ? "fill-emerald-100" : ""}`} />
+        <Icon className={`h-5 w-5 ${isActive ? "fill-primary/20" : ""}`} />
       </div>
       {badge !== undefined && (
-        <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[9px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
           {badge > 9 ? "9+" : badge}
         </span>
       )}
     </div>
-    <span className={`text-[10px] font-medium ${isActive ? "text-emerald-700" : ""}`}>
+    <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
       {label}
     </span>
   </button>

@@ -40,14 +40,14 @@ const FilterBar = ({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-2 py-3 px-4 bg-white border-b border-gray-100 overflow-x-auto">
+    <div className="flex items-center gap-2 py-3 px-4 bg-card border-b border-border overflow-x-auto">
       {/* Filters Button */}
       <Button
         variant="outline"
         size="sm"
         onClick={() => setFiltersOpen(!filtersOpen)}
-        className={`flex-shrink-0 h-8 text-xs font-medium border-gray-200 ${
-          filtersOpen ? "bg-emerald-50 border-emerald-500 text-emerald-600" : ""
+        className={`flex-shrink-0 h-8 text-xs font-medium border-border ${
+          filtersOpen ? "bg-primary/10 border-primary text-primary" : ""
         }`}
       >
         <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
@@ -60,7 +60,7 @@ const FilterBar = ({
           <Button
             variant="outline"
             size="sm"
-            className="flex-shrink-0 h-8 text-xs font-medium border-gray-200"
+            className="flex-shrink-0 h-8 text-xs font-medium border-border"
           >
             Sort
             <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
@@ -75,7 +75,7 @@ const FilterBar = ({
             >
               {option.label}
               {currentSort === option.value && (
-                <Check className="h-4 w-4 text-emerald-500" />
+                <Check className="h-4 w-4 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
@@ -88,8 +88,8 @@ const FilterBar = ({
           <Button
             variant="outline"
             size="sm"
-            className={`flex-shrink-0 h-8 text-xs font-medium border-gray-200 ${
-              currentPriceFilter ? "bg-emerald-50 border-emerald-500 text-emerald-600" : ""
+            className={`flex-shrink-0 h-8 text-xs font-medium border-border ${
+              currentPriceFilter ? "bg-primary/10 border-primary text-primary" : ""
             }`}
           >
             Price
@@ -105,7 +105,7 @@ const FilterBar = ({
             >
               {filter.label}
               {currentPriceFilter === filter.value && (
-                <Check className="h-4 w-4 text-emerald-500" />
+                <Check className="h-4 w-4 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
@@ -114,12 +114,12 @@ const FilterBar = ({
 
       {/* Quick Category Pills (visible on mobile) */}
       <div className="lg:hidden flex items-center gap-2 ml-2">
-        <span className="text-xs text-gray-400 flex-shrink-0">|</span>
+        <span className="text-xs text-muted-foreground flex-shrink-0">|</span>
         <div className="flex gap-2">
           {["Popular", "New", "Offers"].map((tag) => (
             <button
               key={tag}
-              className="flex-shrink-0 text-xs text-gray-600 hover:text-emerald-600 font-medium transition-colors"
+              className="flex-shrink-0 text-xs text-muted-foreground hover:text-primary font-medium transition-colors"
             >
               {tag}
             </button>

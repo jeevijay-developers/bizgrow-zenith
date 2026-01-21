@@ -352,14 +352,14 @@ const StoreCatalogue = () => {
 
   if (storeError || !store) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-muted flex items-center justify-center p-6">
         <StoreNotFound onGoHome={() => navigate("/")} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32">
+    <div className="min-h-screen bg-muted pb-32">
       {/* Blinkit Header */}
       <BlinkitHeader
         storeName={store.name}
@@ -405,12 +405,14 @@ const StoreCatalogue = () => {
           {productsLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl h-72 animate-pulse" />
+                <div key={i} className="bg-card rounded-2xl h-72 animate-pulse border border-border" />
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <NoProductsFound onClearFilters={() => {
-              setSearchQuery("");
+            <NoProductsFound 
+              searchQuery={searchQuery}
+              onClearFilters={() => {
+                setSearchQuery("");
               setSelectedCategory(null);
               setPriceFilter(null);
             }} />
@@ -465,9 +467,9 @@ const StoreCatalogue = () => {
 
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">
-              <ShoppingCart className="h-16 w-16 text-gray-300 mb-4" />
-              <p className="text-gray-500 text-lg">Your cart is empty</p>
-              <Button onClick={() => setCartOpen(false)} className="mt-4 bg-emerald-500 hover:bg-emerald-600">
+              <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mb-4" />
+              <p className="text-muted-foreground text-lg">Your cart is empty</p>
+              <Button onClick={() => setCartOpen(false)} className="mt-4 bg-primary hover:bg-primary/90">
                 Continue Shopping
               </Button>
             </div>
@@ -533,7 +535,7 @@ const StoreCatalogue = () => {
                 <Button variant="outline" onClick={() => setCheckoutOpen(false)} className="flex-1">
                   Back
                 </Button>
-                <Button onClick={handleCheckout} disabled={isSubmitting} className="flex-1 bg-emerald-500 hover:bg-emerald-600">
+                <Button onClick={handleCheckout} disabled={isSubmitting} className="flex-1 bg-primary hover:bg-primary/90">
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
                   Place Order
                 </Button>
@@ -543,36 +545,36 @@ const StoreCatalogue = () => {
             <>
               <div className="py-4 space-y-3 overflow-y-auto max-h-[50vh]">
                 {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="w-16 h-16 bg-white rounded-lg overflow-hidden">
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-xl">
+                    <div className="w-16 h-16 bg-card rounded-lg overflow-hidden">
                       {item.image_url ? (
                         <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
                           <ShoppingCart className="h-6 w-6" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate">{item.name}</p>
-                      <p className="text-emerald-600 font-bold">₹{item.price}</p>
+                      <p className="text-primary font-bold">₹{item.price}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1.5 bg-gray-200 rounded-lg hover:bg-gray-300"
+                        className="p-1.5 bg-muted-foreground/20 rounded-lg hover:bg-muted-foreground/30"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
                       <span className="font-bold w-6 text-center">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600"
+                        className="p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-400 hover:text-red-500">
+                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-muted-foreground hover:text-destructive">
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -582,9 +584,9 @@ const StoreCatalogue = () => {
               <div className="border-t pt-4 space-y-3">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span className="text-emerald-600">₹{cartTotal.toLocaleString()}</span>
+                  <span className="text-primary">₹{cartTotal.toLocaleString()}</span>
                 </div>
-                <Button onClick={() => setCheckoutOpen(true)} className="w-full bg-emerald-500 hover:bg-emerald-600">
+                <Button onClick={() => setCheckoutOpen(true)} className="w-full bg-primary hover:bg-primary/90">
                   Proceed to Checkout
                 </Button>
               </div>

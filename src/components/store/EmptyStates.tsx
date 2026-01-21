@@ -85,10 +85,12 @@ const EmptyState = ({
 // Pre-configured empty states
 export const NoProductsFound = ({ 
   searchQuery, 
-  onClearSearch 
+  onClearSearch,
+  onClearFilters 
 }: { 
   searchQuery?: string;
   onClearSearch?: () => void;
+  onClearFilters?: () => void;
 }) => (
   <EmptyState
     icon={searchQuery ? Search : ShoppingBag}
@@ -99,7 +101,9 @@ export const NoProductsFound = ({
         : "This store is setting up their catalogue. Check back soon for amazing products!"
     }
     action={
-      searchQuery && onClearSearch
+      onClearFilters
+        ? { label: "Clear Filters", onClick: onClearFilters }
+        : searchQuery && onClearSearch
         ? { label: "Clear Search", onClick: onClearSearch }
         : undefined
     }

@@ -77,7 +77,7 @@ const IconCategoryTabs = ({
   return (
     <div 
       ref={scrollRef}
-      className="flex items-center gap-1 py-3 px-4 bg-white border-b border-gray-100 overflow-x-auto scrollbar-hide lg:hidden"
+      className="flex items-center gap-1 py-3 px-4 bg-card border-b border-border overflow-x-auto scrollbar-hide lg:hidden"
     >
       {allCategories.map((category) => {
         const isActive = 
@@ -92,29 +92,29 @@ const IconCategoryTabs = ({
             onClick={() => onCategoryClick(category === "All" ? null : category)}
             className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
               isActive 
-                ? "bg-emerald-50" 
-                : "hover:bg-gray-50"
+                ? "bg-primary/10" 
+                : "hover:bg-muted"
             }`}
           >
             <motion.div 
               className={`p-2 rounded-xl transition-colors ${
                 isActive 
-                  ? "bg-emerald-500 text-white" 
-                  : "bg-gray-100 text-gray-600"
+                  ? "bg-primary text-primary-foreground" 
+                  : "bg-muted text-muted-foreground"
               }`}
               whileTap={{ scale: 0.95 }}
             >
               <Icon className="h-5 w-5" />
             </motion.div>
             <span className={`text-[10px] font-medium whitespace-nowrap ${
-              isActive ? "text-emerald-700" : "text-gray-600"
+              isActive ? "text-primary" : "text-muted-foreground"
             }`}>
               {category}
             </span>
             {isActive && (
               <motion.div 
                 layoutId="activeTabIndicator"
-                className="w-1 h-1 rounded-full bg-emerald-500"
+                className="w-1 h-1 rounded-full bg-primary"
               />
             )}
           </button>

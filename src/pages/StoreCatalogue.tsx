@@ -32,6 +32,8 @@ import FilterBar from "@/components/store/FilterBar";
 import PromoBannerCarousel from "@/components/store/PromoBannerCarousel";
 import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
 import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
+import RecentlyViewedSection from "@/components/store/RecentlyViewedSection";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 
 interface Product {
   id: string;
@@ -151,6 +153,9 @@ const StoreCatalogue = () => {
     cartTotal,
     cartCount,
   } = useCart(storeId);
+
+  // Recently viewed hook
+  const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed(storeId);
 
   // Fetch store info
   const { data: store, isLoading: storeLoading, error: storeError } = useQuery({
@@ -391,6 +396,25 @@ const StoreCatalogue = () => {
         </div>
       )}
 
+      {/* Recently Viewed Section */}
+      {recentlyViewed.length > 0 && !searchQuery && !selectedCategory && (
+        <RecentlyViewedSection
+          products={recentlyViewed}
+          onProductClick={(productId) => {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+              setSelectedProduct(product);
+              setProductModalOpen(true);
+            }
+          }}
+          onClear={clearRecentlyViewed}
+          onAddToCart={(productId) => {
+            const product = products.find(p => p.id === productId);
+            if (product) addToCart(product);
+          }}
+        />
+      )}
+
       {/* Main Content with Sidebar */}
       <div className="flex">
         {/* Category Sidebar (Desktop) */}
@@ -427,6 +451,7 @@ const StoreCatalogue = () => {
                   onViewDetails={() => {
                     setSelectedProduct(product);
                     setProductModalOpen(true);
+                    addToRecentlyViewed(product);
                   }}
                   index={index}
                 />

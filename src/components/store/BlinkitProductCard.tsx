@@ -68,10 +68,10 @@ const BlinkitProductCard = ({
       initial={{ opacity: 0, y: 8, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.25, delay: index * 0.02, ease: "easeOut" }}
-      whileHover={{ y: -2, boxShadow: "0 8px 24px -8px hsl(var(--primary) / 0.15)" }}
+      whileHover={{ y: -4, boxShadow: "0 12px 32px -12px hsl(var(--primary) / 0.2)" }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="group bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-lg overflow-hidden flex flex-col h-full transition-all duration-300 relative"
+      className="group bg-card rounded-2xl lg:rounded-3xl border border-border/60 shadow-sm hover:shadow-xl overflow-hidden flex flex-col h-full transition-all duration-300 relative"
     >
       {/* Quick View Tooltip */}
       <AnimatePresence>
@@ -132,7 +132,7 @@ const BlinkitProductCard = ({
 
       {/* Image Container */}
       <div 
-        className="relative aspect-square bg-gradient-to-br from-muted/30 to-muted/60 cursor-pointer overflow-hidden"
+        className="relative aspect-square bg-gradient-to-br from-muted/30 to-muted/60 cursor-pointer overflow-hidden p-2 lg:p-4"
         onClick={onViewDetails}
       >
         {/* Favorite Button */}
@@ -142,10 +142,10 @@ const BlinkitProductCard = ({
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/90 backdrop-blur-sm shadow-sm border border-border/50 hover:bg-background transition-all"
+          className="absolute top-2 right-2 lg:top-3 lg:right-3 z-10 p-1.5 lg:p-2 rounded-full bg-background/90 backdrop-blur-sm shadow-sm border border-border/50 hover:bg-background transition-all"
         >
           <Heart 
-            className={`h-3.5 w-3.5 transition-all duration-200 ${
+            className={`h-3.5 w-3.5 lg:h-4 lg:w-4 transition-all duration-200 ${
               isFavorite ? "fill-destructive text-destructive scale-110" : "text-muted-foreground"
             }`} 
           />
@@ -162,7 +162,7 @@ const BlinkitProductCard = ({
             transition={{
               scale: discountPercent >= 25 ? { repeat: Infinity, duration: 1.5, ease: "easeInOut" } : undefined
             }}
-            className={`absolute top-2 left-2 z-10 flex items-center gap-0.5 text-[9px] font-bold px-2 py-1 rounded-full shadow-md ${
+            className={`absolute top-2 left-2 lg:top-3 lg:left-3 z-10 flex items-center gap-0.5 text-[9px] lg:text-[10px] font-bold px-2 lg:px-2.5 py-1 lg:py-1.5 rounded-full shadow-md ${
               discountPercent >= 25 
                 ? 'bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white ring-2 ring-orange-300/50 ring-offset-1 ring-offset-transparent' 
                 : 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground'
@@ -170,12 +170,12 @@ const BlinkitProductCard = ({
           >
             {discountPercent >= 25 ? (
               <>
-                <Zap className="h-2.5 w-2.5 animate-pulse" />
+                <Zap className="h-2.5 w-2.5 lg:h-3 lg:w-3 animate-pulse" />
                 HOT {discountPercent}% OFF
               </>
             ) : (
               <>
-                <Sparkles className="h-2.5 w-2.5" />
+                <Sparkles className="h-2.5 w-2.5 lg:h-3 lg:w-3" />
                 {discountPercent}% OFF
               </>
             )}
@@ -199,11 +199,11 @@ const BlinkitProductCard = ({
           <motion.img
             src={product.image_url}
             alt={product.name}
-            className={`w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`}
+            className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-14 h-14 bg-gradient-to-br from-muted-foreground/5 to-muted-foreground/15 rounded-2xl" />
+            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-muted-foreground/5 to-muted-foreground/15 rounded-2xl" />
           </div>
         )}
 
@@ -218,7 +218,7 @@ const BlinkitProductCard = ({
 
         {/* ADD Button */}
         {!isOutOfStock && (
-          <div className="absolute bottom-2 right-2 z-10">
+          <div className="absolute bottom-2 right-2 lg:bottom-3 lg:right-3 z-10">
             {quantity === 0 ? (
               <motion.div whileTap={{ scale: 0.92 }}>
                 <Button
@@ -228,7 +228,7 @@ const BlinkitProductCard = ({
                   }}
                   variant="outline"
                   size="sm"
-                  className="h-7 px-4 bg-background/95 backdrop-blur-sm border-primary text-primary font-bold text-[10px] hover:bg-primary hover:text-primary-foreground shadow-md transition-all duration-200"
+                  className="h-7 lg:h-9 px-4 lg:px-5 bg-background/95 backdrop-blur-sm border-primary text-primary font-bold text-[10px] lg:text-xs hover:bg-primary hover:text-primary-foreground shadow-md transition-all duration-200"
                 >
                   ADD
                 </Button>
@@ -269,14 +269,14 @@ const BlinkitProductCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-2.5 flex flex-col flex-1 cursor-pointer" onClick={onViewDetails}>
+      <div className="p-3 lg:p-4 flex flex-col flex-1 cursor-pointer" onClick={onViewDetails}>
         {/* Product Tags */}
         {productTags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-1.5">
+          <div className="flex flex-wrap gap-1 mb-1.5 lg:mb-2">
             {productTags.map((tag, i) => (
               <span 
                 key={i}
-                className="text-[9px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-md capitalize font-medium"
+                className="text-[9px] lg:text-[10px] text-primary bg-primary/10 px-1.5 lg:px-2 py-0.5 lg:py-1 rounded-md capitalize font-medium"
               >
                 {tag}
               </span>
@@ -291,9 +291,9 @@ const BlinkitProductCard = ({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden mb-1"
+              className="overflow-hidden mb-1.5"
             >
-              <span className="text-[8px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded capitalize">
+              <span className="text-[8px] lg:text-[10px] text-muted-foreground bg-muted px-1.5 lg:px-2 py-0.5 lg:py-1 rounded capitalize">
                 {product.category}
               </span>
             </motion.div>
@@ -301,15 +301,15 @@ const BlinkitProductCard = ({
         </AnimatePresence>
 
         {/* Product Name */}
-        <h3 className="font-medium text-foreground text-xs leading-snug line-clamp-2 mb-1.5 group-hover:text-primary transition-colors">
+        <h3 className="font-medium text-foreground text-xs lg:text-sm leading-snug line-clamp-2 mb-1.5 lg:mb-2 group-hover:text-primary transition-colors">
           {product.name}
         </h3>
 
         {/* Price Section */}
         <div className="mt-auto flex items-baseline gap-2">
-          <span className="font-bold text-foreground text-sm">₹{product.price}</span>
+          <span className="font-bold text-foreground text-sm lg:text-base">₹{product.price}</span>
           {product.compare_price && product.compare_price > product.price && (
-            <span className="text-[10px] text-muted-foreground line-through">
+            <span className="text-[10px] lg:text-xs text-muted-foreground line-through">
               ₹{product.compare_price}
             </span>
           )}

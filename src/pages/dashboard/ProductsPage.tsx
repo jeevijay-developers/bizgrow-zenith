@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
-  X, Upload, Camera, Loader2
+  X, Upload, Camera, Loader2, ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Link, useOutletContext } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useImageUpload } from "@/hooks/useImageUpload";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 
 interface DashboardContext {
   store: {
@@ -74,7 +76,40 @@ const ProductsPage = () => {
     stock_quantity: "",
     description: "",
     is_available: true,
+    image_url: "",
   });
+  
+  // Image upload hook
+  const { uploadImage, uploading: imageUploading, progress: uploadProgress } = useImageUpload({
+    bucket: "product-images",
+    folder: store?.id || "uploads",
+  });
+  const addImageInputRef = useRef<HTMLInputElement>(null);
+  const editImageInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle image upload for new product
+  const handleAddProductImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const url = await uploadImage(file);
+    if (url) {
+      setNewProduct(prev => ({ ...prev, image_url: url }));
+      toast.success("Image uploaded!");
+    }
+  };
+
+  // Handle image upload for editing product
+  const handleEditProductImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+    
+    const url = await uploadImage(file);
+    if (url) {
+      setEditingProduct(prev => prev ? { ...prev, image_url: url } : null);
+      toast.success("Image uploaded!");
+    }
+  };
 
   // Fetch products
   const { data: products = [], isLoading } = useQuery({
@@ -105,6 +140,7 @@ const ProductsPage = () => {
         stock_quantity: parseInt(newProduct.stock_quantity) || 0,
         description: newProduct.description || null,
         is_available: newProduct.is_available,
+        image_url: newProduct.image_url || null,
       });
       if (error) throw error;
     },
@@ -120,6 +156,7 @@ const ProductsPage = () => {
         stock_quantity: "",
         description: "",
         is_available: true,
+        image_url: "",
       });
     },
     onError: (error) => {
@@ -140,6 +177,7 @@ const ProductsPage = () => {
           stock_quantity: product.stock_quantity,
           description: product.description,
           is_available: product.is_available,
+          image_url: product.image_url,
         })
         .eq("id", product.id);
       if (error) throw error;
@@ -230,9 +268,44 @@ const ProductsPage = () => {
                 <DialogTitle>Add New Product</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-4">
-                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Click to upload product image</p>
+                {/* Image Upload */}
+                <input
+                  type="file"
+                  ref={addImageInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleAddProductImage}
+                />
+                <div 
+                  className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer relative overflow-hidden"
+                  onClick={() => addImageInputRef.current?.click()}
+                >
+                  {newProduct.image_url ? (
+                    <div className="relative">
+                      <img src={newProduct.image_url} alt="Product" className="w-full h-32 object-contain rounded-lg" />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-0 right-0 h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setNewProduct(prev => ({ ...prev, image_url: "" }));
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : imageUploading ? (
+                    <div className="space-y-2">
+                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary" />
+                      <Progress value={uploadProgress} className="h-2 w-32 mx-auto" />
+                    </div>
+                  ) : (
+                    <>
+                      <ImageIcon className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Click to upload product image</p>
+                    </>
+                  )}
                 </div>
                 
                 <div className="grid gap-4">

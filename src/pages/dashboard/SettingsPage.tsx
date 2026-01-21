@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   User, Lock, Shield, Palette, Globe, Trash2, 
@@ -12,6 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -31,20 +33,87 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+interface Profile {
+  id: string;
+  user_id: string;
+  full_name: string;
+  phone: string;
+  whatsapp: string | null;
+  avatar_url: string | null;
+}
+
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
+  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
   const [theme, setTheme] = useState("system");
   const [language, setLanguage] = useState("en");
   const [twoFactor, setTwoFactor] = useState(false);
-  const [saving, setSaving] = useState(false);
+  
+  // Form state
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
-  const handleSave = async () => {
-    setSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSaving(false);
-    toast.success("Settings saved successfully!");
+  // Fetch profile from database
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+      if (error) throw error;
+      return data as Profile;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Update form when profile loads
+  useEffect(() => {
+    if (profile) {
+      setFullName(profile.full_name || "");
+      setPhone(profile.phone || "");
+      setWhatsapp(profile.whatsapp || "");
+    }
+  }, [profile]);
+
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("Not logged in");
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: fullName,
+          phone: phone,
+          whatsapp: whatsapp || null,
+        })
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
+      toast.success("Settings saved successfully!");
+    },
+    onError: (error) => {
+      toast.error("Failed to save: " + error.message);
+    },
+  });
+
+  const handleSave = () => {
+    updateProfileMutation.mutate();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
@@ -54,8 +123,12 @@ const SettingsPage = () => {
           <h1 className="text-2xl font-bold">Account Settings</h1>
           <p className="text-muted-foreground">Manage your account preferences</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="gap-2">
-          {saving ? (
+        <Button 
+          onClick={handleSave} 
+          disabled={updateProfileMutation.isPending} 
+          className="gap-2"
+        >
+          {updateProfileMutation.isPending ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
           ) : (
             <><Save className="w-4 h-4" /> Save Changes</>
@@ -75,9 +148,9 @@ const SettingsPage = () => {
         </h3>
         <div className="flex items-center gap-6 mb-6">
           <Avatar className="h-20 w-20">
-            <AvatarImage src="" />
+            <AvatarImage src={profile?.avatar_url || ""} />
             <AvatarFallback className="bg-primary/10 text-primary text-xl">
-              {user?.email?.slice(0, 2).toUpperCase() || "U"}
+              {fullName?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div>
@@ -90,7 +163,11 @@ const SettingsPage = () => {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Full Name</Label>
-            <Input placeholder="Your name" />
+            <Input 
+              placeholder="Your name" 
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label>Email</Label>
@@ -98,11 +175,19 @@ const SettingsPage = () => {
           </div>
           <div className="space-y-2">
             <Label>Phone Number</Label>
-            <Input placeholder="+91 98765 43210" />
+            <Input 
+              placeholder="+91 98765 43210" 
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label>WhatsApp Number</Label>
-            <Input placeholder="+91 98765 43210" />
+            <Input 
+              placeholder="+91 98765 43210" 
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+            />
           </div>
         </div>
       </motion.div>

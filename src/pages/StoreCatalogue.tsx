@@ -33,6 +33,8 @@ import CompactBanner from "@/components/store/CompactBanner";
 import StickyCategoryBar from "@/components/store/StickyCategoryBar";
 import BottomNavDock from "@/components/store/BottomNavDock";
 import FloatingWhatsAppButton from "@/components/store/FloatingWhatsAppButton";
+import QuickStatsBar from "@/components/store/QuickStatsBar";
+import StoreFooter from "@/components/store/StoreFooter";
 
 interface Product {
   id: string;
@@ -553,27 +555,12 @@ const StoreCatalogue = () => {
         />
       )}
 
-      {/* Quick Stats */}
-      <div className="flex gap-3 px-4 mt-5 overflow-x-auto pb-2 scrollbar-hide">
-        {[
-          { icon: Package, label: `${products.length}+ Items`, color: "from-emerald-500 to-teal-500", bg: "from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10" },
-          { icon: Zap, label: "Quick Service", color: "from-amber-500 to-orange-500", bg: "from-amber-50 to-orange-50 dark:from-amber-500/10 dark:to-orange-500/10" },
-          { icon: Star, label: "Top Rated", color: "from-primary to-primary/80", bg: "from-primary/10 to-primary/5" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`flex items-center gap-3 bg-gradient-to-r ${stat.bg} px-4 py-3 rounded-2xl flex-shrink-0 border border-border/50 shadow-sm`}
-          >
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
-              <stat.icon className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-sm font-semibold text-foreground whitespace-nowrap">{stat.label}</span>
-          </motion.div>
-        ))}
-      </div>
+      {/* Quick Stats Bar */}
+      <QuickStatsBar 
+        productCount={products.length} 
+        hasDelivery={hasDelivery}
+        className="px-4 mt-5"
+      />
 
       {/* Promotions */}
       {customization?.show_offers_section !== false && promotions.length > 0 && (
@@ -793,15 +780,14 @@ const StoreCatalogue = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 px-4 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50">
-          <span className="text-xs text-muted-foreground">Powered by</span>
-          <Link to="/" className="font-bold text-sm text-primary hover:underline">
-            BizGrow 360
-          </Link>
-        </div>
-      </footer>
+      {/* Footer with Trust Indicators */}
+      <StoreFooter
+        storeName={store.name}
+        storeAddress={store.address}
+        whatsappNumber={customization?.whatsapp_number}
+        instagramUrl={customization?.instagram_url}
+        facebookUrl={customization?.facebook_url}
+      />
 
       {/* Floating Cart Button */}
       <AnimatePresence>

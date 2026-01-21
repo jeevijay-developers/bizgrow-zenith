@@ -60,7 +60,6 @@ const IconCategoryTabs = ({
   const activeRef = useRef<HTMLButtonElement>(null);
   const allCategories = ["All", ...categories];
 
-  // Scroll active category into view
   useEffect(() => {
     if (activeRef.current && scrollRef.current) {
       const container = scrollRef.current;
@@ -77,7 +76,7 @@ const IconCategoryTabs = ({
   return (
     <div 
       ref={scrollRef}
-      className="flex items-center gap-1 py-3 px-4 bg-card border-b border-border overflow-x-auto scrollbar-hide lg:hidden"
+      className="flex items-center gap-1 py-2 px-3 bg-card border-b border-border overflow-x-auto scrollbar-hide lg:hidden"
     >
       {allCategories.map((category) => {
         const isActive = 
@@ -90,33 +89,27 @@ const IconCategoryTabs = ({
             key={category}
             ref={isActive ? activeRef : null}
             onClick={() => onCategoryClick(category === "All" ? null : category)}
-            className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+            className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-all ${
               isActive 
                 ? "bg-primary/10" 
                 : "hover:bg-muted"
             }`}
           >
             <motion.div 
-              className={`p-2 rounded-xl transition-colors ${
+              className={`p-1.5 rounded-lg transition-colors ${
                 isActive 
                   ? "bg-primary text-primary-foreground" 
                   : "bg-muted text-muted-foreground"
               }`}
               whileTap={{ scale: 0.95 }}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-4 w-4" />
             </motion.div>
-            <span className={`text-[10px] font-medium whitespace-nowrap ${
+            <span className={`text-[9px] font-medium whitespace-nowrap ${
               isActive ? "text-primary" : "text-muted-foreground"
             }`}>
               {category}
             </span>
-            {isActive && (
-              <motion.div 
-                layoutId="activeTabIndicator"
-                className="w-1 h-1 rounded-full bg-primary"
-              />
-            )}
           </button>
         );
       })}

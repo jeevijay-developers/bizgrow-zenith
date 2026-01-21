@@ -37,45 +37,30 @@ const FilterBar = ({
   currentSort,
   currentPriceFilter,
 }: FilterBarProps) => {
-  const [filtersOpen, setFiltersOpen] = useState(false);
-
   return (
-    <div className="flex items-center gap-2 py-3 px-4 bg-card border-b border-border overflow-x-auto">
-      {/* Filters Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setFiltersOpen(!filtersOpen)}
-        className={`flex-shrink-0 h-8 text-xs font-medium border-border ${
-          filtersOpen ? "bg-primary/10 border-primary text-primary" : ""
-        }`}
-      >
-        <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
-        Filters
-      </Button>
-
+    <div className="flex items-center gap-1.5 py-2 px-3 bg-card border-b border-border overflow-x-auto">
       {/* Sort Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="flex-shrink-0 h-8 text-xs font-medium border-border"
+            className="flex-shrink-0 h-7 text-[10px] font-medium border-border px-2"
           >
             Sort
-            <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
+            <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-48">
+        <DropdownMenuContent align="start" className="w-40">
           {sortOptions.map((option) => (
             <DropdownMenuItem
               key={option.value}
               onClick={() => onSortChange(option.value)}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between text-xs"
             >
               {option.label}
               {currentSort === option.value && (
-                <Check className="h-4 w-4 text-primary" />
+                <Check className="h-3 w-3 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
@@ -88,44 +73,29 @@ const FilterBar = ({
           <Button
             variant="outline"
             size="sm"
-            className={`flex-shrink-0 h-8 text-xs font-medium border-border ${
+            className={`flex-shrink-0 h-7 text-[10px] font-medium border-border px-2 ${
               currentPriceFilter ? "bg-primary/10 border-primary text-primary" : ""
             }`}
           >
             Price
-            <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
+            <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-40">
+        <DropdownMenuContent align="start" className="w-32">
           {priceFilters.map((filter) => (
             <DropdownMenuItem
               key={filter.value ?? "all"}
               onClick={() => onPriceFilterChange(filter.value)}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between text-xs"
             >
               {filter.label}
               {currentPriceFilter === filter.value && (
-                <Check className="h-4 w-4 text-primary" />
+                <Check className="h-3 w-3 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Quick Category Pills (visible on mobile) */}
-      <div className="lg:hidden flex items-center gap-2 ml-2">
-        <span className="text-xs text-muted-foreground flex-shrink-0">|</span>
-        <div className="flex gap-2">
-          {["Popular", "New", "Offers"].map((tag) => (
-            <button
-              key={tag}
-              className="flex-shrink-0 text-xs text-muted-foreground hover:text-primary font-medium transition-colors"
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

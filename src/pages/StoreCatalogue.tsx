@@ -359,8 +359,8 @@ const StoreCatalogue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-muted pb-32">
-      {/* Blinkit Header */}
+    <div className="min-h-screen bg-muted pb-28">
+      {/* Header */}
       <BlinkitHeader
         storeName={store.name}
         storeLocation={`${store.city}, ${store.state}`}
@@ -386,7 +386,7 @@ const StoreCatalogue = () => {
 
       {/* Promotions Carousel */}
       {promotions.length > 0 && (
-        <div className="px-4 py-4 lg:pl-24">
+        <div className="px-3 py-3 lg:pl-20">
           <PromoBannerCarousel promotions={promotions} />
         </div>
       )}
@@ -401,11 +401,11 @@ const StoreCatalogue = () => {
         />
 
         {/* Products Grid */}
-        <main className="flex-1 px-4 py-4">
+        <main className="flex-1 px-3 py-3">
           {productsLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-card rounded-2xl h-72 animate-pulse border border-border" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="bg-card rounded-xl h-52 animate-pulse border border-border" />
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
@@ -413,11 +413,12 @@ const StoreCatalogue = () => {
               searchQuery={searchQuery}
               onClearFilters={() => {
                 setSearchQuery("");
-              setSelectedCategory(null);
-              setPriceFilter(null);
-            }} />
+                setSelectedCategory(null);
+                setPriceFilter(null);
+              }} 
+            />
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
               {filteredProducts.map((product, index) => (
                 <BlinkitProductCard
                   key={product.id}
@@ -438,8 +439,6 @@ const StoreCatalogue = () => {
           )}
         </main>
       </div>
-
-      {/* Product Detail Modal */}
       <BlinkitProductModal
         product={selectedProduct}
         open={productModalOpen}

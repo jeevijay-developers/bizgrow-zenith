@@ -35,9 +35,9 @@ const BlinkitBottomNav = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             onClick={onBackToTop}
-            className="fixed bottom-24 right-4 z-40 p-3 bg-background rounded-full shadow-lg border border-border md:hidden"
+            className="fixed bottom-20 right-3 z-40 p-2 bg-background rounded-full shadow-md border border-border md:hidden"
           >
-            <ChevronUp className="h-5 w-5 text-foreground" />
+            <ChevronUp className="h-4 w-4 text-foreground" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -48,7 +48,7 @@ const BlinkitBottomNav = ({
         animate={{ y: 0 }}
         className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border safe-area-pb md:hidden"
       >
-        {/* Cart Preview Bar (when items in cart) */}
+        {/* Cart Preview Bar */}
         <AnimatePresence>
           {cartCount > 0 && (
             <motion.div
@@ -59,22 +59,22 @@ const BlinkitBottomNav = ({
             >
               <button
                 onClick={onCartClick}
-                className="w-full flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground"
+                className="w-full flex items-center justify-between px-3 py-2 bg-primary text-primary-foreground"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div className="relative">
-                    <ShoppingBag className="h-5 w-5" />
-                    <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    <ShoppingBag className="h-4 w-4" />
+                    <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
                       {cartCount > 9 ? "9+" : cartCount}
                     </span>
                   </div>
-                  <span className="text-sm font-medium">
+                  <span className="text-xs font-medium">
                     {cartCount} item{cartCount > 1 ? "s" : ""} · ₹{cartTotal}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-sm font-semibold">
+                <div className="flex items-center gap-1 text-xs font-medium">
                   View Cart
-                  <ChevronUp className="h-4 w-4 rotate-90" />
+                  <ChevronUp className="h-3 w-3 rotate-90" />
                 </div>
               </button>
             </motion.div>
@@ -82,7 +82,7 @@ const BlinkitBottomNav = ({
         </AnimatePresence>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-around py-2 px-4">
+        <div className="flex items-center justify-around py-1.5 px-3">
           <NavItem
             icon={Home}
             label="Home"
@@ -107,9 +107,9 @@ const BlinkitBottomNav = ({
           <Button
             onClick={onWhatsAppClick}
             size="icon"
-            className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 shadow-lg -mt-6"
+            className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 shadow-md -mt-4"
           >
-            <MessageCircle className="h-5 w-5 text-primary-foreground" />
+            <MessageCircle className="h-4 w-4 text-primary-foreground" />
           </Button>
         </div>
       </motion.div>
@@ -132,23 +132,23 @@ const NavItem = ({
 }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-all ${
+    className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-all ${
       isActive ? "text-primary" : "text-muted-foreground"
     }`}
   >
     <div className="relative">
-      <div className={`p-1.5 rounded-xl transition-colors ${
+      <div className={`p-1 rounded-lg transition-colors ${
         isActive ? "bg-primary/10" : ""
       }`}>
-        <Icon className={`h-5 w-5 ${isActive ? "fill-primary/20" : ""}`} />
+        <Icon className={`h-4 w-4 ${isActive ? "fill-primary/20" : ""}`} />
       </div>
       {badge !== undefined && (
-        <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[9px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
+        <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 rounded-full flex items-center justify-center">
           {badge > 9 ? "9+" : badge}
         </span>
       )}
     </div>
-    <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
+    <span className={`text-[9px] font-medium ${isActive ? "text-primary" : ""}`}>
       {label}
     </span>
   </button>

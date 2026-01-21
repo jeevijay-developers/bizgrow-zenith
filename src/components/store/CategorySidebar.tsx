@@ -52,8 +52,8 @@ const CategorySidebar = ({
   const allCategories = ["All", ...categories];
 
   return (
-    <aside className="hidden lg:block w-20 min-h-screen bg-card border-r border-border sticky top-0 overflow-y-auto">
-      <div className="py-4">
+    <aside className="hidden lg:block w-16 min-h-screen bg-card border-r border-border sticky top-0 overflow-y-auto">
+      <div className="py-2">
         {allCategories.map((category) => {
           const isActive = 
             (category === "All" && activeCategory === null) ||
@@ -64,23 +64,22 @@ const CategorySidebar = ({
             <button
               key={category}
               onClick={() => onCategoryClick(category === "All" ? null : category)}
-              className={`w-full flex flex-col items-center gap-1 py-3 px-2 transition-colors relative ${
+              className={`w-full flex flex-col items-center gap-0.5 py-2 px-1 transition-colors relative ${
                 isActive 
                   ? "bg-primary/10 text-primary" 
                   : "text-muted-foreground hover:bg-muted"
               }`}
             >
-              {/* Active indicator */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-r" />
               )}
               
-              <div className={`p-2 rounded-xl ${
+              <div className={`p-1.5 rounded-lg ${
                 isActive ? "bg-primary/20" : "bg-muted"
               }`}>
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
               </div>
-              <span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
+              <span className="text-[8px] font-medium text-center leading-tight line-clamp-1">
                 {category}
               </span>
             </button>

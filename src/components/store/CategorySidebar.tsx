@@ -52,7 +52,7 @@ const CategorySidebar = ({
   const allCategories = ["All", ...categories];
 
   return (
-    <aside className="hidden lg:block w-20 min-h-screen bg-white border-r border-gray-100 sticky top-0 overflow-y-auto">
+    <aside className="hidden lg:block w-20 min-h-screen bg-card border-r border-border sticky top-0 overflow-y-auto">
       <div className="py-4">
         {allCategories.map((category) => {
           const isActive = 
@@ -66,17 +66,17 @@ const CategorySidebar = ({
               onClick={() => onCategoryClick(category === "All" ? null : category)}
               className={`w-full flex flex-col items-center gap-1 py-3 px-2 transition-colors relative ${
                 isActive 
-                  ? "bg-emerald-50 text-emerald-600" 
-                  : "text-gray-600 hover:bg-gray-50"
+                  ? "bg-primary/10 text-primary" 
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               {/* Active indicator */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-r" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r" />
               )}
               
               <div className={`p-2 rounded-xl ${
-                isActive ? "bg-emerald-100" : "bg-gray-100"
+                isActive ? "bg-primary/20" : "bg-muted"
               }`}>
                 <Icon className="h-5 w-5" />
               </div>

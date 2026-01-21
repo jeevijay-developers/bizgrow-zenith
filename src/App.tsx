@@ -12,6 +12,7 @@ import StoreCatalogue from "./pages/StoreCatalogue";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
+import POSBillingPage from "./pages/dashboard/POSBillingPage";
 import ProductsPage from "./pages/dashboard/ProductsPage";
 import OrdersPage from "./pages/dashboard/OrdersPage";
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
@@ -122,6 +123,7 @@ const App = () => (
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route index element={<DashboardHome />} />
+              <Route path="pos" element={<POSBillingPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="products" element={<ProductsPage />} />
               <Route path="customers" element={<CustomersPage />} />

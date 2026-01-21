@@ -36,17 +36,25 @@ interface DashboardContext {
   } | null;
 }
 
+interface OrderItem {
+  name: string;
+  qty: number;
+  price: number;
+}
+
 interface Order {
   id: string;
   store_id: string;
   customer_name: string;
   customer_phone: string;
   customer_address: string | null;
-  items: Array<{ name: string; qty: number; price: number }>;
+  items: OrderItem[];
   total_amount: number;
   status: string;
   payment_method: string | null;
   notes: string | null;
+  order_type: string | null;
+  delivery_mode: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,7 +95,13 @@ const OrdersPage = () => {
         .eq("store_id", store.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Order[];
+      // Transform items from Json to OrderItem[]
+      return (data || []).map(order => ({
+        ...order,
+        items: Array.isArray(order.items) 
+          ? (order.items as unknown as OrderItem[]) 
+          : []
+      })) as Order[];
     },
     enabled: !!store?.id,
   });

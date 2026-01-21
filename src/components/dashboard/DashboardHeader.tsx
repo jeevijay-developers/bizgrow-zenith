@@ -1,4 +1,4 @@
-import { Search, Menu, ChevronDown } from "lucide-react";
+import { Search, Menu, ChevronDown, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -13,17 +13,45 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NotificationBell } from "./NotificationBell";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 interface DashboardHeaderProps {
   storeId?: string;
   storeName?: string;
+  notificationPermission?: NotificationPermission;
+  onRequestNotificationPermission?: () => Promise<NotificationPermission>;
 }
 
-export function DashboardHeader({ storeName = "My Store", storeId }: DashboardHeaderProps) {
+export function DashboardHeader({ 
+  storeName = "My Store", 
+  storeId,
+  notificationPermission,
+  onRequestNotificationPermission,
+}: DashboardHeaderProps) {
   const { user, signOut } = useAuth();
 
   const getInitials = (email: string) => {
     return email.slice(0, 2).toUpperCase();
+  };
+
+  const handleEnableNotifications = async () => {
+    if (onRequestNotificationPermission) {
+      const result = await onRequestNotificationPermission();
+      if (result === "granted") {
+        toast.success("Desktop notifications enabled!");
+      } else if (result === "denied") {
+        toast.error("Notifications blocked", {
+          description: "Enable them in your browser settings.",
+        });
+      }
+    }
   };
 
   return (
@@ -44,6 +72,33 @@ export function DashboardHeader({ storeName = "My Store", storeId }: DashboardHe
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Desktop Notification Status Button */}
+          {notificationPermission && notificationPermission !== "granted" && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative text-muted-foreground hover:text-foreground"
+                    onClick={handleEnableNotifications}
+                  >
+                    <BellOff className="h-5 w-5" />
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
+                    >
+                      !
+                    </Badge>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Click to enable desktop notifications</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
           <NotificationBell storeId={storeId} />
 
           <DropdownMenu>

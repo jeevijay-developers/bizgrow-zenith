@@ -1,81 +1,105 @@
-import { 
-  ShoppingBag, 
-  Croissant, 
-  Milk, 
-  Shirt, 
-  Sparkles, 
-  Smartphone,
-  Apple,
-  Zap,
-  ArrowRight
-} from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
 
+// AI-generated category images
+import kiranaImg from "@/assets/categories-ai/kirana.png";
+import bakeryImg from "@/assets/categories-ai/bakery.png";
+import dairyImg from "@/assets/categories-ai/dairy.png";
+import clothingImg from "@/assets/categories-ai/clothing.png";
+import cosmeticsImg from "@/assets/categories-ai/cosmetics.png";
+import electronicsImg from "@/assets/categories-ai/electronics.png";
+import fruitsVegetablesImg from "@/assets/categories-ai/fruits-vegetables.png";
+import electricalImg from "@/assets/categories-ai/electrical.png";
+import pharmacyImg from "@/assets/categories-ai/pharmacy.png";
+import stationeryImg from "@/assets/categories-ai/stationery.png";
+import hardwareImg from "@/assets/categories-ai/hardware.png";
+import otherImg from "@/assets/categories-ai/other.png";
+
 const storeTypes = [
   {
-    icon: ShoppingBag,
+    image: kiranaImg,
     title: "Kirana Store",
     description: "Daily essentials, groceries & FMCG products",
     products: "500+ Products",
     color: "from-orange-500 to-amber-500",
-    emoji: "🛒",
   },
   {
-    icon: Croissant,
+    image: bakeryImg,
     title: "Bakery",
     description: "Fresh bakes, custom orders & daily specials",
     products: "200+ Products",
     color: "from-amber-500 to-yellow-500",
-    emoji: "🥐",
   },
   {
-    icon: Milk,
+    image: dairyImg,
     title: "Dairy Shop",
     description: "Milk, paneer, curd & dairy products",
     products: "100+ Products",
     color: "from-blue-400 to-cyan-400",
-    emoji: "🥛",
   },
   {
-    icon: Shirt,
+    image: clothingImg,
     title: "Clothing Store",
     description: "Fashion, apparel & accessories",
     products: "1000+ Products",
     color: "from-pink-500 to-rose-500",
-    emoji: "👕",
   },
   {
-    icon: Sparkles,
+    image: cosmeticsImg,
     title: "Cosmetics",
     description: "Beauty, skincare & personal care",
     products: "300+ Products",
     color: "from-purple-500 to-violet-500",
-    emoji: "💄",
   },
   {
-    icon: Smartphone,
+    image: electronicsImg,
     title: "Mobile & Electronics",
     description: "Phones, gadgets & accessories",
     products: "500+ Products",
     color: "from-slate-600 to-gray-700",
-    emoji: "📱",
   },
   {
-    icon: Apple,
+    image: fruitsVegetablesImg,
     title: "Fruits & Vegetables",
     description: "Fresh produce & seasonal items",
     products: "150+ Products",
     color: "from-green-500 to-emerald-500",
-    emoji: "🍎",
   },
   {
-    icon: Zap,
+    image: electricalImg,
     title: "Electrical Supplies",
     description: "Wires, switches & equipment",
     products: "400+ Products",
     color: "from-yellow-500 to-orange-500",
-    emoji: "⚡",
+  },
+  {
+    image: pharmacyImg,
+    title: "Pharmacy",
+    description: "Health, medicine & wellness",
+    products: "600+ Products",
+    color: "from-teal-500 to-cyan-500",
+  },
+  {
+    image: stationeryImg,
+    title: "Stationery",
+    description: "Books, supplies & office items",
+    products: "350+ Products",
+    color: "from-indigo-500 to-blue-500",
+  },
+  {
+    image: hardwareImg,
+    title: "Hardware",
+    description: "Tools, equipment & supplies",
+    products: "450+ Products",
+    color: "from-gray-600 to-slate-600",
+  },
+  {
+    image: otherImg,
+    title: "Other Retail",
+    description: "Gift shops, specialty stores & more",
+    products: "Unlimited",
+    color: "from-rose-500 to-pink-500",
   },
 ];
 
@@ -101,7 +125,7 @@ const StoreTypesSection = () => {
 
         {/* Store Types Grid */}
         <StaggeredContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" staggerDelay={80}>
-          {storeTypes.map((store, index) => (
+          {storeTypes.map((store) => (
             <div
               key={store.title}
               className="group relative bg-card rounded-2xl p-4 md:p-5 border border-border hover:border-transparent transition-all duration-300 hover:shadow-xl cursor-pointer overflow-hidden"
@@ -109,8 +133,14 @@ const StoreTypesSection = () => {
               {/* Gradient background on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${store.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
               
-              {/* Emoji */}
-              <div className="text-3xl md:text-4xl mb-3">{store.emoji}</div>
+              {/* Category Image */}
+              <div className="w-16 h-16 md:w-20 md:h-20 mb-3 rounded-xl overflow-hidden bg-muted/50 flex items-center justify-center">
+                <img 
+                  src={store.image} 
+                  alt={store.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </div>
 
               {/* Content */}
               <h3 className="text-base md:text-lg font-semibold text-card-foreground mb-1">

@@ -7,6 +7,7 @@ import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { LowStockAlert } from "@/components/dashboard/LowStockAlert";
 import { SalesChart } from "@/components/dashboard/SalesChart";
+import { TodaySummary } from "@/components/dashboard/TodaySummary";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardStatsSkeleton } from "@/components/ui/skeleton-loaders";
 import { supabase } from "@/integrations/supabase/client";
@@ -175,6 +176,9 @@ const DashboardHome = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Today's Summary */}
+          {store?.id && <TodaySummary storeId={store.id} />}
+          
           {/* Low Stock Alert */}
           <LowStockAlert />
 

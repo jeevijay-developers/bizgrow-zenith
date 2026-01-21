@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
-  X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download
+  X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download,
+  CheckSquare, Square, ToggleLeft, ToggleRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,7 @@ const ProductsPage = () => {
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -239,9 +241,79 @@ const ProductsPage = () => {
     },
   });
 
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (productIds: string[]) => {
+      const { error } = await supabase
+        .from("products")
+        .delete()
+        .in("id", productIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      toast.success(`${selectedProducts.size} products deleted!`);
+      setSelectedProducts(new Set());
+    },
+    onError: (error) => {
+      toast.error("Failed to delete products: " + error.message);
+    },
+  });
+
+  // Bulk toggle availability mutation
+  const bulkToggleAvailabilityMutation = useMutation({
+    mutationFn: async ({ productIds, isAvailable }: { productIds: string[]; isAvailable: boolean }) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ is_available: isAvailable })
+        .in("id", productIds);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      toast.success(`${selectedProducts.size} products ${variables.isAvailable ? "enabled" : "disabled"}!`);
+      setSelectedProducts(new Set());
+    },
+    onError: (error) => {
+      toast.error("Failed to update products: " + error.message);
+    },
+  });
+
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setEditProductOpen(true);
+  };
+
+  // Bulk selection handlers
+  const toggleProductSelection = (productId: string) => {
+    const newSelected = new Set(selectedProducts);
+    if (newSelected.has(productId)) {
+      newSelected.delete(productId);
+    } else {
+      newSelected.add(productId);
+    }
+    setSelectedProducts(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.size === filteredProducts.length) {
+      setSelectedProducts(new Set());
+    } else {
+      setSelectedProducts(new Set(filteredProducts.map(p => p.id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedProducts.size === 0) return;
+    bulkDeleteMutation.mutate(Array.from(selectedProducts));
+  };
+
+  const handleBulkToggle = (enable: boolean) => {
+    if (selectedProducts.size === 0) return;
+    bulkToggleAvailabilityMutation.mutate({ 
+      productIds: Array.from(selectedProducts), 
+      isAvailable: enable 
+    });
   };
 
   const filteredProducts = products.filter(product => {
@@ -639,6 +711,62 @@ const ProductsPage = () => {
         </div>
       </div>
 
+      {/* Bulk Actions Bar */}
+      <AnimatePresence>
+        {selectedProducts.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            className="bg-primary/10 border border-primary/20 rounded-xl p-4"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="w-5 h-5 text-primary" />
+                <span className="font-medium">
+                  {selectedProducts.size} product{selectedProducts.size > 1 ? "s" : ""} selected
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => setSelectedProducts(new Set())}>
+                  Clear
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={() => handleBulkToggle(true)}
+                  disabled={bulkToggleAvailabilityMutation.isPending}
+                >
+                  <ToggleRight className="w-4 h-4" />
+                  Enable All
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={() => handleBulkToggle(false)}
+                  disabled={bulkToggleAvailabilityMutation.isPending}
+                >
+                  <ToggleLeft className="w-4 h-4" />
+                  Disable All
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleteMutation.isPending}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete {selectedProducts.size}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Products Grid/List */}
       <AnimatePresence mode="wait">
         {filteredProducts.length === 0 ? (
@@ -672,36 +800,73 @@ const ProductsPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
-            {filteredProducts.map((product, index) => {
-              const statusConfig = getStatusConfig(product);
-              return (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all group"
-                >
-                  <div className="aspect-square relative overflow-hidden bg-muted">
-                    {product.image_url ? (
-                      <img 
-                        src={product.image_url} 
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-12 h-12 text-muted-foreground/50" />
+            {/* Select All Row */}
+            <div className="flex items-center gap-3 mb-4 px-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-muted-foreground hover:text-foreground"
+                onClick={toggleSelectAll}
+              >
+                {selectedProducts.size === filteredProducts.length ? (
+                  <CheckSquare className="w-4 h-4 text-primary" />
+                ) : (
+                  <Square className="w-4 h-4" />
+                )}
+                {selectedProducts.size === filteredProducts.length ? "Deselect All" : "Select All"}
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                ({filteredProducts.length} products)
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {filteredProducts.map((product, index) => {
+                const statusConfig = getStatusConfig(product);
+                const isSelected = selectedProducts.has(product.id);
+                return (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all group ${
+                      isSelected ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="aspect-square relative overflow-hidden bg-muted">
+                      {product.image_url ? (
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-12 h-12 text-muted-foreground/50" />
+                        </div>
+                      )}
+                      {/* Checkbox overlay */}
+                      <button
+                        className={`absolute top-2 left-2 w-6 h-6 rounded flex items-center justify-center transition-all ${
+                          isSelected 
+                            ? "bg-primary text-primary-foreground" 
+                            : "bg-white/80 text-muted-foreground hover:bg-white"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleProductSelection(product.id);
+                        }}
+                      >
+                        {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                      </button>
+                      <div className="absolute top-2 right-2">
+                        <Badge className={`${statusConfig.color} text-xs`}>
+                          {statusConfig.status.replace("-", " ")}
+                        </Badge>
                       </div>
-                    )}
-                    <div className="absolute top-2 right-2">
-                      <Badge className={`${statusConfig.color} text-xs`}>
-                        {statusConfig.status.replace("-", " ")}
-                      </Badge>
                     </div>
-                  </div>
                   <div className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="min-w-0 flex-1">
@@ -743,6 +908,7 @@ const ProductsPage = () => {
                 </motion.div>
               );
             })}
+            </div>
           </motion.div>
         ) : (
           <motion.div

@@ -26,7 +26,8 @@ interface DashboardContext {
 }
 
 // Generate store slug from name (lowercase, remove special chars, replace spaces with hyphens)
-const generateStoreSlug = (name: string): string => {
+const generateStoreSlug = (name: string | undefined | null): string => {
+  if (!name) return '';
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')

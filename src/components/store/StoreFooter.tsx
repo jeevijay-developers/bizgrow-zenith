@@ -28,36 +28,36 @@ const StoreFooter = ({
   ];
 
   return (
-    <footer className="mt-16 pb-40 px-4">
+    <footer className="mt-16 pb-40 px-4 lg:px-6">
       {/* Trust Badges Section */}
       <div className="mb-8">
-        <h3 className="text-sm font-semibold text-muted-foreground text-center mb-4">
+        <h3 className="text-sm lg:text-base font-semibold text-muted-foreground text-center mb-4 lg:mb-6">
           Why Shop With Us
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
           {trustBadges.map((badge, index) => (
             <motion.div
               key={badge.label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col items-center gap-2 lg:gap-3 p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-card border border-border/50 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className={`w-10 h-10 rounded-xl bg-muted flex items-center justify-center ${badge.color}`}>
-                <badge.icon className="w-5 h-5" />
+              <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl bg-muted flex items-center justify-center ${badge.color}`}>
+                <badge.icon className="w-5 h-5 lg:w-6 lg:h-6" />
               </div>
-              <span className="text-xs font-medium text-foreground text-center">{badge.label}</span>
+              <span className="text-xs lg:text-sm font-medium text-foreground text-center">{badge.label}</span>
             </motion.div>
           ))}
         </div>
       </div>
 
       {/* Store Info */}
-      <div className="text-center space-y-4 py-6 border-t border-border/50">
+      <div className="text-center space-y-4 py-6 lg:py-8 border-t border-border/50">
         <div>
-          <h4 className="font-bold text-lg text-foreground">{storeName}</h4>
+          <h4 className="font-bold text-lg lg:text-xl text-foreground">{storeName}</h4>
           {storeAddress && (
-            <p className="text-sm text-muted-foreground mt-1">{storeAddress}</p>
+            <p className="text-sm lg:text-base text-muted-foreground mt-1">{storeAddress}</p>
           )}
         </div>
 

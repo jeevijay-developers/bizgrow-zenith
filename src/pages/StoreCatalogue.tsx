@@ -375,101 +375,120 @@ const StoreCatalogue = () => {
         logoUrl={customization?.logo_url}
       />
 
-      {/* Icon Category Tabs (Mobile) */}
-      <IconCategoryTabs
-        categories={categories}
-        activeCategory={selectedCategory}
-        onCategoryClick={setSelectedCategory}
-      />
-
-      {/* Filter Bar */}
-      <FilterBar
-        onSortChange={setSortOrder}
-        onPriceFilterChange={setPriceFilter}
-        currentSort={sortOrder}
-        currentPriceFilter={priceFilter}
-      />
-
-      {/* Promotions Carousel */}
-      {promotions.length > 0 && (
-        <div className="px-3 py-3 lg:pl-20">
-          <PromoBannerCarousel promotions={promotions} />
-        </div>
-      )}
-
-      {/* Recently Viewed Section */}
-      {recentlyViewed.length > 0 && !searchQuery && !selectedCategory && (
-        <RecentlyViewedSection
-          products={recentlyViewed}
-          onProductClick={(productId) => {
-            const product = products.find(p => p.id === productId);
-            if (product) {
-              setSelectedProduct(product);
-              setProductModalOpen(true);
-            }
-          }}
-          onClear={clearRecentlyViewed}
-          onAddToCart={(productId) => {
-            const product = products.find(p => p.id === productId);
-            if (product) addToCart(product);
-          }}
-        />
-      )}
-
-      {/* Main Content with Sidebar */}
-      <div className="flex">
-        {/* Category Sidebar (Desktop) */}
-        <CategorySidebar
+      {/* Desktop Container - Max Width for proper alignment */}
+      <div className="max-w-7xl mx-auto">
+        {/* Icon Category Tabs (Mobile) */}
+        <IconCategoryTabs
           categories={categories}
           activeCategory={selectedCategory}
           onCategoryClick={setSelectedCategory}
         />
 
-        {/* Products Grid */}
-        <main className="flex-1 px-3 py-3">
-          {productsLoading ? (
-            <ProductGridSkeleton count={12} />
-          ) : filteredProducts.length === 0 ? (
-            <NoProductsFound 
-              searchQuery={searchQuery}
-              onClearFilters={() => {
-                setSearchQuery("");
-                setSelectedCategory(null);
-                setPriceFilter(null);
-              }} 
+        {/* Filter Bar */}
+        <FilterBar
+          onSortChange={setSortOrder}
+          onPriceFilterChange={setPriceFilter}
+          currentSort={sortOrder}
+          currentPriceFilter={priceFilter}
+        />
+
+        {/* Promotions Carousel */}
+        {promotions.length > 0 && (
+          <div className="px-3 lg:px-6 py-3">
+            <PromoBannerCarousel promotions={promotions} />
+          </div>
+        )}
+
+        {/* Recently Viewed Section */}
+        {recentlyViewed.length > 0 && !searchQuery && !selectedCategory && (
+          <div className="px-3 lg:px-6">
+            <RecentlyViewedSection
+              products={recentlyViewed}
+              onProductClick={(productId) => {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                  setSelectedProduct(product);
+                  setProductModalOpen(true);
+                }
+              }}
+              onClear={clearRecentlyViewed}
+              onAddToCart={(productId) => {
+                const product = products.find(p => p.id === productId);
+                if (product) addToCart(product);
+              }}
             />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-              {filteredProducts.map((product, index) => (
-                <BlinkitProductCard
-                  key={product.id}
-                  product={product}
-                  quantity={getItemQuantity(product.id)}
-                  isFavorite={favorites.has(product.id)}
-                  onAddToCart={() => addToCart(product)}
-                  onUpdateQuantity={(delta) => updateQuantity(product.id, getItemQuantity(product.id) + delta)}
-                  onToggleFavorite={() => toggleFavorite(product.id)}
-                  onViewDetails={() => {
-                    setSelectedProduct(product);
-                    setProductModalOpen(true);
-                    addToRecentlyViewed(product);
-                  }}
-                  index={index}
-                />
-              ))}
+          </div>
+        )}
+
+        {/* Main Content with Sidebar */}
+        <div className="flex">
+          {/* Category Sidebar (Desktop) */}
+          <CategorySidebar
+            categories={categories}
+            activeCategory={selectedCategory}
+            onCategoryClick={setSelectedCategory}
+          />
+
+          {/* Products Grid */}
+          <main className="flex-1 px-3 lg:px-6 py-4">
+            {/* Section Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg lg:text-xl font-bold text-foreground">
+                  {selectedCategory || "All Products"}
+                </h2>
+                <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} available
+                </p>
+              </div>
             </div>
-          )}
-        </main>
+
+            {productsLoading ? (
+              <ProductGridSkeleton count={12} />
+            ) : filteredProducts.length === 0 ? (
+              <NoProductsFound 
+                searchQuery={searchQuery}
+                onClearFilters={() => {
+                  setSearchQuery("");
+                  setSelectedCategory(null);
+                  setPriceFilter(null);
+                }} 
+              />
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+                {filteredProducts.map((product, index) => (
+                  <BlinkitProductCard
+                    key={product.id}
+                    product={product}
+                    quantity={getItemQuantity(product.id)}
+                    isFavorite={favorites.has(product.id)}
+                    onAddToCart={() => addToCart(product)}
+                    onUpdateQuantity={(delta) => updateQuantity(product.id, getItemQuantity(product.id) + delta)}
+                    onToggleFavorite={() => toggleFavorite(product.id)}
+                    onViewDetails={() => {
+                      setSelectedProduct(product);
+                      setProductModalOpen(true);
+                      addToRecentlyViewed(product);
+                    }}
+                    index={index}
+                  />
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
 
-      {/* Store Footer */}
-      <StoreFooter
-        storeName={store.name}
-        storeAddress={store.address}
-        whatsappNumber={customization?.whatsapp_number}
-        instagramUrl={customization?.instagram_url}
-        facebookUrl={customization?.facebook_url}
-      />
+      {/* Store Footer - Inside container */}
+      <div className="max-w-7xl mx-auto">
+        <StoreFooter
+          storeName={store.name}
+          storeAddress={store.address}
+          whatsappNumber={customization?.whatsapp_number}
+          instagramUrl={customization?.instagram_url}
+          facebookUrl={customization?.facebook_url}
+        />
+      </div>
 
       <BlinkitProductModal
         product={selectedProduct}

@@ -46,8 +46,7 @@ const CompactBanner = ({
       className="mx-4 mt-4"
     >
       <div 
-        className="relative rounded-3xl overflow-hidden shadow-2xl"
-        style={{ maxHeight: "180px", minHeight: "140px" }}
+        className="relative rounded-3xl overflow-hidden shadow-2xl h-[160px] md:h-[180px]"
       >
         {/* Background */}
         <div

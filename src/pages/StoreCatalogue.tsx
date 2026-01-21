@@ -35,6 +35,8 @@ import BottomNavDock from "@/components/store/BottomNavDock";
 import FloatingWhatsAppButton from "@/components/store/FloatingWhatsAppButton";
 import QuickStatsBar from "@/components/store/QuickStatsBar";
 import StoreFooter from "@/components/store/StoreFooter";
+import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
+import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
 
 interface Product {
   id: string;
@@ -380,58 +382,14 @@ const StoreCatalogue = () => {
 
   // Premium loading skeleton
   if (storeLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="px-4 py-6 space-y-6">
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-14 w-14 rounded-2xl" />
-            <div className="space-y-2 flex-1">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-3 w-24" />
-            </div>
-          </div>
-          <Skeleton className="h-48 w-full rounded-3xl" />
-          <div className="flex gap-3">
-            {[1,2,3,4].map(i => <Skeleton key={i} className="h-10 w-24 rounded-full" />)}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-72 w-full rounded-3xl" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <StorePageSkeleton />;
   }
 
   // Store not found
   if (storeError || !store) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-6 max-w-sm"
-        >
-          <motion.div 
-            className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mx-auto shadow-xl"
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ repeat: Infinity, duration: 4 }}
-          >
-            <Store className="w-14 h-14 text-primary/50" />
-          </motion.div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Store Not Found</h1>
-            <p className="text-muted-foreground mt-2">
-              This store doesn't exist or is currently unavailable.
-            </p>
-          </div>
-          <Link to="/">
-            <Button className="rounded-full px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-              Go Home
-            </Button>
-          </Link>
-        </motion.div>
+        <StoreNotFound onGoHome={() => navigate("/")} />
       </div>
     );
   }
@@ -733,25 +691,12 @@ const StoreCatalogue = () => {
         {/* Products Grid */}
         <div className="px-4">
           {productsLoading ? (
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} className="h-72 w-full rounded-3xl" />
-              ))}
-            </div>
+            <ProductGridSkeleton count={4} />
           ) : filteredProducts.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-20"
-            >
-              <div className="w-24 h-24 rounded-3xl bg-muted flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="w-12 h-12 text-muted-foreground/50" />
-              </div>
-              <h3 className="font-bold text-lg text-foreground">No products found</h3>
-              <p className="text-muted-foreground mt-2">
-                {searchQuery ? "Try a different search term" : "Check back soon for new arrivals!"}
-              </p>
-            </motion.div>
+            <NoProductsFound 
+              searchQuery={searchQuery}
+              onClearSearch={() => setSearchQuery("")}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredProducts.map((product, index) => {

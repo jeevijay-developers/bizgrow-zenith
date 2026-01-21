@@ -37,6 +37,7 @@ import QuickStatsBar from "@/components/store/QuickStatsBar";
 import StoreFooter from "@/components/store/StoreFooter";
 import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
 import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
+import PromoBannerCarousel from "@/components/store/PromoBannerCarousel";
 
 interface Product {
   id: string;
@@ -520,50 +521,20 @@ const StoreCatalogue = () => {
         className="px-4 mt-5"
       />
 
-      {/* Promotions */}
+      {/* Promotions Carousel */}
       {customization?.show_offers_section !== false && promotions.length > 0 && (
-        <div className="mt-6">
-          <div className="flex items-center justify-between px-4 mb-4">
+        <div className="mt-6 px-4">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Gift className="w-5 h-5 text-accent" />
               Special Offers
             </h3>
             <Badge variant="secondary" className="text-xs">{promotions.length} active</Badge>
           </div>
-          <div className="flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory scrollbar-hide">
-            {promotions.map((promo, index) => (
-              <motion.div
-                key={promo.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-80 snap-start"
-              >
-                <div className="relative p-6 rounded-3xl h-full overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl">
-                  {/* Decorative circles */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-                  
-                  <div className="relative text-primary-foreground">
-                    {promo.discount_percentage && (
-                      <motion.div
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                      >
-                        <Badge className="bg-accent text-accent-foreground text-base font-bold px-4 py-1 mb-3 shadow-lg">
-                          {promo.discount_percentage}% OFF
-                        </Badge>
-                      </motion.div>
-                    )}
-                    <h4 className="font-bold text-xl">{promo.title}</h4>
-                    {promo.description && (
-                      <p className="text-sm opacity-90 mt-2 line-clamp-2">{promo.description}</p>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <PromoBannerCarousel 
+            promotions={promotions} 
+            autoPlayInterval={5000}
+          />
         </div>
       )}
 

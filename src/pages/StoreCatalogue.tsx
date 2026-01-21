@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -30,6 +30,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ProductDetailModal from "@/components/store/ProductDetailModal";
 import EnhancedProductCard from "@/components/store/EnhancedProductCard";
 import CompactBanner from "@/components/store/CompactBanner";
+import StickyCategoryBar from "@/components/store/StickyCategoryBar";
+import BottomNavDock from "@/components/store/BottomNavDock";
+import FloatingWhatsAppButton from "@/components/store/FloatingWhatsAppButton";
 
 interface Product {
   id: string;
@@ -130,7 +133,43 @@ const StoreCatalogue = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
+  const [showStickyCategory, setShowStickyCategory] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const categoryBarRef = useRef<HTMLDivElement>(null);
 
+  // Scroll tracking for sticky nav
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Show sticky category bar after scrolling past 400px
+      setShowStickyCategory(scrollY > 400);
+      // Show back to top after scrolling past 600px
+      setShowBackToTop(scrollY > 600);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const focusSearch = () => {
+    searchInputRef.current?.focus();
+    searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const handleWhatsAppChat = () => {
+    if (!customization?.whatsapp_number) {
+      toast.info("WhatsApp contact not available for this store");
+      return;
+    }
+    const phone = customization.whatsapp_number.replace(/\D/g, "");
+    const message = `Hi! I'm browsing ${store?.name}. Can you help me?`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+  };
   // Use persistent cart hook
   const {
     cart,
@@ -403,6 +442,18 @@ const StoreCatalogue = () => {
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
       </div>
 
+      {/* Sticky Category Bar - appears on scroll */}
+      <AnimatePresence>
+        {showStickyCategory && customization?.show_categories !== false && (
+          <StickyCategoryBar
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            isVisible={showStickyCategory}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Announcement Bar */}
       <AnimatePresence>
         {customization?.announcement_active && customization?.announcement_text && (
@@ -633,6 +684,7 @@ const StoreCatalogue = () => {
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
+              ref={searchInputRef}
               placeholder="Search for products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -1032,6 +1084,23 @@ const StoreCatalogue = () => {
         onToggleFavorite={() => {
           if (selectedProduct) toggleFavorite(selectedProduct.id);
         }}
+        whatsappNumber={customization?.whatsapp_number}
+        storeName={store.name}
+      />
+
+      {/* Bottom Navigation Dock - Mobile Only */}
+      <BottomNavDock
+        cartCount={cartCount}
+        onHomeClick={scrollToTop}
+        onSearchClick={focusSearch}
+        onCartClick={() => setCartOpen(true)}
+        onWhatsAppClick={handleWhatsAppChat}
+        showBackToTop={showBackToTop}
+        onBackToTop={scrollToTop}
+      />
+
+      {/* Floating WhatsApp Button - Desktop Only */}
+      <FloatingWhatsAppButton
         whatsappNumber={customization?.whatsapp_number}
         storeName={store.name}
       />

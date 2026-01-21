@@ -322,8 +322,30 @@ const StoreCustomizationPage = () => {
 
   if (!store) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Loading store information...</p>
+      <div className="space-y-6 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="h-8 w-64 bg-muted rounded-lg mb-2" />
+            <div className="h-4 w-48 bg-muted rounded" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-10 w-24 bg-muted rounded-lg" />
+            <div className="h-10 w-32 bg-muted rounded-lg" />
+          </div>
+        </div>
+        
+        {/* Tabs Skeleton */}
+        <div className="h-12 bg-muted rounded-lg" />
+        
+        {/* Content Skeleton */}
+        <div className="space-y-4">
+          <div className="h-64 bg-muted rounded-xl" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-20 bg-muted rounded-lg" />
+            <div className="h-20 bg-muted rounded-lg" />
+          </div>
+        </div>
       </div>
     );
   }

@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { AnimatePresence, motion } from "framer-motion";
 import Index from "./pages/Index";
 import Join from "./pages/Join";
 import Auth from "./pages/Auth";
@@ -88,6 +89,85 @@ const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Page transition wrapper
+const pageTransitionVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+};
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={pageTransitionVariants}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Index />} />
+          <Route path="/join" element={<Join />} />
+          <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+          <Route path="/store/:storeId" element={<StoreCatalogue />} />
+          {/* Support slug-based URLs like /s/storename-d3105ef5 */}
+          <Route path="/s/:storeId" element={<StoreCatalogue />} />
+          <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+          
+          {/* Feature Pages */}
+          <Route path="/features/digital-catalogue" element={<DigitalCataloguePage />} />
+          <Route path="/features/ai-upload" element={<AIUploadFeaturePage />} />
+          <Route path="/features/whatsapp-orders" element={<WhatsAppOrdersPage />} />
+          <Route path="/features/analytics" element={<AnalyticsFeaturePage />} />
+          
+          {/* Solution Pages */}
+          <Route path="/solutions/kirana" element={<KiranaStorePage />} />
+          <Route path="/solutions/bakery" element={<BakeryStorePage />} />
+          <Route path="/solutions/dairy" element={<DairyStorePage />} />
+          <Route path="/solutions/clothing" element={<ClothingStorePage />} />
+          <Route path="/solutions/electronics" element={<ElectronicsStorePage />} />
+          <Route path="/solutions/cosmetics" element={<CosmeticsStorePage />} />
+          <Route path="/solutions/mobile" element={<MobileStorePage />} />
+          <Route path="/solutions/fruits-vegetables" element={<FruitsVegetablesStorePage />} />
+          
+          {/* Dashboard Routes */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route index element={<DashboardHome />} />
+            <Route path="pos" element={<POSBillingPage />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="customers" element={<CustomersPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="ai-upload" element={<AIUploadPage />} />
+            <Route path="whatsapp" element={<WhatsAppPage />} />
+            <Route path="delivery" element={<DeliveryPage />} />
+            <Route path="catalogue-link" element={<CatalogueLinkPage />} />
+            <Route path="customize-store" element={<StoreCustomizationPage />} />
+            <Route path="store-settings" element={<StoreSettingsPage />} />
+            <Route path="billing" element={<BillingPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="stores" element={<AdminStores />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+          </Route>
+          
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -95,60 +175,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/join" element={<Join />} />
-            <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
-            <Route path="/store/:storeId" element={<StoreCatalogue />} />
-            {/* Support slug-based URLs like /s/storename-d3105ef5 */}
-            <Route path="/s/:storeId" element={<StoreCatalogue />} />
-            <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-            
-            {/* Feature Pages */}
-            <Route path="/features/digital-catalogue" element={<DigitalCataloguePage />} />
-            <Route path="/features/ai-upload" element={<AIUploadFeaturePage />} />
-            <Route path="/features/whatsapp-orders" element={<WhatsAppOrdersPage />} />
-            <Route path="/features/analytics" element={<AnalyticsFeaturePage />} />
-            
-            {/* Solution Pages */}
-            <Route path="/solutions/kirana" element={<KiranaStorePage />} />
-            <Route path="/solutions/bakery" element={<BakeryStorePage />} />
-            <Route path="/solutions/dairy" element={<DairyStorePage />} />
-            <Route path="/solutions/clothing" element={<ClothingStorePage />} />
-            <Route path="/solutions/electronics" element={<ElectronicsStorePage />} />
-            <Route path="/solutions/cosmetics" element={<CosmeticsStorePage />} />
-            <Route path="/solutions/mobile" element={<MobileStorePage />} />
-            <Route path="/solutions/fruits-vegetables" element={<FruitsVegetablesStorePage />} />
-            
-            {/* Dashboard Routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-              <Route index element={<DashboardHome />} />
-              <Route path="pos" element={<POSBillingPage />} />
-              <Route path="orders" element={<OrdersPage />} />
-              <Route path="products" element={<ProductsPage />} />
-              <Route path="customers" element={<CustomersPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="ai-upload" element={<AIUploadPage />} />
-              <Route path="whatsapp" element={<WhatsAppPage />} />
-              <Route path="delivery" element={<DeliveryPage />} />
-              <Route path="catalogue-link" element={<CatalogueLinkPage />} />
-              <Route path="customize-store" element={<StoreCustomizationPage />} />
-              <Route path="store-settings" element={<StoreSettingsPage />} />
-              <Route path="billing" element={<BillingPage />} />
-              <Route path="notifications" element={<NotificationsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-
-            {/* Admin Routes */}
-            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="stores" element={<AdminStores />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="analytics" element={<AdminAnalytics />} />
-            </Route>
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatedRoutes />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

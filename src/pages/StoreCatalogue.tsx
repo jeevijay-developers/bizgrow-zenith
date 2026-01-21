@@ -33,6 +33,7 @@ import PromoBannerCarousel from "@/components/store/PromoBannerCarousel";
 import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
 import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
 import RecentlyViewedSection from "@/components/store/RecentlyViewedSection";
+import StoreFooter from "@/components/store/StoreFooter";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 
 interface Product {
@@ -460,6 +461,16 @@ const StoreCatalogue = () => {
           )}
         </main>
       </div>
+
+      {/* Store Footer */}
+      <StoreFooter
+        storeName={store.name}
+        storeAddress={store.address}
+        whatsappNumber={customization?.whatsapp_number}
+        instagramUrl={customization?.instagram_url}
+        facebookUrl={customization?.facebook_url}
+      />
+
       <BlinkitProductModal
         product={selectedProduct}
         open={productModalOpen}

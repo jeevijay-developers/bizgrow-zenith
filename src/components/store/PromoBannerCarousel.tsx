@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Gift, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Gift, Sparkles, Clock, Timer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +12,8 @@ interface Promotion {
   discount_amount: number | null;
   is_active: boolean;
   image_url?: string | null;
+  end_date?: string | null;
+  start_date?: string | null;
 }
 
 interface PromoBannerCarouselProps {
@@ -19,6 +21,68 @@ interface PromoBannerCarouselProps {
   autoPlayInterval?: number;
   className?: string;
 }
+
+// Countdown timer hook
+const useCountdown = (endDate: string | null | undefined) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true });
+
+  useEffect(() => {
+    if (!endDate) {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true });
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const target = new Date(endDate).getTime();
+      const difference = target - now;
+
+      if (difference <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
+      }
+
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+        isExpired: false,
+      };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const interval = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+    return () => clearInterval(interval);
+  }, [endDate]);
+
+  return timeLeft;
+};
+
+// Countdown display component
+const CountdownDisplay = ({ endDate }: { endDate: string | null | undefined }) => {
+  const { days, hours, minutes, seconds, isExpired } = useCountdown(endDate);
+
+  if (isExpired || !endDate) return null;
+
+  const isUrgent = days === 0 && hours < 6;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={`flex items-center gap-2 mt-3 ${isUrgent ? 'animate-pulse' : ''}`}
+    >
+      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isUrgent ? 'bg-red-500/30' : 'bg-white/20'} backdrop-blur-sm`}>
+        <Timer className={`w-3.5 h-3.5 ${isUrgent ? 'text-red-200' : 'text-white/90'}`} />
+        <span className={`text-xs font-bold ${isUrgent ? 'text-red-100' : 'text-white'}`}>
+          {days > 0 && `${days}d `}
+          {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+        </span>
+        <span className="text-[10px] text-white/70 hidden sm:inline">left</span>
+      </div>
+    </motion.div>
+  );
+};
 
 const PromoBannerCarousel = ({
   promotions,
@@ -120,6 +184,9 @@ const PromoBannerCarousel = ({
                     {currentPromo.description}
                   </p>
                 )}
+
+                {/* Countdown Timer */}
+                <CountdownDisplay endDate={currentPromo.end_date} />
               </div>
             </div>
 

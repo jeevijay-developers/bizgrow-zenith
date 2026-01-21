@@ -151,15 +151,34 @@ const BlinkitProductCard = ({
           />
         </motion.button>
 
-        {/* Discount Badge */}
+        {/* Discount Badge with HOT DEAL pulse for 25%+ */}
         {discountPercent && (
           <motion.div 
             initial={{ scale: 0, rotate: -10 }}
-            animate={{ scale: 1, rotate: 0 }}
-            className="absolute top-2 left-2 z-10 flex items-center gap-0.5 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground text-[9px] font-bold px-2 py-1 rounded-full shadow-md"
+            animate={{ 
+              scale: discountPercent >= 25 ? [1, 1.08, 1] : 1, 
+              rotate: 0 
+            }}
+            transition={{
+              scale: discountPercent >= 25 ? { repeat: Infinity, duration: 1.5, ease: "easeInOut" } : undefined
+            }}
+            className={`absolute top-2 left-2 z-10 flex items-center gap-0.5 text-[9px] font-bold px-2 py-1 rounded-full shadow-md ${
+              discountPercent >= 25 
+                ? 'bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white ring-2 ring-orange-300/50 ring-offset-1 ring-offset-transparent' 
+                : 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground'
+            }`}
           >
-            <Sparkles className="h-2.5 w-2.5" />
-            {discountPercent}% OFF
+            {discountPercent >= 25 ? (
+              <>
+                <Zap className="h-2.5 w-2.5 animate-pulse" />
+                HOT {discountPercent}% OFF
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-2.5 w-2.5" />
+                {discountPercent}% OFF
+              </>
+            )}
           </motion.div>
         )}
 

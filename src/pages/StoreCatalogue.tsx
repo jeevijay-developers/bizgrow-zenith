@@ -30,7 +30,7 @@ import CategorySidebar from "@/components/store/CategorySidebar";
 import IconCategoryTabs from "@/components/store/IconCategoryTabs";
 import FilterBar from "@/components/store/FilterBar";
 import PromoBannerCarousel from "@/components/store/PromoBannerCarousel";
-import { StorePageSkeleton } from "@/components/store/StoreSkeletons";
+import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
 import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
 
 interface Product {
@@ -403,11 +403,7 @@ const StoreCatalogue = () => {
         {/* Products Grid */}
         <main className="flex-1 px-3 py-3">
           {productsLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="bg-card rounded-xl h-52 animate-pulse border border-border" />
-              ))}
-            </div>
+            <ProductGridSkeleton count={12} />
           ) : filteredProducts.length === 0 ? (
             <NoProductsFound 
               searchQuery={searchQuery}

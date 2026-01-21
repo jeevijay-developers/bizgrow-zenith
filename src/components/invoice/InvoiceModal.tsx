@@ -10,13 +10,61 @@ import {
 import { InvoiceTemplate, InvoiceData } from "./InvoiceTemplate";
 import { toast } from "sonner";
 
+interface InvoiceItem {
+  name: string;
+  qty?: number;
+  quantity?: number;
+  price: number;
+}
+
+interface InvoiceInput {
+  id: string;
+  invoice_number: string;
+  customer_name: string;
+  customer_phone: string | null;
+  customer_address: string | null;
+  items: InvoiceItem[];
+  subtotal: number;
+  gst_percentage: number | null;
+  gst_amount: number | null;
+  discount_amount: number | null;
+  total_amount: number;
+  payment_method: string | null;
+  created_at: string | null;
+}
+
 interface InvoiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  invoice: InvoiceData;
+  invoice: InvoiceInput;
+  storeName?: string;
+  storeAddress?: string;
 }
 
-export function InvoiceModal({ open, onOpenChange, invoice }: InvoiceModalProps) {
+export function InvoiceModal({ open, onOpenChange, invoice, storeName = "Store", storeAddress = "" }: InvoiceModalProps) {
+  // Transform invoice to InvoiceData format
+  const invoiceData: InvoiceData = {
+    id: invoice.id,
+    invoice_number: invoice.invoice_number,
+    order_id: invoice.id,
+    store_name: storeName,
+    store_address: storeAddress,
+    customer_name: invoice.customer_name,
+    customer_phone: invoice.customer_phone || "",
+    customer_address: invoice.customer_address || "",
+    items: invoice.items.map((item) => ({
+      name: item.name,
+      quantity: item.qty || item.quantity || 1,
+      price: item.price,
+    })),
+    subtotal: invoice.subtotal,
+    gst_percentage: invoice.gst_percentage || 0,
+    gst_amount: invoice.gst_amount || 0,
+    discount_amount: invoice.discount_amount || 0,
+    total_amount: invoice.total_amount,
+    payment_method: invoice.payment_method || "cash",
+    created_at: invoice.created_at || new Date().toISOString(),
+  };
   const [isPrinting, setIsPrinting] = useState(false);
 
   const handlePrint = () => {
@@ -121,31 +169,31 @@ export function InvoiceModal({ open, onOpenChange, invoice }: InvoiceModalProps)
   };
 
   const handleWhatsAppShare = () => {
-    const itemsList = invoice.items
+    const itemsList = invoiceData.items
       .map((item) => `• ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
       .join("\n");
 
-    const message = `🧾 *Invoice from ${invoice.store_name}*
+    const message = `🧾 *Invoice from ${invoiceData.store_name}*
 
-Invoice #: ${invoice.invoice_number}
-Date: ${new Date(invoice.created_at).toLocaleDateString()}
+Invoice #: ${invoiceData.invoice_number}
+Date: ${new Date(invoiceData.created_at).toLocaleDateString()}
 
 *Items:*
 ${itemsList}
 
-Subtotal: ₹${invoice.subtotal.toFixed(2)}${
-      invoice.gst_percentage > 0
-        ? `\nGST (${invoice.gst_percentage}%): ₹${invoice.gst_amount.toFixed(2)}`
+Subtotal: ₹${invoiceData.subtotal.toFixed(2)}${
+      invoiceData.gst_percentage > 0
+        ? `\nGST (${invoiceData.gst_percentage}%): ₹${invoiceData.gst_amount.toFixed(2)}`
         : ""
-    }${invoice.discount_amount > 0 ? `\nDiscount: -₹${invoice.discount_amount.toFixed(2)}` : ""}
+    }${invoiceData.discount_amount > 0 ? `\nDiscount: -₹${invoiceData.discount_amount.toFixed(2)}` : ""}
 
-*Total: ₹${invoice.total_amount.toFixed(2)}*
+*Total: ₹${invoiceData.total_amount.toFixed(2)}*
 
-Payment: ${invoice.payment_method.toUpperCase()}
+Payment: ${invoiceData.payment_method.toUpperCase()}
 
 Thank you for shopping with us! 🙏`;
 
-    const phoneNumber = invoice.customer_phone?.replace(/\D/g, "");
+    const phoneNumber = invoiceData.customer_phone?.replace(/\D/g, "");
     const whatsappUrl = phoneNumber
       ? `https://wa.me/91${phoneNumber}?text=${encodeURIComponent(message)}`
       : `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -159,14 +207,14 @@ Thank you for shopping with us! 🙏`;
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-500" />
-            Order Created Successfully!
+            <CheckCircle className="w-5 h-5 text-emerald-500" />
+            Invoice Details
           </DialogTitle>
         </DialogHeader>
 
         {/* Invoice Preview */}
         <div className="border rounded-lg overflow-hidden my-4">
-          <InvoiceTemplate invoice={invoice} />
+          <InvoiceTemplate invoice={invoiceData} />
         </div>
 
         {/* Actions */}
@@ -182,7 +230,7 @@ Thank you for shopping with us! 🙏`;
           </Button>
           <Button
             variant="outline"
-            className="flex-1 gap-2 text-green-600 border-green-600 hover:bg-green-50"
+            className="flex-1 gap-2 text-emerald-600 border-emerald-500/30 hover:bg-emerald-50"
             onClick={handleWhatsAppShare}
           >
             <MessageCircle className="w-4 h-4" />

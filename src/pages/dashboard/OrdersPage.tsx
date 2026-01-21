@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ShoppingCart, Search, Filter, Eye, Phone, MessageCircle,
   Clock, CheckCircle, Truck, Package, XCircle,
-  Calendar, Download, ChevronDown, MapPin, User, Loader2
+  Calendar, Download, ChevronDown, MapPin, User, Loader2,
+  Store, Globe, Volume2, VolumeX, Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { formatDistanceToNow, format } from "date-fns";
+import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
+import { InvoiceModal } from "@/components/invoice/InvoiceModal";
 
 interface DashboardContext {
   store: {
@@ -59,6 +62,22 @@ interface Order {
   updated_at: string;
 }
 
+interface Invoice {
+  id: string;
+  invoice_number: string;
+  customer_name: string;
+  customer_phone: string | null;
+  customer_address: string | null;
+  items: OrderItem[];
+  subtotal: number;
+  gst_percentage: number | null;
+  gst_amount: number | null;
+  discount_amount: number | null;
+  total_amount: number;
+  payment_method: string | null;
+  created_at: string | null;
+}
+
 const getStatusConfig = (status: string) => {
   switch (status) {
     case "pending":
@@ -76,13 +95,33 @@ const getStatusConfig = (status: string) => {
   }
 };
 
+const getOrderTypeConfig = (orderType: string | null) => {
+  switch (orderType) {
+    case "walkin":
+      return { icon: Store, color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", label: "Walk-in" };
+    case "online":
+    default:
+      return { icon: Globe, color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20", label: "Online" };
+  }
+};
+
 const OrdersPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const queryClient = useQueryClient();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [orderTypeFilter, setOrderTypeFilter] = useState("all");
   const [newStatus, setNewStatus] = useState("");
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+
+  // Real-time orders subscription with sound
+  useRealtimeOrders({
+    storeId: store?.id,
+    playSound: soundEnabled,
+  });
 
   // Fetch orders
   const { data: orders = [], isLoading } = useQuery({
@@ -125,18 +164,44 @@ const OrdersPage = () => {
     },
   });
 
+  // Fetch invoice for an order
+  const fetchInvoice = async (orderId: string) => {
+    const { data, error } = await supabase
+      .from("invoices")
+      .select("*")
+      .eq("order_id", orderId)
+      .single();
+    
+    if (error) {
+      toast.error("Invoice not found");
+      return;
+    }
+
+    setSelectedInvoice({
+      ...data,
+      items: Array.isArray(data.items) ? (data.items as unknown as OrderItem[]) : [],
+    });
+    setInvoiceModalOpen(true);
+  };
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.customer_name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === "all" || order.status === activeTab;
-    return matchesSearch && matchesTab;
+    const matchesStatusTab = activeTab === "all" || order.status === activeTab;
+    const matchesOrderType = orderTypeFilter === "all" || 
+      (orderTypeFilter === "online" && (order.order_type === "online" || !order.order_type)) ||
+      (orderTypeFilter === "walkin" && order.order_type === "walkin");
+    return matchesSearch && matchesStatusTab && matchesOrderType;
   });
+
+  const onlineOrders = orders.filter(o => o.order_type === "online" || !o.order_type);
+  const walkinOrders = orders.filter(o => o.order_type === "walkin");
 
   const stats = [
     { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "text-primary" },
+    { label: "Online", value: onlineOrders.length, icon: Globe, color: "text-indigo-600" },
+    { label: "Walk-in", value: walkinOrders.length, icon: Store, color: "text-emerald-600" },
     { label: "Pending", value: orders.filter(o => o.status === "pending").length, icon: Clock, color: "text-yellow-600" },
-    { label: "In Progress", value: orders.filter(o => ["confirmed", "out-for-delivery"].includes(o.status)).length, icon: Truck, color: "text-blue-600" },
-    { label: "Delivered", value: orders.filter(o => o.status === "delivered").length, icon: CheckCircle, color: "text-green-600" },
   ];
 
   if (isLoading) {
@@ -191,31 +256,63 @@ const OrdersPage = () => {
         ))}
       </div>
 
-      {/* Tabs & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="h-auto flex-wrap">
-            <TabsTrigger value="all">All Orders</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
-            <TabsTrigger value="out-for-delivery">Delivering</TabsTrigger>
-            <TabsTrigger value="delivered">Delivered</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        
-        <div className="flex gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search orders..." 
-              className="pl-10 w-64" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" size="icon">
-            <Filter className="w-4 h-4" />
+      {/* Order Type Filter & Tabs */}
+      <div className="flex flex-col gap-4">
+        {/* Order Source Tabs */}
+        <div className="flex items-center gap-2">
+          <Tabs value={orderTypeFilter} onValueChange={setOrderTypeFilter}>
+            <TabsList>
+              <TabsTrigger value="all" className="gap-2">
+                <ShoppingCart className="w-4 h-4" />
+                All ({orders.length})
+              </TabsTrigger>
+              <TabsTrigger value="online" className="gap-2">
+                <Globe className="w-4 h-4" />
+                Online ({onlineOrders.length})
+              </TabsTrigger>
+              <TabsTrigger value="walkin" className="gap-2">
+                <Store className="w-4 h-4" />
+                Walk-in ({walkinOrders.length})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button
+            variant={soundEnabled ? "default" : "outline"}
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            title={soundEnabled ? "Sound alerts enabled" : "Sound alerts disabled"}
+          >
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </Button>
+        </div>
+
+        {/* Status Tabs & Filters */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="h-auto flex-wrap">
+              <TabsTrigger value="all">All Status</TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+              <TabsTrigger value="out-for-delivery">Delivering</TabsTrigger>
+              <TabsTrigger value="delivered">Delivered</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="flex gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search orders..." 
+                className="pl-10 w-64" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" size="icon">
+              <Filter className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -259,8 +356,17 @@ const OrdersPage = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     {/* Order Info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className="font-semibold">{order.id.slice(0, 8).toUpperCase()}</span>
+                        {(() => {
+                          const orderTypeConfig = getOrderTypeConfig(order.order_type);
+                          return (
+                            <Badge className={`${orderTypeConfig.color} text-xs`}>
+                              <orderTypeConfig.icon className="w-3 h-3 mr-1" />
+                              {orderTypeConfig.label}
+                            </Badge>
+                          );
+                        })()}
                         <Badge className={`${statusConfig.color} text-xs`}>
                           <statusConfig.icon className="w-3 h-3 mr-1" />
                           {statusConfig.label}
@@ -391,31 +497,64 @@ const OrdersPage = () => {
                 </Select>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1 gap-2">
+              <div className="flex gap-3 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => {
+                    fetchInvoice(selectedOrder.id);
+                  }}
+                >
+                  <Receipt className="w-4 h-4" />
+                  Invoice
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => {
+                    const message = `Hi ${selectedOrder.customer_name}, your order #${selectedOrder.id.slice(0, 8).toUpperCase()} worth ₹${selectedOrder.total_amount} is being processed.`;
+                    window.open(`https://wa.me/${selectedOrder.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                  }}
+                >
                   <MessageCircle className="w-4 h-4" />
                   WhatsApp
                 </Button>
-                <Button variant="outline" className="flex-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={() => {
+                    window.open(`tel:${selectedOrder.customer_phone}`, '_blank');
+                  }}
+                >
                   <Phone className="w-4 h-4" />
                   Call
                 </Button>
-                <Button 
-                  className="flex-1"
-                  disabled={newStatus === selectedOrder.status || updateStatusMutation.isPending}
-                  onClick={() => updateStatusMutation.mutate({ orderId: selectedOrder.id, status: newStatus })}
-                >
-                  {updateStatusMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "Update Order"
-                  )}
-                </Button>
               </div>
+              <Button 
+                className="w-full"
+                disabled={newStatus === selectedOrder.status || updateStatusMutation.isPending}
+                onClick={() => updateStatusMutation.mutate({ orderId: selectedOrder.id, status: newStatus })}
+              >
+                {updateStatusMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Update Order"
+                )}
+              </Button>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Invoice Modal */}
+      {selectedInvoice && store && (
+        <InvoiceModal
+          open={invoiceModalOpen}
+          onOpenChange={setInvoiceModalOpen}
+          invoice={selectedInvoice}
+          storeName={store.name}
+        />
+      )}
     </div>
   );
 };

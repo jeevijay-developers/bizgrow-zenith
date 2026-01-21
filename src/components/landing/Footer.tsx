@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Sparkles, Store, BarChart3, MessageSquare, Heart } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Sparkles, Store, BarChart3, MessageSquare, Heart, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
+import ScheduleDemoModal from "./ScheduleDemoModal";
 
 const Footer = () => {
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const footerLinks = {
     Product: [
       { label: "Features", href: "#features" },
@@ -48,6 +51,9 @@ const Footer = () => {
 
   return (
     <footer className="relative overflow-hidden">
+      {/* Schedule Demo Modal */}
+      <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
+
       {/* CTA Section - Compact */}
       <div className="bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)] relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -83,15 +89,15 @@ const Footer = () => {
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </Link>
-              <Link to="/auth">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="border border-white/30 hover:bg-white/10 text-white font-medium px-6 py-3 rounded-lg flex items-center gap-2 justify-center w-full sm:w-auto text-sm"
-                >
-                  Seller Login
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowDemoModal(true)}
+                className="border border-white/30 hover:bg-white/10 text-white font-medium px-6 py-3 rounded-lg flex items-center gap-2 justify-center w-full sm:w-auto text-sm"
+              >
+                <Calendar className="w-4 h-4" />
+                Schedule Demo
+              </motion.button>
             </div>
           </motion.div>
 

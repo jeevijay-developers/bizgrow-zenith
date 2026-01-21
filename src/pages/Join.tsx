@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
   Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock,
-  ShoppingCart, Croissant, Milk, Shirt, Palette, Smartphone, Apple, Lightbulb, Pill, BookOpen, Wrench, Package,
   ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,19 +15,33 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
+// AI-generated category images
+import kiranaImg from "@/assets/categories-ai/kirana.png";
+import bakeryImg from "@/assets/categories-ai/bakery.png";
+import dairyImg from "@/assets/categories-ai/dairy.png";
+import clothingImg from "@/assets/categories-ai/clothing.png";
+import cosmeticsImg from "@/assets/categories-ai/cosmetics.png";
+import electronicsImg from "@/assets/categories-ai/electronics.png";
+import fruitsVegetablesImg from "@/assets/categories-ai/fruits-vegetables.png";
+import electricalImg from "@/assets/categories-ai/electrical.png";
+import pharmacyImg from "@/assets/categories-ai/pharmacy.png";
+import stationeryImg from "@/assets/categories-ai/stationery.png";
+import hardwareImg from "@/assets/categories-ai/hardware.png";
+import otherImg from "@/assets/categories-ai/other.png";
+
 const storeCategories = [
-  { id: "kirana", label: "Kirana Store", Icon: ShoppingCart, desc: "General & grocery" },
-  { id: "bakery", label: "Bakery", Icon: Croissant, desc: "Fresh baked goods" },
-  { id: "dairy", label: "Dairy Shop", Icon: Milk, desc: "Milk & dairy" },
-  { id: "clothing", label: "Clothing", Icon: Shirt, desc: "Fashion & apparel" },
-  { id: "cosmetic", label: "Cosmetics", Icon: Palette, desc: "Beauty & skincare" },
-  { id: "mobile", label: "Electronics", Icon: Smartphone, desc: "Gadgets & more" },
-  { id: "fruits", label: "Fruits & Veggies", Icon: Apple, desc: "Fresh produce" },
-  { id: "electrical", label: "Electrical", Icon: Lightbulb, desc: "Electrical goods" },
-  { id: "pharmacy", label: "Pharmacy", Icon: Pill, desc: "Health & medicine" },
-  { id: "stationery", label: "Stationery", Icon: BookOpen, desc: "Books & supplies" },
-  { id: "hardware", label: "Hardware", Icon: Wrench, desc: "Tools & equipment" },
-  { id: "other", label: "Other", Icon: Package, desc: "Other retail" },
+  { id: "kirana", label: "Kirana Store", image: kiranaImg, desc: "General & grocery" },
+  { id: "bakery", label: "Bakery", image: bakeryImg, desc: "Fresh baked goods" },
+  { id: "dairy", label: "Dairy Shop", image: dairyImg, desc: "Milk & dairy" },
+  { id: "clothing", label: "Clothing", image: clothingImg, desc: "Fashion & apparel" },
+  { id: "cosmetic", label: "Cosmetics", image: cosmeticsImg, desc: "Beauty & skincare" },
+  { id: "mobile", label: "Electronics", image: electronicsImg, desc: "Gadgets & more" },
+  { id: "fruits", label: "Fruits & Veggies", image: fruitsVegetablesImg, desc: "Fresh produce" },
+  { id: "electrical", label: "Electrical", image: electricalImg, desc: "Electrical goods" },
+  { id: "pharmacy", label: "Pharmacy", image: pharmacyImg, desc: "Health & medicine" },
+  { id: "stationery", label: "Stationery", image: stationeryImg, desc: "Books & supplies" },
+  { id: "hardware", label: "Hardware", image: hardwareImg, desc: "Tools & equipment" },
+  { id: "other", label: "Other", image: otherImg, desc: "Other retail" },
 ];
 
 const businessModes = [
@@ -702,10 +715,10 @@ const Join = () => {
                             : "border-transparent bg-muted/50 hover:bg-muted"
                         }`}
                       >
-                        <div className={`w-9 h-9 mx-auto mb-1.5 rounded-lg flex items-center justify-center transition-colors ${
-                          formData.category === cat.id ? "bg-primary text-primary-foreground" : "bg-background"
+                        <div className={`w-12 h-12 mx-auto mb-1.5 rounded-xl overflow-hidden flex items-center justify-center transition-all ${
+                          formData.category === cat.id ? "ring-2 ring-primary ring-offset-2" : ""
                         }`}>
-                          <cat.Icon className="w-4 h-4" />
+                          <img src={cat.image} alt={cat.label} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xs font-medium text-foreground block truncate">{cat.label}</span>
                         {formData.category === cat.id && (

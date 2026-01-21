@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Bell, ShoppingCart, Package, Users, Settings, Check, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Bell, ShoppingCart, Package, Users, Settings, Check, X, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Notification {
   id: string;
@@ -26,6 +27,44 @@ interface Notification {
 interface NotificationBellProps {
   storeId: string | undefined;
 }
+
+// Audio notification using Web Audio API - more prominent sound
+const playNotificationSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    
+    // Create a more prominent notification sound
+    const oscillator = audioContext.createOscillator();
+    const oscillator2 = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    oscillator2.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Two-tone notification sound
+    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.15); // E5
+    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.3); // G5
+    
+    oscillator2.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator2.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.15); // C5
+    oscillator2.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.3); // E5
+    
+    gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.type = "sine";
+    oscillator2.type = "triangle";
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator2.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+    oscillator2.stop(audioContext.currentTime + 0.5);
+  } catch (error) {
+    console.log("Could not play notification sound:", error);
+  }
+};
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
@@ -59,7 +98,10 @@ const getNotificationColor = (type: string) => {
 
 export function NotificationBell({ storeId }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const queryClient = useQueryClient();
+  const previousUnreadCount = useRef<number>(0);
+  const isFirstLoad = useRef(true);
 
   // Fetch notifications
   const { data: notifications = [] } = useQuery({
@@ -78,12 +120,29 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
     enabled: !!storeId,
   });
 
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
+
+  // Play sound when new notification arrives
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      previousUnreadCount.current = unreadCount;
+      return;
+    }
+
+    // If unread count increased, play sound
+    if (unreadCount > previousUnreadCount.current && soundEnabled) {
+      playNotificationSound();
+    }
+    previousUnreadCount.current = unreadCount;
+  }, [unreadCount, soundEnabled]);
+
   // Subscribe to realtime notifications
   useEffect(() => {
     if (!storeId) return;
 
     const channel = supabase
-      .channel("notifications-realtime")
+      .channel(`notifications-bell-${storeId}`)
       .on(
         "postgres_changes",
         {
@@ -133,21 +192,59 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
     },
   });
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
+          <AnimatePresence>
+            {unreadCount > 0 && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                className="absolute inset-0 rounded-full bg-primary/20"
+              />
+            )}
+          </AnimatePresence>
+          <Bell className={`w-5 h-5 relative z-10 ${unreadCount > 0 ? 'text-primary' : ''}`} />
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground text-xs">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </Badge>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-1 -right-1"
+            >
+              <Badge className="h-5 w-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground text-xs">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </Badge>
+            </motion.div>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h4 className="font-semibold">Notifications</h4>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              title={soundEnabled ? "Mute notifications" : "Unmute notifications"}
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </Button>
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-7"
+                onClick={() => markAllAsReadMutation.mutate()}
+              >
+                Mark all read
+              </Button>
+            )}
+          </div>
+        </div>
         <div className="flex items-center justify-between p-4 border-b">
           <h4 className="font-semibold">Notifications</h4>
           {unreadCount > 0 && (

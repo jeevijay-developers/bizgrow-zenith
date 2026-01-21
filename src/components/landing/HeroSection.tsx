@@ -84,8 +84,8 @@ const HeroSection = () => {
               </Link>
               <RippleButton 
                 size="lg" 
-                variant="outline" 
-                className="border-white/25 text-white hover:bg-white/10 w-full sm:w-auto group text-sm h-11"
+                variant="outline-light" 
+                className="w-full sm:w-auto group text-sm h-11"
                 onClick={() => setShowDemoModal(true)}
               >
                 <Calendar className="w-3.5 h-3.5 mr-2" />

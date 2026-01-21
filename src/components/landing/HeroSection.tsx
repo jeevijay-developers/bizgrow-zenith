@@ -1,11 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
-import { ArrowRight, MessageCircle, Star, Sparkles, Clock, CheckCircle, Play, TrendingUp, Package } from "lucide-react";
+import { ArrowRight, MessageCircle, Star, Sparkles, Clock, CheckCircle, Calendar, TrendingUp, Package } from "lucide-react";
 import modelImage from "@/assets/bizgrow-model.png";
+import ScheduleDemoModal from "./ScheduleDemoModal";
 
 const HeroSection = () => {
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   return (
     <section className="relative min-h-[100svh] bg-gradient-to-br from-primary via-primary to-primary/95 overflow-hidden pt-16 md:pt-20">
+      {/* Schedule Demo Modal */}
+      <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
+
       {/* Simplified gradient background */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_rgba(255,208,102,0.15)_0%,_transparent_50%)]" />
@@ -75,9 +82,14 @@ const HeroSection = () => {
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </RippleButton>
               </Link>
-              <RippleButton size="lg" variant="outline" className="border-white/25 text-white hover:bg-white/10 w-full sm:w-auto group text-sm h-11">
-                <Play className="w-3.5 h-3.5 mr-2 fill-white" />
-                Watch Demo
+              <RippleButton 
+                size="lg" 
+                variant="outline" 
+                className="border-white/25 text-white hover:bg-white/10 w-full sm:w-auto group text-sm h-11"
+                onClick={() => setShowDemoModal(true)}
+              >
+                <Calendar className="w-3.5 h-3.5 mr-2" />
+                Schedule Demo
               </RippleButton>
             </div>
 

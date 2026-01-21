@@ -3,10 +3,10 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Search, Share2, Package,
-  MessageCircle, Clock, Instagram, Gift, Heart,
+  MessageCircle, Instagram, Gift,
   ShoppingBag, Sparkles, Plus, Minus, X, ShoppingCart,
   Truck, Store, ChevronDown, Star, Zap, TrendingUp,
-  User, Phone, Home, Check, ChevronRight, Filter, Loader2
+  User, Phone, Home, Check, ChevronRight, Loader2
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import ProductDetailModal from "@/components/store/ProductDetailModal";
+import EnhancedProductCard from "@/components/store/EnhancedProductCard";
+import CompactBanner from "@/components/store/CompactBanner";
 
 interface Product {
   id: string;
@@ -125,6 +128,8 @@ const StoreCatalogue = () => {
     notes: ""
   });
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productModalOpen, setProductModalOpen] = useState(false);
 
   // Use persistent cart hook
   const {
@@ -481,60 +486,20 @@ const StoreCatalogue = () => {
         </div>
       </header>
 
-      {/* Hero Banner */}
+      {/* Compact Branded Banner - 1/3 height */}
       {(customization?.show_banner !== false) && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mx-4 mt-4"
-        >
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: "16/8" }}>
-            {/* Background */}
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: customization?.banner_image_url 
-                  ? `url(${customization.banner_image_url}) center/cover` 
-                  : `linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.8) 50%, hsl(var(--accent)) 100%)`
-              }}
-            />
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-            {/* Decorative elements */}
-            <div className="absolute top-4 right-4 w-20 h-20 bg-accent/20 rounded-full blur-2xl" />
-            <div className="absolute bottom-8 left-8 w-16 h-16 bg-primary/30 rounded-full blur-xl" />
-            
-            {/* Content */}
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
-                  {customization?.banner_text || `Welcome to ${store.name}`}
-                </h2>
-                {(customization?.banner_subtitle || customization?.tagline) && (
-                  <p className="text-sm md:text-base text-white/90 mt-2 drop-shadow">
-                    {customization?.banner_subtitle || customization?.tagline}
-                  </p>
-                )}
-              </motion.div>
-              <div className="flex flex-wrap items-center gap-2 mt-4">
-                <Badge className="bg-white/20 backdrop-blur-md text-white border-white/20 px-4 py-1.5 text-xs font-medium capitalize">
-                  {(store.category || "").replace("-", " ")}
-                </Badge>
-                {hasDelivery && (
-                  <Badge className="bg-green-500/90 backdrop-blur-md text-white border-0 px-4 py-1.5 text-xs font-medium">
-                    <Truck className="w-3.5 h-3.5 mr-1.5" />
-                    Free Delivery
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <CompactBanner
+          storeName={store.name}
+          storeCategory={store.category}
+          storeCity={store.city}
+          logoUrl={customization?.logo_url}
+          bannerImageUrl={customization?.banner_image_url}
+          bannerText={customization?.banner_text}
+          bannerSubtitle={customization?.banner_subtitle}
+          tagline={customization?.tagline}
+          hasDelivery={hasDelivery}
+          hasTakeaway={hasTakeaway}
+        />
       )}
 
       {/* Quick Stats */}
@@ -749,115 +714,26 @@ const StoreCatalogue = () => {
               </p>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredProducts.map((product, index) => {
                 const itemQty = getItemQuantity(product.id);
                 const isFavorite = favorites.has(product.id);
                 
                 return (
-                  <motion.div
+                  <EnhancedProductCard
                     key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    whileHover={{ y: -4 }}
-                    className="group"
-                  >
-                    <div className="bg-card rounded-3xl border border-border shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
-                      {/* Product Image */}
-                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
-                        {product.image_url ? (
-                          <img 
-                            src={product.image_url} 
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-16 h-16 text-muted-foreground/20" />
-                          </div>
-                        )}
-                        
-                        {/* Discount Badge */}
-                        {product.compare_price && product.compare_price > product.price && (
-                          <Badge className="absolute top-3 left-3 bg-red-500 text-white text-[11px] px-2.5 py-1 font-bold shadow-lg">
-                            {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
-                          </Badge>
-                        )}
-
-                        {/* Favorite Button */}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => toggleFavorite(product.id)}
-                          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
-                        >
-                          <Heart 
-                            className={`w-4 h-4 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} 
-                          />
-                        </motion.button>
-
-                        {/* Add to Cart */}
-                        <div className="absolute bottom-3 right-3">
-                          {itemQty === 0 ? (
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                              <Button
-                                size="icon"
-                                className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl"
-                                onClick={() => addToCart(product)}
-                              >
-                                <Plus className="w-5 h-5" />
-                              </Button>
-                            </motion.div>
-                          ) : (
-                            <div className="flex items-center gap-0.5 bg-card rounded-full shadow-xl border-2 border-primary p-1">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 rounded-full hover:bg-muted"
-                                onClick={() => updateQuantity(product.id, -1)}
-                              >
-                                <Minus className="w-4 h-4" />
-                              </Button>
-                              <span className="w-7 text-center font-bold text-sm text-foreground">{itemQty}</span>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 rounded-full hover:bg-muted"
-                                onClick={() => updateQuantity(product.id, 1)}
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Product Info */}
-                      <div className="p-4">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                          {product.category?.replace("-", " ") || "General"}
-                        </p>
-                        <h3 className="font-semibold text-sm text-foreground line-clamp-2 mt-1 min-h-[2.5rem] leading-snug">
-                          {product.name}
-                        </h3>
-                        {product.description && (
-                          <p className="text-xs text-muted-foreground line-clamp-1 mt-1.5">{product.description}</p>
-                        )}
-                        <div className="flex items-baseline gap-2 mt-3">
-                          <span className="text-xl font-bold text-primary">
-                            ₹{product.price.toLocaleString()}
-                          </span>
-                          {product.compare_price && product.compare_price > product.price && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              ₹{product.compare_price.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                    product={product}
+                    quantity={itemQty}
+                    isFavorite={isFavorite}
+                    onAddToCart={() => addToCart(product)}
+                    onUpdateQuantity={(delta) => updateQuantity(product.id, delta)}
+                    onToggleFavorite={() => toggleFavorite(product.id)}
+                    onViewDetails={() => {
+                      setSelectedProduct(product);
+                      setProductModalOpen(true);
+                    }}
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -1139,6 +1015,26 @@ const StoreCatalogue = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        open={productModalOpen}
+        onOpenChange={setProductModalOpen}
+        quantity={selectedProduct ? getItemQuantity(selectedProduct.id) : 0}
+        onAddToCart={() => {
+          if (selectedProduct) addToCart(selectedProduct);
+        }}
+        onUpdateQuantity={(delta) => {
+          if (selectedProduct) updateQuantity(selectedProduct.id, delta);
+        }}
+        isFavorite={selectedProduct ? favorites.has(selectedProduct.id) : false}
+        onToggleFavorite={() => {
+          if (selectedProduct) toggleFavorite(selectedProduct.id);
+        }}
+        whatsappNumber={customization?.whatsapp_number}
+        storeName={store.name}
+      />
     </div>
   );
 };

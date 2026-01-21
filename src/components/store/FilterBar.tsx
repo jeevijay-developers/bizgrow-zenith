@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { SlidersHorizontal, ChevronDown, Check } from "lucide-react";
+import { ArrowUpDown, IndianRupee, Check, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ interface FilterBarProps {
 }
 
 const sortOptions = [
-  { value: "relevance", label: "Relevance" },
+  { value: "relevance", label: "Relevance", icon: Sparkles },
   { value: "price-low", label: "Price: Low to High" },
   { value: "price-high", label: "Price: High to Low" },
   { value: "discount", label: "Discount" },
@@ -37,30 +37,38 @@ const FilterBar = ({
   currentSort,
   currentPriceFilter,
 }: FilterBarProps) => {
+  const activeSort = sortOptions.find(o => o.value === currentSort);
+  
   return (
-    <div className="flex items-center gap-1.5 py-2 px-3 bg-card border-b border-border overflow-x-auto">
+    <motion.div 
+      initial={{ opacity: 0, y: -5 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center gap-2 py-2.5 px-4 bg-gradient-to-r from-card via-card/95 to-card border-b border-border/50 overflow-x-auto scrollbar-hide"
+    >
       {/* Sort Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="flex-shrink-0 h-7 text-[10px] font-medium border-border px-2"
+            className="flex-shrink-0 h-8 text-[11px] font-semibold border-border/60 px-3 gap-1.5 bg-background/80 hover:bg-muted/80 shadow-sm"
           >
-            Sort
-            <ChevronDown className="h-3 w-3 ml-1" />
+            <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+            {activeSort?.label || "Sort"}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-40">
+        <DropdownMenuContent align="start" className="w-44 p-1.5">
           {sortOptions.map((option) => (
             <DropdownMenuItem
               key={option.value}
               onClick={() => onSortChange(option.value)}
-              className="flex items-center justify-between text-xs"
+              className={`flex items-center justify-between text-xs rounded-lg px-3 py-2 cursor-pointer ${
+                currentSort === option.value ? "bg-primary/10 text-primary" : ""
+              }`}
             >
-              {option.label}
+              <span className="font-medium">{option.label}</span>
               {currentSort === option.value && (
-                <Check className="h-3 w-3 text-primary" />
+                <Check className="h-3.5 w-3.5 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
@@ -73,30 +81,37 @@ const FilterBar = ({
           <Button
             variant="outline"
             size="sm"
-            className={`flex-shrink-0 h-7 text-[10px] font-medium border-border px-2 ${
-              currentPriceFilter ? "bg-primary/10 border-primary text-primary" : ""
+            className={`flex-shrink-0 h-8 text-[11px] font-semibold border-border/60 px-3 gap-1.5 shadow-sm transition-all ${
+              currentPriceFilter 
+                ? "bg-primary/10 border-primary/50 text-primary hover:bg-primary/15" 
+                : "bg-background/80 hover:bg-muted/80"
             }`}
           >
-            Price
-            <ChevronDown className="h-3 w-3 ml-1" />
+            <IndianRupee className="h-3 w-3" />
+            {currentPriceFilter 
+              ? priceFilters.find(f => f.value === currentPriceFilter)?.label 
+              : "Price"
+            }
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-32">
+        <DropdownMenuContent align="start" className="w-36 p-1.5">
           {priceFilters.map((filter) => (
             <DropdownMenuItem
               key={filter.value ?? "all"}
               onClick={() => onPriceFilterChange(filter.value)}
-              className="flex items-center justify-between text-xs"
+              className={`flex items-center justify-between text-xs rounded-lg px-3 py-2 cursor-pointer ${
+                currentPriceFilter === filter.value ? "bg-primary/10 text-primary" : ""
+              }`}
             >
-              {filter.label}
+              <span className="font-medium">{filter.label}</span>
               {currentPriceFilter === filter.value && (
-                <Check className="h-3 w-3 text-primary" />
+                <Check className="h-3.5 w-3.5 text-primary" />
               )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </motion.div>
   );
 };
 

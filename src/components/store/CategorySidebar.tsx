@@ -89,9 +89,9 @@ const CategorySidebar = ({
   const allCategories = ["All", ...categories];
 
   return (
-    <aside className="hidden lg:block w-20 min-h-screen bg-card border-r border-border sticky top-0 overflow-y-auto">
-      <div className="py-2">
-        {allCategories.map((category) => {
+    <aside className="hidden lg:block w-22 min-h-screen bg-gradient-to-b from-card to-card/95 border-r border-border/50 sticky top-0 overflow-y-auto shadow-sm">
+      <div className="py-3 space-y-1">
+        {allCategories.map((category, index) => {
           const isActive = 
             (category === "All" && activeCategory === null) ||
             category === activeCategory;
@@ -101,29 +101,29 @@ const CategorySidebar = ({
             <button
               key={category}
               onClick={() => onCategoryClick(category === "All" ? null : category)}
-              className={`w-full flex flex-col items-center gap-1 py-2.5 px-1.5 transition-colors relative ${
+              className={`w-full flex flex-col items-center gap-1.5 py-2.5 px-2 transition-all duration-200 relative group ${
                 isActive 
-                  ? "bg-primary/10" 
-                  : "hover:bg-muted"
+                  ? "bg-primary/8" 
+                  : "hover:bg-muted/60"
               }`}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-primary rounded-r" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-gradient-to-b from-primary to-primary/80 rounded-r-full shadow-sm" />
               )}
               
-              <div className={`w-12 h-12 rounded-xl overflow-hidden border-2 transition-all ${
+              <div className={`w-13 h-13 rounded-2xl overflow-hidden border-2 transition-all duration-200 shadow-sm group-hover:shadow-md ${
                 isActive 
-                  ? "border-primary shadow-md" 
-                  : "border-transparent"
+                  ? "border-primary shadow-md ring-2 ring-primary/20" 
+                  : "border-transparent group-hover:border-muted-foreground/20"
               }`}>
                 <img 
                   src={categoryImage} 
                   alt={category}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                 />
               </div>
-              <span className={`text-[9px] font-medium text-center leading-tight line-clamp-2 ${
-                isActive ? "text-primary" : "text-muted-foreground"
+              <span className={`text-[9px] font-semibold text-center leading-tight line-clamp-2 transition-colors ${
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
               }`}>
                 {category}
               </span>

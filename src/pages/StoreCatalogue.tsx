@@ -1,19 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  MapPin, Search, Share2, Package,
-  MessageCircle, Instagram, Gift,
-  ShoppingBag, Sparkles, Plus, Minus, X, ShoppingCart,
-  Truck, Store, ChevronDown, Star, Zap, TrendingUp,
-  User, Phone, Home, Check, ChevronRight, Loader2
+  Plus, Minus, X, ShoppingCart,
+  Truck, Store, Check, Loader2
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -22,22 +16,22 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import ProductDetailModal from "@/components/store/ProductDetailModal";
-import EnhancedProductCard from "@/components/store/EnhancedProductCard";
-import CompactBanner from "@/components/store/CompactBanner";
-import StickyCategoryBar from "@/components/store/StickyCategoryBar";
-import BottomNavDock from "@/components/store/BottomNavDock";
-import FloatingWhatsAppButton from "@/components/store/FloatingWhatsAppButton";
-import QuickStatsBar from "@/components/store/QuickStatsBar";
-import StoreFooter from "@/components/store/StoreFooter";
-import { StorePageSkeleton, ProductGridSkeleton } from "@/components/store/StoreSkeletons";
-import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
+
+// New Blinkit-style components
+import BlinkitProductCard from "@/components/store/BlinkitProductCard";
+import BlinkitProductModal from "@/components/store/BlinkitProductModal";
+import BlinkitHeader from "@/components/store/BlinkitHeader";
+import BlinkitBottomNav from "@/components/store/BlinkitBottomNav";
+import CategorySidebar from "@/components/store/CategorySidebar";
+import IconCategoryTabs from "@/components/store/IconCategoryTabs";
+import FilterBar from "@/components/store/FilterBar";
 import PromoBannerCarousel from "@/components/store/PromoBannerCarousel";
+import { StorePageSkeleton } from "@/components/store/StoreSkeletons";
+import { NoProductsFound, StoreNotFound } from "@/components/store/EmptyStates";
 
 interface Product {
   id: string;
@@ -49,10 +43,6 @@ interface Product {
   category: string | null;
   is_available: boolean | null;
   stock_quantity: number | null;
-}
-
-interface CartItem extends Product {
-  quantity: number;
 }
 
 interface StoreInfo {
@@ -107,19 +97,16 @@ const StoreCatalogue = () => {
   const { storeId: rawStoreId } = useParams<{ storeId: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState("relevance");
+  const [priceFilter, setPriceFilter] = useState<string | null>(null);
   
-  // Extract actual store ID - supports both formats:
-  // 1. Full UUID: d3105ef5-8fba-4312-a0b2-93fd6d5f7ab9
-  // 2. Slug format: storename-d3105ef5-8fba-4312-a0b2-93fd6d5f7ab9 (full UUID at end)
-  // We look for a valid UUID pattern at the end of the slug
+  // Extract store ID from slug
   const extractStoreId = (raw: string | undefined): string | undefined => {
     if (!raw) return undefined;
-    // If it's already a full UUID (36 chars with hyphens)
     const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const match = raw.match(uuidRegex);
     if (match) return match[0];
-    // Fallback: use the raw value if it looks like a UUID
     if (raw.length === 36 && raw.includes('-')) return raw;
     return raw;
   };
@@ -138,21 +125,13 @@ const StoreCatalogue = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
-  const [showStickyCategory, setShowStickyCategory] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const categoryBarRef = useRef<HTMLDivElement>(null);
 
-  // Scroll tracking for sticky nav
+  // Scroll tracking
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Show sticky category bar after scrolling past 400px
-      setShowStickyCategory(scrollY > 400);
-      // Show back to top after scrolling past 600px
-      setShowBackToTop(scrollY > 600);
+      setShowBackToTop(window.scrollY > 600);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -161,21 +140,7 @@ const StoreCatalogue = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const focusSearch = () => {
-    searchInputRef.current?.focus();
-    searchInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
-  const handleWhatsAppChat = () => {
-    if (!customization?.whatsapp_number) {
-      toast.info("WhatsApp contact not available for this store");
-      return;
-    }
-    const phone = customization.whatsapp_number.replace(/\D/g, "");
-    const message = `Hi! I'm browsing ${store?.name}. Can you help me?`;
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
-  };
-  // Use persistent cart hook
+  // Cart hook
   const {
     cart,
     addToCart: addToCartHook,
@@ -253,18 +218,44 @@ const StoreCatalogue = () => {
   // Get unique categories
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))] as string[];
 
-  // Filter products
-  const filteredProducts = products.filter(p => {
+  // Filter and sort products
+  let filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesCategory = !selectedCategory || p.category === selectedCategory;
+    
+    // Price filter
+    let matchesPrice = true;
+    if (priceFilter) {
+      if (priceFilter === "0-100") matchesPrice = p.price < 100;
+      else if (priceFilter === "100-500") matchesPrice = p.price >= 100 && p.price < 500;
+      else if (priceFilter === "500-1000") matchesPrice = p.price >= 500 && p.price < 1000;
+      else if (priceFilter === "1000+") matchesPrice = p.price >= 1000;
+    }
+    
+    return matchesSearch && matchesCategory && matchesPrice;
   });
 
-  // Products with discounts
-  const discountedProducts = products.filter(p => p.compare_price && p.compare_price > p.price);
+  // Sort
+  if (sortOrder === "price-low") {
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
+  } else if (sortOrder === "price-high") {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
+  } else if (sortOrder === "discount") {
+    filteredProducts = [...filteredProducts].sort((a, b) => {
+      const discA = a.compare_price ? (a.compare_price - a.price) / a.compare_price : 0;
+      const discB = b.compare_price ? (b.compare_price - b.price) / b.compare_price : 0;
+      return discB - discA;
+    });
+  }
 
-  // Cart wrapper function to show toast
+  // Similar products for modal
+  const getSimilarProducts = (product: Product | null) => {
+    if (!product) return [];
+    return products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 6);
+  };
+
+  // Cart wrapper
   const addToCart = (product: Product) => {
     addToCartHook({
       id: product.id,
@@ -283,26 +274,18 @@ const StoreCatalogue = () => {
       } else {
         newSet.add(productId);
       }
-    return newSet;
+      return newSet;
     });
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: store?.name,
-          text: `Check out ${store?.name}!`,
-          url: window.location.href,
-        });
-      } catch {
-        navigator.clipboard.writeText(window.location.href);
-        toast.success("Link copied!");
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied!");
+  const handleWhatsAppChat = () => {
+    if (!customization?.whatsapp_number) {
+      toast.info("WhatsApp contact not available");
+      return;
     }
+    const phone = customization.whatsapp_number.replace(/\D/g, "");
+    const message = `Hi! I'm browsing ${store?.name}. Can you help me?`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const handleCheckout = async () => {
@@ -319,7 +302,6 @@ const StoreCatalogue = () => {
     setIsSubmitting(true);
 
     try {
-      // Call the create-order edge function
       const { data, error } = await supabase.functions.invoke("create-order", {
         body: {
           store_id: storeId,
@@ -342,669 +324,285 @@ const StoreCatalogue = () => {
       if (error) throw error;
 
       const orderId = data?.order?.id;
-
-      // Optionally send WhatsApp message
       const phone = customization?.whatsapp_number?.replace(/\D/g, "") || "";
+      
       if (phone) {
-        const itemsList = cart
-          .map(
-            (item) =>
-              `• ${item.name} x${item.quantity} = ₹${(item.price * item.quantity).toLocaleString()}`
-          )
-          .join("\n");
-
+        const itemsList = cart.map(item =>
+          `• ${item.name} x${item.quantity} = ₹${(item.price * item.quantity).toLocaleString()}`
+        ).join("\n");
         const orderType = deliveryMode === "delivery" ? "🚚 Home Delivery" : "🏪 Store Pickup";
-        const addressLine =
-          deliveryMode === "delivery" ? `\n📍 *Delivery Address:*\n${customerDetails.address}` : "";
-        const notesLine = customerDetails.notes ? `\n📝 *Notes:* ${customerDetails.notes}` : "";
-
-        const message = `🛒 *New Order from ${store.name}*\n\n${orderType}\n\n*Items:*\n${itemsList}\n\n💰 *Total: ₹${cartTotal.toLocaleString()}*\n\n👤 *Customer:* ${customerDetails.name}\n📞 *Phone:* ${customerDetails.phone}${addressLine}${notesLine}`;
-
-        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, "_blank");
+        const message = `🛒 *New Order from ${store.name}*\n\n${orderType}\n\n*Items:*\n${itemsList}\n\n💰 *Total: ₹${cartTotal.toLocaleString()}*\n\n👤 *Customer:* ${customerDetails.name}\n📞 *Phone:* ${customerDetails.phone}`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
       }
 
-      // Clear cart and navigate to confirmation
       clearCart();
       setCartOpen(false);
       setCheckoutOpen(false);
       navigate(`/order-confirmation/${orderId}`);
     } catch (error: any) {
-      console.error("Checkout error:", error);
-      toast.error(error.message || "Failed to place order. Please try again.");
+      toast.error(error.message || "Failed to place order");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Check if delivery is available
   const hasDelivery = store?.business_mode?.includes("delivery");
-  const hasTakeaway = !store?.business_mode?.includes("delivery") || store?.business_mode?.includes("shop");
 
-  // Premium loading skeleton
-  if (storeLoading) {
-    return <StorePageSkeleton />;
-  }
+  if (storeLoading) return <StorePageSkeleton />;
 
-  // Store not found
   if (storeError || !store) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <StoreNotFound onGoHome={() => navigate("/")} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/3 via-background to-accent/5 pb-36">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 -right-20 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-gray-50 pb-32">
+      {/* Blinkit Header */}
+      <BlinkitHeader
+        storeName={store.name}
+        storeLocation={`${store.city}, ${store.state}`}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        logoUrl={customization?.logo_url}
+      />
 
-      {/* Sticky Category Bar - appears on scroll */}
-      <AnimatePresence>
-        {showStickyCategory && customization?.show_categories !== false && (
-          <StickyCategoryBar
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            isVisible={showStickyCategory}
-          />
-        )}
-      </AnimatePresence>
+      {/* Icon Category Tabs (Mobile) */}
+      <IconCategoryTabs
+        categories={categories}
+        activeCategory={selectedCategory}
+        onCategoryClick={setSelectedCategory}
+      />
 
-      {/* Announcement Bar */}
-      <AnimatePresence>
-        {customization?.announcement_active && customization?.announcement_text && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="relative overflow-hidden"
-          >
-            <div className="bg-gradient-to-r from-primary via-primary/90 to-primary text-primary-foreground text-center py-3 px-4 text-sm font-medium">
-              <motion.div
-                animate={{ x: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-4 h-4 text-accent" />
-                <span>{customization.announcement_text}</span>
-                <Sparkles className="w-4 h-4 text-accent" />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Premium Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Avatar className="h-12 w-12 ring-2 ring-primary/20 ring-offset-2 ring-offset-background shadow-lg">
-                <AvatarImage src={customization?.logo_url || ""} className="object-cover" />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-sm font-bold">
-                  {store.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </motion.div>
-            <div className="min-w-0">
-              <h1 className="font-bold text-foreground text-lg truncate">{store.name}</h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {store.city}
-                </span>
-                <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-                <span className="flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-accent text-accent" />
-                  <span className="font-semibold text-foreground">4.8</span>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {customization?.instagram_url && (
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-10 w-10 rounded-full bg-pink-50 hover:bg-pink-100 dark:bg-pink-500/10 dark:hover:bg-pink-500/20" 
-                  asChild
-                >
-                  <a href={customization.instagram_url} target="_blank" rel="noopener noreferrer">
-                    <Instagram className="w-5 h-5 text-pink-500" />
-                  </a>
-                </Button>
-              </motion.div>
-            )}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-10 w-10 rounded-full bg-muted hover:bg-muted/80" 
-                onClick={handleShare}
-              >
-                <Share2 className="w-5 h-5 text-muted-foreground" />
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </header>
-
-      {/* Compact Branded Banner - 1/3 height */}
-      {(customization?.show_banner !== false) && (
-        <CompactBanner
-          storeName={store.name}
-          storeCategory={store.category}
-          storeCity={store.city}
-          logoUrl={customization?.logo_url}
-          bannerImageUrl={customization?.banner_image_url}
-          bannerText={customization?.banner_text}
-          bannerSubtitle={customization?.banner_subtitle}
-          tagline={customization?.tagline}
-          hasDelivery={hasDelivery}
-          hasTakeaway={hasTakeaway}
-        />
-      )}
-
-      {/* Quick Stats Bar */}
-      <QuickStatsBar 
-        productCount={products.length} 
-        hasDelivery={hasDelivery}
-        className="px-4 mt-5"
+      {/* Filter Bar */}
+      <FilterBar
+        onSortChange={setSortOrder}
+        onPriceFilterChange={setPriceFilter}
+        currentSort={sortOrder}
+        currentPriceFilter={priceFilter}
       />
 
       {/* Promotions Carousel */}
-      {customization?.show_offers_section !== false && promotions.length > 0 && (
-        <div className="mt-6 px-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Gift className="w-5 h-5 text-accent" />
-              Special Offers
-            </h3>
-            <Badge variant="secondary" className="text-xs">{promotions.length} active</Badge>
-          </div>
-          <PromoBannerCarousel 
-            promotions={promotions} 
-            autoPlayInterval={5000}
-          />
+      {promotions.length > 0 && (
+        <div className="px-4 py-4 lg:pl-24">
+          <PromoBannerCarousel promotions={promotions} />
         </div>
       )}
 
-      {/* Hot Deals Section */}
-      {discountedProducts.length > 0 && (
-        <div className="mt-6">
-          <div className="flex items-center justify-between px-4 mb-4">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-red-500" />
-              Hot Deals
-            </h3>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1">
-              See all <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex gap-4 overflow-x-auto px-4 pb-3 scrollbar-hide">
-            {discountedProducts.slice(0, 6).map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="flex-shrink-0 w-40"
-              >
-                <div className="bg-card rounded-3xl border border-border shadow-lg overflow-hidden group">
-                  <div className="aspect-square relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
-                    {product.image_url ? (
-                      <img 
-                        src={product.image_url} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-12 h-12 text-muted-foreground/30" />
-                      </div>
-                    )}
-                    <Badge className="absolute top-2 left-2 bg-red-500 text-white text-[11px] px-2.5 py-1 font-bold shadow-lg">
-                      {Math.round((1 - product.price / (product.compare_price || product.price)) * 100)}% OFF
-                    </Badge>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-sm font-semibold text-foreground line-clamp-1">{product.name}</p>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span className="text-base font-bold text-primary">₹{product.price}</span>
-                      <span className="text-xs text-muted-foreground line-through">₹{product.compare_price}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Search Bar */}
-      {customization?.show_search !== false && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-4 mt-6"
-        >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              ref={searchInputRef}
-              placeholder="Search for products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 h-14 rounded-2xl bg-card border-border text-base shadow-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary"
-            />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Category Pills */}
-      {customization?.show_categories !== false && categories.length > 0 && (
-        <div className="mt-5 px-4">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant={selectedCategory === "all" ? "default" : "outline"}
-                size="sm"
-                className={`rounded-full flex-shrink-0 h-11 px-6 text-sm font-semibold transition-all ${
-                  selectedCategory === "all" 
-                    ? "bg-primary text-primary-foreground shadow-lg" 
-                    : "border-border bg-card hover:bg-muted"
-                }`}
-                onClick={() => setSelectedCategory("all")}
-              >
-                All Items
-              </Button>
-            </motion.div>
-            {categories.map(cat => (
-              <motion.div key={cat} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant={selectedCategory === cat ? "default" : "outline"}
-                  size="sm"
-                  className={`rounded-full flex-shrink-0 h-11 px-6 text-sm font-semibold capitalize transition-all ${
-                    selectedCategory === cat 
-                      ? "bg-primary text-primary-foreground shadow-lg" 
-                      : "border-border bg-card hover:bg-muted"
-                  }`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat.replace("-", " ")}
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Products Section */}
-      <div className="mt-6">
-        <div className="flex items-center justify-between px-4 mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-foreground">
-              {selectedCategory === "all" ? "All Products" : selectedCategory.replace("-", " ")}
-            </h3>
-            <p className="text-sm text-muted-foreground">{filteredProducts.length} items available</p>
-          </div>
-        </div>
+      {/* Main Content with Sidebar */}
+      <div className="flex">
+        {/* Category Sidebar (Desktop) */}
+        <CategorySidebar
+          categories={categories}
+          activeCategory={selectedCategory}
+          onCategoryClick={setSelectedCategory}
+        />
 
         {/* Products Grid */}
-        <div className="px-4">
+        <main className="flex-1 px-4 py-4">
           {productsLoading ? (
-            <ProductGridSkeleton count={4} />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl h-72 animate-pulse" />
+              ))}
+            </div>
           ) : filteredProducts.length === 0 ? (
-            <NoProductsFound 
-              searchQuery={searchQuery}
-              onClearSearch={() => setSearchQuery("")}
-            />
+            <NoProductsFound onClearFilters={() => {
+              setSearchQuery("");
+              setSelectedCategory(null);
+              setPriceFilter(null);
+            }} />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {filteredProducts.map((product, index) => {
-                const itemQty = getItemQuantity(product.id);
-                const isFavorite = favorites.has(product.id);
-                
-                return (
-                  <EnhancedProductCard
-                    key={product.id}
-                    product={product}
-                    quantity={itemQty}
-                    isFavorite={isFavorite}
-                    onAddToCart={() => addToCart(product)}
-                    onUpdateQuantity={(delta) => updateQuantity(product.id, delta)}
-                    onToggleFavorite={() => toggleFavorite(product.id)}
-                    onViewDetails={() => {
-                      setSelectedProduct(product);
-                      setProductModalOpen(true);
-                    }}
-                    index={index}
-                  />
-                );
-              })}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {filteredProducts.map((product, index) => (
+                <BlinkitProductCard
+                  key={product.id}
+                  product={product}
+                  quantity={getItemQuantity(product.id)}
+                  isFavorite={favorites.has(product.id)}
+                  onAddToCart={() => addToCart(product)}
+                  onUpdateQuantity={(delta) => updateQuantity(product.id, getItemQuantity(product.id) + delta)}
+                  onToggleFavorite={() => toggleFavorite(product.id)}
+                  onViewDetails={() => {
+                    setSelectedProduct(product);
+                    setProductModalOpen(true);
+                  }}
+                  index={index}
+                />
+              ))}
             </div>
           )}
-        </div>
+        </main>
       </div>
 
-      {/* Footer with Trust Indicators */}
-      <StoreFooter
-        storeName={store.name}
-        storeAddress={store.address}
-        whatsappNumber={customization?.whatsapp_number}
-        instagramUrl={customization?.instagram_url}
-        facebookUrl={customization?.facebook_url}
-      />
-
-      {/* Floating Cart Button */}
-      <AnimatePresence>
-        {cart.length > 0 && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-xl border-t border-border shadow-2xl"
-          >
-            <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-              <SheetTrigger asChild>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
-                    className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-4 text-base shadow-xl"
-                  >
-                    <div className="relative">
-                      <ShoppingCart className="w-6 h-6" />
-                      <motion.span 
-                        key={cartCount}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-xs font-bold"
-                      >
-                        {cartCount}
-                      </motion.span>
-                    </div>
-                    <span>View Cart</span>
-                    <span className="ml-auto text-lg font-bold">₹{cartTotal.toLocaleString()}</span>
-                  </Button>
-                </motion.div>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl p-0">
-                <div className="flex flex-col h-full">
-                  <SheetHeader className="p-5 pb-4 border-b border-border">
-                    <SheetTitle className="flex items-center gap-3 text-xl">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <ShoppingCart className="w-5 h-5 text-primary" />
-                      </div>
-                      Your Cart
-                      <Badge variant="secondary" className="ml-auto text-sm px-3 py-1">{cartCount} items</Badge>
-                    </SheetTitle>
-                  </SheetHeader>
-                  
-                  {!checkoutOpen ? (
-                    <>
-                      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                        {cart.map((item) => (
-                          <motion.div 
-                            key={item.id} 
-                            layout
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="flex gap-4 p-4 bg-muted/50 rounded-2xl"
-                          >
-                            <div className="w-20 h-20 bg-card rounded-xl overflow-hidden flex-shrink-0 border border-border shadow-sm">
-                              {item.image_url ? (
-                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Package className="w-8 h-8 text-muted-foreground/30" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm text-foreground line-clamp-1">{item.name}</h4>
-                              <p className="text-base font-bold text-primary mt-1">
-                                ₹{item.price.toLocaleString()}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <Button 
-                                  size="icon" 
-                                  variant="outline" 
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => updateQuantity(item.id, -1)}
-                                >
-                                  <Minus className="w-3 h-3" />
-                                </Button>
-                                <span className="font-bold w-8 text-center">{item.quantity}</span>
-                                <Button 
-                                  size="icon" 
-                                  variant="outline" 
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => updateQuantity(item.id, 1)}
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => removeFromCart(item.id)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </motion.div>
-                        ))}
-                      </div>
-                      
-                      {/* Cart Footer */}
-                      <div className="border-t border-border p-4 space-y-4 bg-card">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Subtotal</span>
-                          <span className="text-xl font-bold text-foreground">₹{cartTotal.toLocaleString()}</span>
-                        </div>
-                        <Button 
-                          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base shadow-lg"
-                          onClick={() => setCheckoutOpen(true)}
-                        >
-                          Proceed to Checkout
-                          <ChevronRight className="w-5 h-5 ml-2" />
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Checkout Form */}
-                      <div className="flex-1 overflow-y-auto p-4 space-y-5">
-                        <Button 
-                          variant="ghost" 
-                          className="gap-2 text-muted-foreground"
-                          onClick={() => setCheckoutOpen(false)}
-                        >
-                          <ChevronDown className="w-4 h-4 rotate-90" />
-                          Back to cart
-                        </Button>
-
-                        {/* Delivery Mode */}
-                        <div className="space-y-3">
-                          <Label className="text-sm font-semibold">How would you like to receive your order?</Label>
-                          <RadioGroup 
-                            value={deliveryMode} 
-                            onValueChange={(v) => setDeliveryMode(v as "takeaway" | "delivery")}
-                            className="grid grid-cols-2 gap-3"
-                          >
-                            {hasTakeaway && (
-                              <div>
-                                <RadioGroupItem value="takeaway" id="takeaway" className="sr-only" />
-                                <Label
-                                  htmlFor="takeaway"
-                                  className={`flex flex-col items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                                    deliveryMode === "takeaway" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                                  }`}
-                                >
-                                  <Store className={`w-6 h-6 mb-2 ${deliveryMode === "takeaway" ? "text-primary" : "text-muted-foreground"}`} />
-                                  <span className={`text-sm font-medium ${deliveryMode === "takeaway" ? "text-primary" : ""}`}>Store Pickup</span>
-                                </Label>
-                              </div>
-                            )}
-                            {hasDelivery && (
-                              <div>
-                                <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
-                                <Label
-                                  htmlFor="delivery"
-                                  className={`flex flex-col items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                                    deliveryMode === "delivery" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                                  }`}
-                                >
-                                  <Truck className={`w-6 h-6 mb-2 ${deliveryMode === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
-                                  <span className={`text-sm font-medium ${deliveryMode === "delivery" ? "text-primary" : ""}`}>Home Delivery</span>
-                                </Label>
-                              </div>
-                            )}
-                          </RadioGroup>
-                        </div>
-
-                        {/* Customer Details */}
-                        <div className="space-y-4">
-                          <Label className="text-sm font-semibold">Your Details</Label>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="name" className="text-xs text-muted-foreground">Full Name *</Label>
-                            <div className="relative">
-                              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                              <Input
-                                id="name"
-                                placeholder="Enter your name"
-                                value={customerDetails.name}
-                                onChange={(e) => setCustomerDetails(p => ({...p, name: e.target.value}))}
-                                className="pl-11 h-12 rounded-xl"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="phone" className="text-xs text-muted-foreground">Phone Number *</Label>
-                            <div className="relative">
-                              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                              <Input
-                                id="phone"
-                                type="tel"
-                                placeholder="Enter phone number"
-                                value={customerDetails.phone}
-                                onChange={(e) => setCustomerDetails(p => ({...p, phone: e.target.value}))}
-                                className="pl-11 h-12 rounded-xl"
-                              />
-                            </div>
-                          </div>
-
-                          {deliveryMode === "delivery" && (
-                            <div className="space-y-2">
-                              <Label htmlFor="address" className="text-xs text-muted-foreground">Delivery Address *</Label>
-                              <div className="relative">
-                                <Home className="absolute left-4 top-4 w-4 h-4 text-muted-foreground" />
-                                <Textarea
-                                  id="address"
-                                  placeholder="Enter full address"
-                                  value={customerDetails.address}
-                                  onChange={(e) => setCustomerDetails(p => ({...p, address: e.target.value}))}
-                                  className="pl-11 min-h-[100px] rounded-xl resize-none"
-                                />
-                              </div>
-                            </div>
-                          )}
-
-                          <div className="space-y-2">
-                            <Label htmlFor="notes" className="text-xs text-muted-foreground">Special Instructions (optional)</Label>
-                            <Textarea
-                              id="notes"
-                              placeholder="Any special requests..."
-                              value={customerDetails.notes}
-                              onChange={(e) => setCustomerDetails(p => ({...p, notes: e.target.value}))}
-                              className="min-h-[80px] rounded-xl resize-none"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Checkout Footer */}
-                      <div className="border-t border-border p-4 space-y-4 bg-card">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Total Amount</span>
-                          <span className="text-2xl font-bold text-foreground">₹{cartTotal.toLocaleString()}</span>
-                        </div>
-                        <Button 
-                          className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base shadow-lg gap-3"
-                          onClick={handleCheckout}
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                              Placing Order...
-                            </>
-                          ) : (
-                            <>
-                              <Check className="w-5 h-5" />
-                              Place Order
-                            </>
-                          )}
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          {customization?.whatsapp_number ? "Order will be sent via WhatsApp" : "Order will be saved to the store"}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Product Detail Modal */}
-      <ProductDetailModal
+      <BlinkitProductModal
         product={selectedProduct}
         open={productModalOpen}
         onOpenChange={setProductModalOpen}
         quantity={selectedProduct ? getItemQuantity(selectedProduct.id) : 0}
-        onAddToCart={() => {
-          if (selectedProduct) addToCart(selectedProduct);
-        }}
-        onUpdateQuantity={(delta) => {
-          if (selectedProduct) updateQuantity(selectedProduct.id, delta);
-        }}
+        onAddToCart={() => selectedProduct && addToCart(selectedProduct)}
+        onUpdateQuantity={(delta) => selectedProduct && updateQuantity(selectedProduct.id, getItemQuantity(selectedProduct.id) + delta)}
         isFavorite={selectedProduct ? favorites.has(selectedProduct.id) : false}
-        onToggleFavorite={() => {
-          if (selectedProduct) toggleFavorite(selectedProduct.id);
-        }}
+        onToggleFavorite={() => selectedProduct && toggleFavorite(selectedProduct.id)}
         whatsappNumber={customization?.whatsapp_number}
         storeName={store.name}
+        similarProducts={getSimilarProducts(selectedProduct)}
+        onViewProduct={(p) => setSelectedProduct(p)}
       />
 
-      {/* Bottom Navigation Dock - Mobile Only */}
-      <BottomNavDock
+      {/* Cart Sheet */}
+      <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+          <SheetHeader className="pb-4 border-b">
+            <SheetTitle className="flex items-center gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              Your Cart ({cartCount} items)
+            </SheetTitle>
+          </SheetHeader>
+
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center">
+              <ShoppingCart className="h-16 w-16 text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg">Your cart is empty</p>
+              <Button onClick={() => setCartOpen(false)} className="mt-4 bg-emerald-500 hover:bg-emerald-600">
+                Continue Shopping
+              </Button>
+            </div>
+          ) : checkoutOpen ? (
+            <div className="py-4 space-y-4 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-3">
+                <div>
+                  <Label>Name *</Label>
+                  <Input
+                    value={customerDetails.name}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <Label>Phone *</Label>
+                  <Input
+                    value={customerDetails.phone}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="10-digit phone number"
+                  />
+                </div>
+                
+                {hasDelivery && (
+                  <RadioGroup value={deliveryMode} onValueChange={(v) => setDeliveryMode(v as any)}>
+                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                      <RadioGroupItem value="takeaway" id="takeaway" />
+                      <Label htmlFor="takeaway" className="flex items-center gap-2 cursor-pointer">
+                        <Store className="h-4 w-4" /> Store Pickup
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                      <RadioGroupItem value="delivery" id="delivery" />
+                      <Label htmlFor="delivery" className="flex items-center gap-2 cursor-pointer">
+                        <Truck className="h-4 w-4" /> Home Delivery
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                )}
+
+                {deliveryMode === "delivery" && (
+                  <div>
+                    <Label>Delivery Address *</Label>
+                    <Textarea
+                      value={customerDetails.address}
+                      onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
+                      placeholder="Full delivery address"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <Label>Notes (optional)</Label>
+                  <Textarea
+                    value={customerDetails.notes}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Any special instructions"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setCheckoutOpen(false)} className="flex-1">
+                  Back
+                </Button>
+                <Button onClick={handleCheckout} disabled={isSubmitting} className="flex-1 bg-emerald-500 hover:bg-emerald-600">
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
+                  Place Order
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="py-4 space-y-3 overflow-y-auto max-h-[50vh]">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <div className="w-16 h-16 bg-white rounded-lg overflow-hidden">
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                          <ShoppingCart className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{item.name}</p>
+                      <p className="text-emerald-600 font-bold">₹{item.price}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="p-1.5 bg-gray-200 rounded-lg hover:bg-gray-300"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="font-bold w-6 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="p-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-400 hover:text-red-500">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t pt-4 space-y-3">
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Total</span>
+                  <span className="text-emerald-600">₹{cartTotal.toLocaleString()}</span>
+                </div>
+                <Button onClick={() => setCheckoutOpen(true)} className="w-full bg-emerald-500 hover:bg-emerald-600">
+                  Proceed to Checkout
+                </Button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Bottom Navigation */}
+      <BlinkitBottomNav
         cartCount={cartCount}
+        cartTotal={cartTotal}
         onHomeClick={scrollToTop}
-        onSearchClick={focusSearch}
+        onCategoriesClick={() => setSelectedCategory(null)}
         onCartClick={() => setCartOpen(true)}
         onWhatsAppClick={handleWhatsAppChat}
         showBackToTop={showBackToTop}
         onBackToTop={scrollToTop}
-      />
-
-      {/* Floating WhatsApp Button - Desktop Only */}
-      <FloatingWhatsAppButton
-        whatsappNumber={customization?.whatsapp_number}
-        storeName={store.name}
       />
     </div>
   );

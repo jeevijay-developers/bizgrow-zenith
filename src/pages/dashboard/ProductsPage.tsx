@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
-  X, Upload, Camera, Loader2, ImageIcon
+  X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { useCSVImport } from "@/hooks/useCSVImport";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,6 +87,36 @@ const ProductsPage = () => {
   });
   const addImageInputRef = useRef<HTMLInputElement>(null);
   const editImageInputRef = useRef<HTMLInputElement>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
+  
+  // CSV Import hook
+  const { importing, progress: importProgress, downloadTemplate, importProducts } = useCSVImport(store?.id);
+  
+  // Handle CSV import
+  const handleCSVImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      const result = await importProducts(file);
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      
+      if (result.success > 0) {
+        toast.success(`Imported ${result.success} products successfully!`);
+      }
+      if (result.failed > 0) {
+        toast.error(`Failed to import ${result.failed} products`);
+        console.error("Import errors:", result.errors);
+      }
+    } catch (error) {
+      toast.error("Import failed: " + (error as Error).message);
+    }
+    
+    // Reset file input
+    if (csvInputRef.current) {
+      csvInputRef.current.value = "";
+    }
+  };
 
   // Handle image upload for new product
   const handleAddProductImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,7 +280,37 @@ const ProductsPage = () => {
           <h1 className="text-2xl font-bold">Products</h1>
           <p className="text-muted-foreground">Manage your product catalogue ({products.length} products)</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          {/* CSV Import */}
+          <input
+            type="file"
+            ref={csvInputRef}
+            className="hidden"
+            accept=".csv"
+            onChange={handleCSVImport}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2" disabled={importing}>
+                {importing ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Importing... {importProgress}%</>
+                ) : (
+                  <><FileSpreadsheet className="w-4 h-4" /> CSV Import</>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => csvInputRef.current?.click()}>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={downloadTemplate}>
+                <Download className="w-4 h-4 mr-2" />
+                Download Template
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <Link to="/dashboard/ai-upload">
             <Button variant="outline" className="gap-2">
               <Camera className="w-4 h-4" />

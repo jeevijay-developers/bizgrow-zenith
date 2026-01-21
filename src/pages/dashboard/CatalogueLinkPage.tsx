@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardContext {
   store: {
@@ -36,6 +38,22 @@ const CatalogueLinkPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const [copied, setCopied] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"mobile" | "desktop">("mobile");
+
+  // Fetch store customizations for logo
+  const { data: customization } = useQuery({
+    queryKey: ["store-customization", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return null;
+      const { data, error } = await supabase
+        .from("store_customizations")
+        .select("logo_url, theme_color")
+        .eq("store_id", store.id)
+        .single();
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+    enabled: !!store?.id,
+  });
 
   // For now, use the current origin. In production with custom domain, this would be bizgrow360.com
   const baseUrl = window.location.origin;
@@ -216,7 +234,12 @@ const CatalogueLinkPage = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row items-start gap-6">
-              <QRCodeGenerator url={storeLink} storeName={store.name} />
+              <QRCodeGenerator 
+                url={storeLink} 
+                storeName={store.name} 
+                themeColor={customization?.theme_color || "#10b981"}
+                logoUrl={customization?.logo_url || undefined}
+              />
               <div className="flex-1 space-y-3">
                 <p className="text-sm text-muted-foreground">
                   Customers can scan this QR code to instantly access your digital catalogue. 

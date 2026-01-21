@@ -46,6 +46,7 @@ const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [theme, setTheme] = useState("system");
   const [language, setLanguage] = useState("en");
   const [twoFactor, setTwoFactor] = useState(false);
@@ -54,6 +55,11 @@ const SettingsPage = () => {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  
+  // Password change state
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChanging, setPasswordChanging] = useState(false);
 
   // Fetch profile from database
   const { data: profile, isLoading } = useQuery({
@@ -105,6 +111,41 @@ const SettingsPage = () => {
 
   const handleSave = () => {
     updateProfileMutation.mutate();
+  };
+
+  // Password change handler
+  const handlePasswordChange = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    
+    setPasswordChanging(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Password updated successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error("Failed to update password: " + (error as Error).message);
+    } finally {
+      setPasswordChanging(false);
+    }
   };
 
   if (isLoading) {
@@ -204,35 +245,63 @@ const SettingsPage = () => {
           Security
         </h3>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Current Password</Label>
-            <div className="relative">
-              <Input 
-                type={showPassword ? "text" : "password"} 
-                placeholder="Enter current password"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            You are logged in as: <span className="font-medium">{user?.email}</span>
+          </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>New Password</Label>
-              <Input type="password" placeholder="Enter new password" />
+              <div className="relative">
+                <Input 
+                  type={showNewPassword ? "text" : "password"} 
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Confirm Password</Label>
-              <Input type="password" placeholder="Confirm new password" />
+              <div className="relative">
+                <Input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
           </div>
-          <Button variant="outline">Update Password</Button>
+          <Button 
+            variant="outline" 
+            onClick={handlePasswordChange}
+            disabled={passwordChanging || !newPassword || !confirmPassword}
+            className="gap-2"
+          >
+            {passwordChanging ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Updating...</>
+            ) : (
+              "Update Password"
+            )}
+          </Button>
         </div>
 
         <Separator className="my-6" />

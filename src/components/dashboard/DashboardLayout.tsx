@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { MobileBottomNav } from "@/components/dashboard/MobileBottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -76,7 +77,10 @@ export function DashboardLayout() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <DashboardSidebar />
+        {/* Desktop Sidebar - Hidden on mobile */}
+        <div className="hidden lg:block">
+          <DashboardSidebar />
+        </div>
         <div className="flex-1 flex flex-col min-w-0">
           <DashboardHeader 
             storeName={store?.name || "My Store"} 
@@ -84,10 +88,12 @@ export function DashboardLayout() {
             notificationPermission={permission}
             onRequestNotificationPermission={requestPermission}
           />
-          <main className="flex-1 overflow-auto p-4 md:p-6">
+          <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 lg:pb-6">
             <Outlet context={{ store }} />
           </main>
         </div>
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav />
       </div>
     </SidebarProvider>
   );

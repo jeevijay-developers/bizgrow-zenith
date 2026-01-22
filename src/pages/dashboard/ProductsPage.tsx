@@ -4,7 +4,7 @@ import {
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
   X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download,
-  CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus
+  CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus, Minus, Box
 } from "lucide-react";
 import BulkImageUpload from "@/components/dashboard/BulkImageUpload";
 import AIUploadPromoBanner from "@/components/dashboard/AIUploadPromoBanner";
@@ -69,11 +69,13 @@ const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "low-stock" | "out-of-stock">("all");
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [bulkImageUploadOpen, setBulkImageUploadOpen] = useState(false);
+  const [bulkStockValue, setBulkStockValue] = useState("");
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -282,6 +284,43 @@ const ProductsPage = () => {
     },
   });
 
+  // Quick stock update mutation
+  const updateStockMutation = useMutation({
+    mutationFn: async ({ productId, newQuantity }: { productId: string; newQuantity: number }) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ stock_quantity: newQuantity })
+        .eq("id", productId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+    },
+    onError: (error) => {
+      toast.error("Failed to update stock: " + error.message);
+    },
+  });
+
+  // Bulk stock update mutation
+  const bulkUpdateStockMutation = useMutation({
+    mutationFn: async ({ productIds, quantity }: { productIds: string[]; quantity: number }) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ stock_quantity: quantity })
+        .in("id", productIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      toast.success(`Updated stock for ${selectedProducts.size} products!`);
+      setSelectedProducts(new Set());
+      setBulkStockValue("");
+    },
+    onError: (error) => {
+      toast.error("Failed to update stock: " + error.message);
+    },
+  });
+
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setEditProductOpen(true);
@@ -319,10 +358,36 @@ const ProductsPage = () => {
     });
   };
 
+  const handleBulkStockUpdate = () => {
+    if (selectedProducts.size === 0 || !bulkStockValue) return;
+    const quantity = parseInt(bulkStockValue);
+    if (isNaN(quantity) || quantity < 0) {
+      toast.error("Please enter a valid stock quantity");
+      return;
+    }
+    bulkUpdateStockMutation.mutate({
+      productIds: Array.from(selectedProducts),
+      quantity
+    });
+  };
+
+  const handleQuickStockAdjust = (productId: string, currentStock: number, delta: number) => {
+    const newQuantity = Math.max(0, currentStock + delta);
+    updateStockMutation.mutate({ productId, newQuantity });
+  };
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    // Stock filter
+    let matchesStock = true;
+    const stock = product.stock_quantity ?? 0;
+    if (stockFilter === "in-stock") matchesStock = stock > 10;
+    else if (stockFilter === "low-stock") matchesStock = stock > 0 && stock <= 10;
+    else if (stockFilter === "out-of-stock") matchesStock = stock === 0;
+    
+    return matchesSearch && matchesCategory && matchesStock;
   });
 
   const getStatusConfig = (product: typeof products[0]) => {
@@ -691,43 +756,85 @@ const ProductsPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search products..." 
-            className="pl-10" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-          {categories.map(cat => (
-            <Button
-              key={cat}
-              variant={selectedCategory === cat ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(cat)}
-              className="whitespace-nowrap"
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search products..." 
+              className="pl-10" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={selectedCategory === cat ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(cat)}
+                className="whitespace-nowrap"
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant={viewMode === "grid" ? "default" : "outline"} 
+              size="icon"
+              onClick={() => setViewMode("grid")}
             >
-              {cat}
+              <Grid className="w-4 h-4" />
             </Button>
-          ))}
+            <Button 
+              variant={viewMode === "list" ? "default" : "outline"} 
+              size="icon"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            variant={viewMode === "grid" ? "default" : "outline"} 
-            size="icon"
-            onClick={() => setViewMode("grid")}
+        
+        {/* Stock Filter Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <Button
+            variant={stockFilter === "all" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setStockFilter("all")}
+            className="gap-2"
           >
-            <Grid className="w-4 h-4" />
+            <Box className="w-3.5 h-3.5" />
+            All Stock
           </Button>
-          <Button 
-            variant={viewMode === "list" ? "default" : "outline"} 
-            size="icon"
-            onClick={() => setViewMode("list")}
+          <Button
+            variant={stockFilter === "in-stock" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setStockFilter("in-stock")}
+            className="gap-2 text-green-600"
           >
-            <List className="w-4 h-4" />
+            <TrendingUp className="w-3.5 h-3.5" />
+            In Stock ({products.filter(p => (p.stock_quantity ?? 0) > 10).length})
+          </Button>
+          <Button
+            variant={stockFilter === "low-stock" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setStockFilter("low-stock")}
+            className="gap-2 text-orange-600"
+          >
+            <AlertTriangle className="w-3.5 h-3.5" />
+            Low Stock ({products.filter(p => (p.stock_quantity ?? 0) > 0 && (p.stock_quantity ?? 0) <= 10).length})
+          </Button>
+          <Button
+            variant={stockFilter === "out-of-stock" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setStockFilter("out-of-stock")}
+            className="gap-2 text-destructive"
+          >
+            <X className="w-3.5 h-3.5" />
+            Out of Stock ({products.filter(p => (p.stock_quantity ?? 0) === 0).length})
           </Button>
         </div>
       </div>
@@ -782,6 +889,28 @@ const ProductsPage = () => {
                   <Trash2 className="w-4 h-4" />
                   Delete {selectedProducts.size}
                 </Button>
+                
+                {/* Bulk Stock Update */}
+                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="Stock qty"
+                    value={bulkStockValue}
+                    onChange={(e) => setBulkStockValue(e.target.value)}
+                    className="w-24 h-8 text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={handleBulkStockUpdate}
+                    disabled={bulkUpdateStockMutation.isPending || !bulkStockValue}
+                  >
+                    <Box className="w-4 h-4" />
+                    Set Stock
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -922,8 +1051,32 @@ const ProductsPage = () => {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
-                      <span>Stock: {product.stock_quantity ?? 0}</span>
+                    {/* Quick Stock Adjustment */}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuickStockAdjust(product.id, product.stock_quantity ?? 0, -1);
+                          }}
+                          disabled={updateStockMutation.isPending || (product.stock_quantity ?? 0) === 0}
+                          className="p-1 rounded bg-muted hover:bg-muted-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-sm font-medium w-8 text-center">{product.stock_quantity ?? 0}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuickStockAdjust(product.id, product.stock_quantity ?? 0, 1);
+                          }}
+                          disabled={updateStockMutation.isPending}
+                          className="p-1 rounded bg-muted hover:bg-muted-foreground/20 disabled:opacity-50 transition-colors"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <span className="text-xs text-muted-foreground">stock</span>
                     </div>
                   </div>
                 </motion.div>
@@ -980,7 +1133,25 @@ const ProductsPage = () => {
                           <span className="text-sm text-muted-foreground line-through ml-2">₹{product.compare_price}</span>
                         )}
                       </td>
-                      <td className="p-4">{product.stock_quantity ?? 0}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleQuickStockAdjust(product.id, product.stock_quantity ?? 0, -1)}
+                            disabled={updateStockMutation.isPending || (product.stock_quantity ?? 0) === 0}
+                            className="p-1 rounded bg-muted hover:bg-muted-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="font-medium w-8 text-center">{product.stock_quantity ?? 0}</span>
+                          <button
+                            onClick={() => handleQuickStockAdjust(product.id, product.stock_quantity ?? 0, 1)}
+                            disabled={updateStockMutation.isPending}
+                            className="p-1 rounded bg-muted hover:bg-muted-foreground/20 disabled:opacity-50 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
                       <td className="p-4">
                         <Badge className={`${statusConfig.color} text-xs`}>
                           {statusConfig.status.replace("-", " ")}

@@ -328,18 +328,40 @@ const Join = () => {
           return;
         }
         
-        const { data: sessionData } = await supabase.auth.getSession();
-        userId = sessionData.session?.user?.id;
+        // Wait for auth state to update properly
+        const waitForSession = (): Promise<string | null> => {
+          return new Promise((resolve) => {
+            // First check if session is already available
+            supabase.auth.getSession().then(({ data }) => {
+              if (data.session?.user?.id) {
+                resolve(data.session.user.id);
+                return;
+              }
+              
+              // If not, listen for auth state change
+              const { data: { subscription } } = supabase.auth.onAuthStateChange(
+                (event, session) => {
+                  if (session?.user?.id) {
+                    subscription.unsubscribe();
+                    resolve(session.user.id);
+                  }
+                }
+              );
+              
+              // Timeout after 10 seconds
+              setTimeout(() => {
+                subscription.unsubscribe();
+                resolve(null);
+              }, 10000);
+            });
+          });
+        };
         
-        if (!userId) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const { data: retrySession } = await supabase.auth.getSession();
-          userId = retrySession.session?.user?.id;
-        }
+        userId = await waitForSession();
       }
       
       if (!userId) {
-        toast.error("Account creation failed");
+        toast.error("Account creation failed. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -360,16 +382,20 @@ const Join = () => {
         });
       
       if (storeError) {
-        toast.error("Store creation failed");
+        console.error("Store creation error:", storeError);
+        toast.error("Store creation failed. Please try again.");
         setIsSubmitting(false);
         return;
       }
       
-      toast.success("Welcome to BizGrow 360!");
-      navigate("/dashboard");
+      toast.success("Welcome to BizGrow 360! 🎉");
+      
+      // Use replace to prevent going back to onboarding
+      navigate("/dashboard", { replace: true });
       
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Onboarding error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

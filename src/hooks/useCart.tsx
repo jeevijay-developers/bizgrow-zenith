@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 interface CartItem {
   id: string;
@@ -6,6 +7,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image_url?: string | null;
+  stock_quantity?: number | null;
 }
 
 const CART_STORAGE_KEY = "bizgrow-cart";
@@ -43,7 +45,14 @@ export function useCart(storeId: string | undefined) {
   const addToCart = useCallback((item: Omit<CartItem, "quantity">) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
+      const maxStock = item.stock_quantity ?? Infinity;
+      
       if (existing) {
+        // Check if we can add more
+        if (existing.quantity >= maxStock) {
+          toast.error(`Only ${maxStock} available in stock`);
+          return prev;
+        }
         return prev.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
@@ -58,6 +67,14 @@ export function useCart(storeId: string | undefined) {
         .map((item) => {
           if (item.id === id) {
             const newQty = item.quantity + delta;
+            const maxStock = item.stock_quantity ?? Infinity;
+            
+            // Check stock limit when increasing
+            if (delta > 0 && newQty > maxStock) {
+              toast.error(`Only ${maxStock} available in stock`);
+              return item;
+            }
+            
             return newQty > 0 ? { ...item, quantity: newQty } : item;
           }
           return item;

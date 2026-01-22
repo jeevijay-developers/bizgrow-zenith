@@ -38,6 +38,7 @@ interface DetectedProduct {
   selectedImage: "original" | "enhanced";
   description?: string;
   brand?: string;
+  stockQuantity: number;
 }
 
 interface DashboardContext {
@@ -189,7 +190,8 @@ const AIUploadPage = () => {
           enhancedImage: product.enhancedImage,
           selectedImage: product.enhancedImage ? "enhanced" : "original",
           description: product.description,
-          brand: product.brand
+          brand: product.brand,
+          stockQuantity: 10 // Default stock quantity - user can adjust
         }));
 
         setDetectedProducts(detectedWithImages);
@@ -372,7 +374,7 @@ const AIUploadPage = () => {
           description: product.description || null,
           image_url: imageUrl,
           is_available: true,
-          stock_quantity: 100
+          stock_quantity: product.stockQuantity || 10
         });
 
         if (insertError) {
@@ -871,7 +873,7 @@ const AIUploadPage = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <div className="space-y-1">
                           <Label className="text-xs text-muted-foreground">Price (₹)</Label>
                           <Input
@@ -879,6 +881,17 @@ const AIUploadPage = () => {
                             value={product.price}
                             onChange={(e) => updateProductField(product.id, 'price', Number(e.target.value))}
                             className="h-9"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Stock Qty</Label>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={product.stockQuantity}
+                            onChange={(e) => updateProductField(product.id, 'stockQuantity', Math.max(0, Number(e.target.value)))}
+                            className="h-9"
+                            placeholder="Qty"
                           />
                         </div>
                         <div className="space-y-1">

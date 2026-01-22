@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import AIProcessingLoader from "@/components/dashboard/AIProcessingLoader";
 import AIProcessFlow from "@/components/dashboard/AIProcessFlow";
+import AIUploadSuccessModal from "@/components/dashboard/AIUploadSuccessModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -68,6 +69,7 @@ interface UploadFailure {
 
 const AIUploadPage = () => {
   const { store } = useOutletContext<DashboardContext>();
+  const navigate = useNavigate();
   const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "enhancing" | "results">("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectedProducts, setDetectedProducts] = useState<DetectedProduct[]>([]);
@@ -79,6 +81,8 @@ const AIUploadPage = () => {
   const [newCategoryInput, setNewCategoryInput] = useState<string>("");
   const [showAddCategory, setShowAddCategory] = useState<string | null>(null);
   const [uploadFailures, setUploadFailures] = useState<UploadFailure[]>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [uploadedProductsInfo, setUploadedProductsInfo] = useState<{name: string; price: number; category: string; imageUrl?: string | null}[]>([]);
   
   const allCategories = [...defaultCategories, ...customCategories];
   const [isAddingToCatalogue, setIsAddingToCatalogue] = useState(false);
@@ -265,6 +269,7 @@ const AIUploadPage = () => {
     const failures: UploadFailure[] = [];
     let successCount = 0;
     const categoriesToGenerate = new Set<string>();
+    const successfulProducts: {name: string; price: number; category: string; imageUrl?: string | null}[] = [];
 
     try {
       // Upload images to storage and create products
@@ -367,6 +372,13 @@ const AIUploadPage = () => {
           });
         } else {
           successCount++;
+          // Track successful product for modal display
+          successfulProducts.push({
+            name: product.name,
+            price: product.price,
+            category: product.category,
+            imageUrl: imageUrl
+          });
           // Track category for image generation (deduplicated later)
           categoriesToGenerate.add(product.category.toLowerCase());
         }
@@ -382,11 +394,12 @@ const AIUploadPage = () => {
       setUploadFailures(failures);
 
       if (successCount > 0) {
+        // Show success modal with product details
+        setUploadedProductsInfo(successfulProducts);
+        setShowSuccessModal(true);
+        
         if (failures.length > 0) {
           toast.warning(`${successCount} products added, ${failures.length} failed`);
-        } else {
-          toast.success(`${successCount} products added to catalogue!`);
-          resetUpload();
         }
       } else if (failures.length > 0) {
         toast.error("All uploads failed. Check the errors below.");
@@ -426,6 +439,17 @@ const AIUploadPage = () => {
     setDetectedProducts(prev => 
       prev.map(p => p.id === id ? { ...p, [field]: value } : p)
     );
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    resetUpload();
+  };
+
+  const handleViewProducts = () => {
+    setShowSuccessModal(false);
+    resetUpload();
+    navigate("/dashboard/products");
   };
 
   return (
@@ -987,6 +1011,14 @@ const AIUploadPage = () => {
           </div>
         </motion.div>
       )}
+
+      {/* Success Modal */}
+      <AIUploadSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        products={uploadedProductsInfo}
+        onViewProducts={handleViewProducts}
+      />
     </div>
   );
 };

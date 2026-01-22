@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Package,
@@ -16,6 +17,7 @@ import {
   Link2,
   Sparkles,
   Receipt,
+  Zap,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 import logoLightBg from "@/assets/logo-light-bg.png";
@@ -48,7 +51,7 @@ const mainNavItems = [
 const toolsNavItems = [
   { title: "Catalogue Link", url: "/dashboard/catalogue-link", icon: Link2 },
   { title: "Customize Store", url: "/dashboard/customize-store", icon: Sparkles },
-  { title: "AI Upload", url: "/dashboard/ai-upload", icon: ImagePlus },
+  { title: "AI Upload", url: "/dashboard/ai-upload", icon: ImagePlus, isHighlighted: true },
   { title: "WhatsApp", url: "/dashboard/whatsapp", icon: MessageCircle },
   { title: "Delivery", url: "/dashboard/delivery", icon: Truck },
 ];
@@ -110,11 +113,29 @@ export function DashboardSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink
                       to={item.url}
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-white/80 hover:bg-white/15 hover:text-white transition-colors"
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-white/80 hover:bg-white/15 hover:text-white transition-colors relative ${
+                        item.isHighlighted ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30" : ""
+                      }`}
                       activeClassName="bg-accent text-accent-foreground font-medium"
                     >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
+                      <item.icon className={`w-5 h-5 shrink-0 ${item.isHighlighted ? "text-amber-400" : ""}`} />
+                      {!collapsed && (
+                        <>
+                          <span>{item.title}</span>
+                          {item.isHighlighted && (
+                            <motion.div
+                              className="ml-auto"
+                              animate={{ scale: [1, 1.1, 1] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                            >
+                              <Badge className="bg-amber-500 hover:bg-amber-500 text-[9px] px-1.5 py-0 h-4 font-bold">
+                                <Zap className="w-2.5 h-2.5 mr-0.5" />
+                                NEW
+                              </Badge>
+                            </motion.div>
+                          )}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

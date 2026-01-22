@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Plus, Minus, X, ShoppingCart,
-  Truck, Store, Check, Loader2
+  Truck, Store, Check, Loader2, User, ChevronRight
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
@@ -500,142 +500,304 @@ const StoreCatalogue = () => {
         onViewProduct={(p) => setSelectedProduct(p)}
       />
 
-      {/* Cart Sheet */}
+      {/* Cart Sheet - Enhanced Design */}
       <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-3 sm:px-6">
-          <SheetHeader className="pb-4 border-b">
-            <SheetTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
-              Your Cart ({cartCount} items)
-            </SheetTitle>
-          </SheetHeader>
+        <SheetContent side="bottom" className="h-[85vh] sm:h-[80vh] rounded-t-3xl p-0 overflow-hidden">
+          {/* Header */}
+          <div className="sticky top-0 bg-background z-10 px-4 sm:px-6 pt-4 pb-3 border-b">
+            <div className="flex items-center justify-between">
+              <SheetTitle className="flex items-center gap-3 text-lg sm:text-xl">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <ShoppingCart className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <span className="font-bold">Your Cart</span>
+                  <p className="text-xs text-muted-foreground font-normal">{cartCount} {cartCount === 1 ? 'item' : 'items'}</p>
+                </div>
+              </SheetTitle>
+              {cart.length > 0 && !checkoutOpen && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearCart}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 text-xs"
+                >
+                  Clear All
+                </Button>
+              )}
+            </div>
+          </div>
 
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-center">
-              <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground text-lg">Your cart is empty</p>
-              <Button onClick={() => setCartOpen(false)} className="mt-4 bg-primary hover:bg-primary/90">
-                Continue Shopping
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center px-6">
+              <div className="w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+                <ShoppingCart className="h-12 w-12 text-muted-foreground/40" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">Your cart is empty</h3>
+              <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+                Looks like you haven't added anything yet. Start shopping to fill your cart!
+              </p>
+              <Button onClick={() => setCartOpen(false)} className="bg-primary hover:bg-primary/90 px-8">
+                <Store className="h-4 w-4 mr-2" />
+                Browse Products
               </Button>
             </div>
           ) : checkoutOpen ? (
-            <div className="py-4 space-y-4 overflow-y-auto max-h-[60vh]">
-              <div className="space-y-3">
-                <div>
-                  <Label>Name *</Label>
-                  <Input
-                    value={customerDetails.name}
-                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Your name"
-                  />
+            <div className="px-4 sm:px-6 py-5 overflow-y-auto h-[calc(85vh-80px)] sm:h-[calc(80vh-80px)]">
+              {/* Order Summary Mini */}
+              <div className="bg-muted/50 rounded-xl p-4 mb-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-muted-foreground">Order Summary</span>
+                  <button onClick={() => setCheckoutOpen(false)} className="text-xs text-primary font-medium">
+                    Edit Cart
+                  </button>
                 </div>
-                <div>
-                  <Label>Phone *</Label>
-                  <Input
-                    value={customerDetails.phone}
-                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="10-digit phone number"
-                  />
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {cart.slice(0, 3).map((item, i) => (
+                      <div key={item.id} className="w-10 h-10 rounded-lg bg-card border-2 border-background overflow-hidden">
+                        {item.image_url ? (
+                          <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <ShoppingCart className="h-4 w-4 text-muted-foreground/30" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {cart.length > 3 && (
+                      <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold border-2 border-background">
+                        +{cart.length - 3}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{cartCount} items</p>
+                    <p className="text-lg font-bold text-primary">₹{cartTotal.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Details Form */}
+              <div className="space-y-4">
+                <h3 className="text-base font-semibold flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" />
+                  Customer Details
+                </h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Full Name *</Label>
+                    <Input
+                      value={customerDetails.name}
+                      onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Enter your name"
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Phone Number *</Label>
+                    <Input
+                      value={customerDetails.phone}
+                      onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                      placeholder="10-digit number"
+                      className="h-11"
+                      maxLength={10}
+                    />
+                  </div>
                 </div>
                 
                 {hasDelivery && (
-                  <RadioGroup value={deliveryMode} onValueChange={(v) => setDeliveryMode(v as any)}>
-                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                      <RadioGroupItem value="takeaway" id="takeaway" />
-                      <Label htmlFor="takeaway" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <Store className="h-4 w-4" /> Store Pickup
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">Delivery Option</Label>
+                    <RadioGroup value={deliveryMode} onValueChange={(v) => setDeliveryMode(v as any)} className="grid grid-cols-2 gap-3">
+                      <Label 
+                        htmlFor="takeaway" 
+                        className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                          deliveryMode === 'takeaway' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/30'
+                        }`}
+                      >
+                        <RadioGroupItem value="takeaway" id="takeaway" className="sr-only" />
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          deliveryMode === 'takeaway' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                        }`}>
+                          <Store className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">Store Pickup</p>
+                          <p className="text-xs text-muted-foreground">Collect from store</p>
+                        </div>
+                        {deliveryMode === 'takeaway' && (
+                          <Check className="h-5 w-5 text-primary ml-auto" />
+                        )}
                       </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
-                      <RadioGroupItem value="delivery" id="delivery" />
-                      <Label htmlFor="delivery" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <Truck className="h-4 w-4" /> Home Delivery
+                      <Label 
+                        htmlFor="delivery" 
+                        className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                          deliveryMode === 'delivery' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/30'
+                        }`}
+                      >
+                        <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          deliveryMode === 'delivery' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                        }`}>
+                          <Truck className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">Home Delivery</p>
+                          <p className="text-xs text-muted-foreground">To your address</p>
+                        </div>
+                        {deliveryMode === 'delivery' && (
+                          <Check className="h-5 w-5 text-primary ml-auto" />
+                        )}
                       </Label>
-                    </div>
-                  </RadioGroup>
-                )}
-
-                {deliveryMode === "delivery" && (
-                  <div>
-                    <Label>Delivery Address *</Label>
-                    <Textarea
-                      value={customerDetails.address}
-                      onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
-                      placeholder="Full delivery address"
-                    />
+                    </RadioGroup>
                   </div>
                 )}
 
-                <div>
-                  <Label>Notes (optional)</Label>
+                <AnimatePresence>
+                  {deliveryMode === "delivery" && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-1.5 overflow-hidden"
+                    >
+                      <Label className="text-sm font-medium">Delivery Address *</Label>
+                      <Textarea
+                        value={customerDetails.address}
+                        onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
+                        placeholder="Enter your complete delivery address"
+                        className="min-h-[80px]"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium text-muted-foreground">Special Instructions (Optional)</Label>
                   <Textarea
                     value={customerDetails.notes}
                     onChange={(e) => setCustomerDetails(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Any special instructions"
+                    placeholder="Any special requests or notes..."
+                    className="min-h-[60px]"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setCheckoutOpen(false)} className="flex-1">
-                  Back
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-6 mt-6 border-t sticky bottom-0 bg-background pb-4">
+                <Button variant="outline" onClick={() => setCheckoutOpen(false)} className="flex-1 h-12">
+                  Back to Cart
                 </Button>
-                <Button onClick={handleCheckout} disabled={isSubmitting} className="flex-1 bg-primary hover:bg-primary/90">
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
-                  Place Order
+                <Button 
+                  onClick={handleCheckout} 
+                  disabled={isSubmitting} 
+                  className="flex-1 h-12 bg-primary hover:bg-primary/90 font-semibold"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <Check className="h-5 w-5 mr-2" />
+                      Place Order • ₹{cartTotal.toLocaleString()}
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
           ) : (
-            <>
-              <div className="py-4 space-y-3 overflow-y-auto max-h-[50vh]">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-muted rounded-xl">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-card rounded-lg overflow-hidden flex-shrink-0">
+            <div className="flex flex-col h-[calc(85vh-80px)] sm:h-[calc(80vh-80px)]">
+              {/* Cart Items */}
+              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3">
+                {cart.map((item, index) => (
+                  <motion.div 
+                    key={item.id} 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-xl border border-border/50"
+                  >
+                    {/* Product Image */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-card rounded-xl overflow-hidden flex-shrink-0 border">
                       {item.image_url ? (
-                        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
+                        <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-                          <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <ShoppingCart className="h-6 w-6 text-muted-foreground/30" />
                         </div>
                       )}
                     </div>
+                    
+                    {/* Product Details */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-xs sm:text-sm truncate">{item.name}</p>
-                      <p className="text-primary font-bold text-sm sm:text-base">₹{item.price}</p>
+                      <p className="font-semibold text-sm sm:text-base line-clamp-2">{item.name}</p>
+                      <p className="text-primary font-bold text-base sm:text-lg mt-1">
+                        ₹{(item.price * item.quantity).toLocaleString()}
+                        {item.quantity > 1 && (
+                          <span className="text-xs text-muted-foreground font-normal ml-2">
+                            (₹{item.price} × {item.quantity})
+                          </span>
+                        )}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => updateQuantity(item.id, -1)}
-                        className="p-1 sm:p-1.5 bg-muted-foreground/20 rounded-lg hover:bg-muted-foreground/30"
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <button 
+                        onClick={() => removeFromCart(item.id)} 
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                       >
-                        <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <X className="h-4 w-4" />
                       </button>
-                      <span className="font-bold w-5 sm:w-6 text-center text-sm">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, 1)}
-                        className="p-1 sm:p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-                      >
-                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-                      </button>
+                      <div className="flex items-center gap-1 bg-background rounded-lg border p-1">
+                        <button
+                          onClick={() => updateQuantity(item.id, -1)}
+                          className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="font-bold w-8 text-center text-sm">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, 1)}
+                          className="p-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-muted-foreground hover:text-destructive flex-shrink-0">
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
-              <div className="border-t pt-4 space-y-3">
-                <div className="flex justify-between text-base sm:text-lg font-bold">
-                  <span>Total</span>
-                  <span className="text-primary">₹{cartTotal.toLocaleString()}</span>
+              {/* Footer with Total & Checkout */}
+              <div className="sticky bottom-0 bg-background border-t px-4 sm:px-6 py-4 space-y-4">
+                {/* Bill Details */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Subtotal ({cartCount} items)</span>
+                    <span className="font-medium">₹{cartTotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Delivery</span>
+                    <span className="text-green-600 font-medium">FREE</span>
+                  </div>
+                  <div className="h-px bg-border my-2" />
+                  <div className="flex justify-between">
+                    <span className="font-bold text-base">Total Amount</span>
+                    <span className="font-bold text-xl text-primary">₹{cartTotal.toLocaleString()}</span>
+                  </div>
                 </div>
-                <Button onClick={() => setCheckoutOpen(true)} className="w-full bg-primary hover:bg-primary/90">
+                
+                <Button 
+                  onClick={() => setCheckoutOpen(true)} 
+                  className="w-full h-12 bg-primary hover:bg-primary/90 font-semibold text-base"
+                >
                   Proceed to Checkout
+                  <ChevronRight className="h-5 w-5 ml-2" />
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </SheetContent>
       </Sheet>

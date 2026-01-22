@@ -379,7 +379,7 @@ const Join = () => {
   const StepIcon = currentStep.Icon;
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-[100svh] bg-background flex">
       {/* Left Panel - Branding (Centered) */}
       <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] bg-primary relative overflow-hidden">
         {/* Background Effects */}
@@ -450,22 +450,22 @@ const Join = () => {
       </div>
 
       {/* Right Panel - Form (Centered) */}
-      <div className="flex-1 flex flex-col min-h-screen bg-background">
-        {/* Mobile Header */}
-        <header className="lg:hidden flex items-center justify-between p-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+      <div className="flex-1 flex flex-col min-h-[100svh] bg-background">
+        {/* Mobile Header - Compact */}
+        <header className="lg:hidden flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-20">
+          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground p-1">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <img src={logoDarkBg} alt="BizGrow 360" className="h-8 invert dark:invert-0" />
-          <div className="w-5" />
+          <img src={logoDarkBg} alt="BizGrow 360" className="h-7 invert dark:invert-0" />
+          <div className="w-7" />
         </header>
         
-        {/* Form Container - Vertically Centered */}
-        <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
+        {/* Form Container - Centered with proper mobile padding */}
+        <div className="flex-1 flex items-start sm:items-center justify-center px-4 py-4 sm:py-6 lg:p-8 overflow-y-auto">
           <div className="w-full max-w-md">
-            {/* Progress Steps */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
+            {/* Progress Steps - Compact on mobile */}
+            <div className="mb-5 sm:mb-8">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
                 {steps.slice(0, totalSteps).map((s, i) => (
                   <div key={s.id} className="flex items-center">
                     <motion.div
@@ -473,7 +473,7 @@ const Join = () => {
                       animate={{ 
                         scale: step === s.id ? 1 : 0.85,
                       }}
-                      className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 ${
                         step > s.id 
                           ? "bg-green-500 text-white" 
                           : step === s.id 
@@ -482,13 +482,13 @@ const Join = () => {
                       }`}
                     >
                       {step > s.id ? (
-                        <Check className="w-5 h-5" />
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : (
-                        <s.Icon className="w-4 h-4" />
+                        <s.Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       )}
                     </motion.div>
                     {i < totalSteps - 1 && (
-                      <div className={`w-8 sm:w-12 h-0.5 mx-1 rounded-full transition-colors duration-300 ${
+                      <div className={`w-4 xs:w-6 sm:w-8 md:w-12 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-colors duration-300 ${
                         step > s.id ? "bg-green-500" : "bg-muted"
                       }`} />
                     )}
@@ -498,11 +498,11 @@ const Join = () => {
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Step {step} of {totalSteps}</p>
-                  <h2 className="text-lg font-semibold text-foreground mt-0.5">{currentStep.title}</h2>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide">Step {step} of {totalSteps}</p>
+                  <h2 className="text-base sm:text-lg font-semibold text-foreground mt-0.5">{currentStep.title}</h2>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                  <StepIcon className="w-5 h-5 text-accent" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-accent/10 flex items-center justify-center">
+                  <StepIcon className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
                 </div>
               </div>
             </div>

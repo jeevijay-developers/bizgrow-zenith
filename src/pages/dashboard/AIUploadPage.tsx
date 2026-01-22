@@ -1,14 +1,15 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Camera, Upload, Sparkles, CheckCircle2, Image as ImageIcon,
   RefreshCw, Edit, Trash2, Plus, Package, Loader2,
   Zap, Clock, ImagePlus, AlertCircle, Check, X,
-  Wand2, Brain, Scan
+  Wand2, Brain, Scan, HelpCircle
 } from "lucide-react";
 import AIProcessingLoader from "@/components/dashboard/AIProcessingLoader";
 import AIProcessFlow from "@/components/dashboard/AIProcessFlow";
 import AIUploadSuccessModal from "@/components/dashboard/AIUploadSuccessModal";
+import AIUploadTutorial from "@/components/dashboard/AIUploadTutorial";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -83,11 +84,22 @@ const AIUploadPage = () => {
   const [uploadFailures, setUploadFailures] = useState<UploadFailure[]>([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [uploadedProductsInfo, setUploadedProductsInfo] = useState<{name: string; price: number; category: string; imageUrl?: string | null}[]>([]);
+  const [showTutorial, setShowTutorial] = useState(false);
   
   const allCategories = [...defaultCategories, ...customCategories];
   const [isAddingToCatalogue, setIsAddingToCatalogue] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // Check if first-time user and show tutorial
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('ai-upload-tutorial-seen');
+    if (!hasSeenTutorial) {
+      // Slight delay to let page render first
+      const timer = setTimeout(() => setShowTutorial(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -452,6 +464,16 @@ const AIUploadPage = () => {
     navigate("/dashboard/products");
   };
 
+  const handleTutorialComplete = () => {
+    localStorage.setItem('ai-upload-tutorial-seen', 'true');
+    setShowTutorial(false);
+  };
+
+  const handleTutorialClose = () => {
+    localStorage.setItem('ai-upload-tutorial-seen', 'true');
+    setShowTutorial(false);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto px-4 sm:px-0">
       {/* Hidden file inputs */}
@@ -473,9 +495,19 @@ const AIUploadPage = () => {
       />
 
       {/* Header */}
-      <div className="text-center">
+      <div className="text-center relative">
+        {/* Help button to reopen tutorial */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-0 top-0"
+          onClick={() => setShowTutorial(true)}
+        >
+          <HelpCircle className="w-5 h-5 text-muted-foreground" />
+        </Button>
+
         <motion.div 
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 border border-primary/20"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/20 to-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 border border-primary/20"
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
@@ -1018,6 +1050,13 @@ const AIUploadPage = () => {
         onClose={handleSuccessModalClose}
         products={uploadedProductsInfo}
         onViewProducts={handleViewProducts}
+      />
+
+      {/* Onboarding Tutorial */}
+      <AIUploadTutorial
+        isOpen={showTutorial}
+        onClose={handleTutorialClose}
+        onComplete={handleTutorialComplete}
       />
     </div>
   );

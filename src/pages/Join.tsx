@@ -405,7 +405,72 @@ const Join = () => {
   const StepIcon = currentStep.Icon;
 
   return (
-    <div className="min-h-[100svh] bg-background flex">
+    <>
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {isSubmitting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col items-center gap-6 text-center px-6"
+            >
+              {/* Animated Store Icon */}
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="w-20 h-20 rounded-full border-4 border-primary/20 border-t-primary"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Store className="w-8 h-8 text-primary" />
+                </div>
+              </div>
+              
+              {/* Text */}
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-foreground">Creating your store...</h3>
+                <p className="text-muted-foreground text-sm max-w-xs">
+                  Setting up your digital storefront. This will only take a moment.
+                </p>
+              </div>
+              
+              {/* Progress Steps */}
+              <div className="flex items-center gap-3 mt-2">
+                {["Account", "Store", "Dashboard"].map((label, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0.3 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.5, duration: 0.3 }}
+                    className="flex items-center gap-2"
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: i * 0.5 + 0.2, type: "spring" }}
+                      className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center"
+                    >
+                      <Check className="w-3.5 h-3.5 text-primary" />
+                    </motion.div>
+                    <span className="text-xs text-muted-foreground">{label}</span>
+                    {i < 2 && <ChevronRight className="w-3 h-3 text-muted-foreground/50" />}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-[100svh] bg-background flex">
       {/* Left Panel - Branding (Centered) */}
       <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] bg-primary relative overflow-hidden">
         {/* Background Effects */}
@@ -1021,6 +1086,7 @@ const Join = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -40,10 +40,15 @@ interface DashboardContext {
 }
 
 const defaultCategories = [
+  // General categories
   "Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", 
   "Household", "Electronics", "Clothing", "Fruits", "Vegetables",
   "Bakery", "Frozen Foods", "Meat & Seafood", "Health & Wellness",
-  "Baby Products", "Pet Supplies", "Stationery", "Home Decor"
+  "Baby Products", "Pet Supplies", "Home Decor",
+  // Stationery specific
+  "Pens", "Pencils", "Notebooks", "Books", "Stickers", "Art & Craft",
+  "Paper & Notebooks", "Stamps", "Gifts & Decor", "Frames & Decor",
+  "Accessories", "Party Supplies", "Office Supplies", "School Supplies"
 ];
 
 const AIUploadPage = () => {

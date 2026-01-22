@@ -206,8 +206,13 @@ const ProductContent = ({
               className="w-full h-full object-contain p-4"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="h-16 w-16 text-muted-foreground/30" />
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-muted to-primary/10">
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3">
+                  <Package className="h-10 w-10 text-primary/50" />
+                </div>
+                <span className="text-sm text-muted-foreground font-medium">No Image Available</span>
+              </div>
             </div>
           )}
         </div>

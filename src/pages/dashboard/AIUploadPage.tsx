@@ -259,17 +259,23 @@ const AIUploadPage = () => {
         // Convert base64 to blob and upload
         if (imageToUpload) {
           try {
-            // Handle both base64 and blob URLs
             let blob: Blob;
             
             if (imageToUpload.startsWith('data:')) {
-              // Base64 image
-              const response = await fetch(imageToUpload);
-              blob = await response.blob();
+              // Base64 image - convert to blob properly
+              const base64Data = imageToUpload.split(',')[1];
+              const mimeType = imageToUpload.split(';')[0].split(':')[1] || 'image/jpeg';
+              const byteCharacters = atob(base64Data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              blob = new Blob([byteArray], { type: mimeType });
             } else if (imageToUpload.startsWith('blob:')) {
-              // Blob URL - find the original file
-              const fileIndex = detectedProducts.indexOf(product);
-              const file = uploadedFiles[fileIndex] || uploadedFiles[0];
+              // Blob URL - use the original file
+              const productIndex = detectedProducts.indexOf(product);
+              const file = uploadedFiles[productIndex];
               if (file) {
                 blob = file;
               } else {
@@ -277,21 +283,29 @@ const AIUploadPage = () => {
                 blob = await response.blob();
               }
             } else {
+              // Regular URL
               const response = await fetch(imageToUpload);
               blob = await response.blob();
             }
 
-            const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+            const fileExt = blob.type.includes('png') ? 'png' : 'jpg';
+            const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
             
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('product-images')
-              .upload(fileName, blob, { contentType: 'image/jpeg' });
+              .upload(fileName, blob, { 
+                contentType: blob.type || 'image/jpeg',
+                upsert: false
+              });
 
-            if (!uploadError && uploadData) {
+            if (uploadError) {
+              console.error("Storage upload error:", uploadError);
+            } else if (uploadData) {
               const { data: publicUrl } = supabase.storage
                 .from('product-images')
                 .getPublicUrl(uploadData.path);
               imageUrl = publicUrl.publicUrl;
+              console.log("Image uploaded successfully:", imageUrl);
             }
           } catch (imgError) {
             console.error("Error uploading image:", imgError);

@@ -202,8 +202,13 @@ const BlinkitProductCard = ({
             className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-muted-foreground/5 to-muted-foreground/15 rounded-2xl" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 via-muted to-primary/10">
+            <div className="text-center p-2">
+              <div className="w-12 h-12 lg:w-16 lg:h-16 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+                <Package className="w-6 h-6 lg:w-8 lg:h-8 text-primary/60" />
+              </div>
+              <span className="text-[9px] lg:text-[10px] text-muted-foreground font-medium">No Image</span>
+            </div>
           </div>
         )}
 

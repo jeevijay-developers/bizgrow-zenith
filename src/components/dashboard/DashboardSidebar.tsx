@@ -36,8 +36,12 @@ import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { getCategoryConfig } from "@/config/categoryConfig";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
-import logoLightBg from "@/assets/logo-light-bg.png";
+
+interface DashboardSidebarProps {
+  storeCategory?: string | null;
+}
 
 const mainNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -63,10 +67,12 @@ const settingsNavItems = [
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
   const { state } = useSidebar();
   const { signOut } = useAuth();
   const collapsed = state === "collapsed";
+  const categoryConfig = getCategoryConfig(storeCategory);
+  const CategoryIcon = categoryConfig.icon;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-primary">
@@ -78,6 +84,19 @@ export function DashboardSidebar() {
             className={`transition-all duration-300 ${collapsed ? "h-8 w-8 object-contain object-left" : "h-9"}`}
           />
         </Link>
+        {/* Category Badge */}
+        {!collapsed && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mt-3 flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gradient-to-r ${categoryConfig.theme.gradient} bg-opacity-20`}
+          >
+            <div className="w-6 h-6 rounded bg-white/20 flex items-center justify-center">
+              <CategoryIcon className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-xs font-medium text-white/90 truncate">{categoryConfig.label}</span>
+          </motion.div>
+        )}
       </SidebarHeader>
 
       <SidebarContent className="px-2 bg-primary">

@@ -1,54 +1,15 @@
 import { motion } from "framer-motion";
-import { Plus, ImagePlus, Share2, MessageCircle, QrCode, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { getCategoryConfig, CategoryQuickAction } from "@/config/categoryConfig";
 
-const actions = [
-  {
-    title: "Add Product",
-    description: "Add new product manually",
-    icon: Plus,
-    color: "bg-primary text-primary-foreground",
-    href: "/dashboard/products/new",
-  },
-  {
-    title: "AI Upload",
-    description: "Snap & auto-fill products",
-    icon: ImagePlus,
-    color: "bg-gradient-to-br from-violet-500 to-purple-600 text-white",
-    href: "/dashboard/ai-upload",
-  },
-  {
-    title: "Share Store",
-    description: "Get your store link",
-    icon: Share2,
-    color: "bg-gradient-to-br from-blue-500 to-cyan-500 text-white",
-    href: "/dashboard/store-settings",
-  },
-  {
-    title: "WhatsApp",
-    description: "Manage order notifications",
-    icon: MessageCircle,
-    color: "bg-gradient-to-br from-green-500 to-emerald-500 text-white",
-    href: "/dashboard/whatsapp",
-  },
-  {
-    title: "QR Code",
-    description: "Generate store QR",
-    icon: QrCode,
-    color: "bg-gradient-to-br from-orange-500 to-amber-500 text-white",
-    href: "/dashboard/store-settings",
-  },
-  {
-    title: "Settings",
-    description: "Configure your store",
-    icon: Settings,
-    color: "bg-muted text-foreground",
-    href: "/dashboard/settings",
-  },
-];
+interface QuickActionsProps {
+  storeCategory?: string | null;
+}
 
-export function QuickActions() {
+export function QuickActions({ storeCategory }: QuickActionsProps) {
+  const categoryConfig = getCategoryConfig(storeCategory);
+  const actions = categoryConfig.quickActions;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,11 +18,16 @@ export function QuickActions() {
       className="bg-card rounded-xl border border-border p-6"
     >
       <div className="mb-4">
-        <h3 className="text-lg font-semibold">Quick Actions</h3>
-        <p className="text-sm text-muted-foreground">Common tasks at your fingertips</p>
+        <div className="flex items-center gap-2 mb-1">
+          <categoryConfig.icon className="w-5 h-5 text-muted-foreground" />
+          <h3 className="text-lg font-semibold">Quick Actions</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Common tasks for your {categoryConfig.label.toLowerCase()}
+        </p>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {actions.map((action, index) => (
           <Link key={action.title} to={action.href}>
             <motion.div
@@ -76,7 +42,7 @@ export function QuickActions() {
                 <action.icon className="w-5 h-5" />
               </div>
               <p className="font-medium text-sm">{action.title}</p>
-              <p className="text-xs text-muted-foreground">{action.description}</p>
+              <p className="text-xs text-muted-foreground line-clamp-1">{action.description}</p>
             </motion.div>
           </Link>
         ))}

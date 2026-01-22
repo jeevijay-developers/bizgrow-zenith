@@ -1,17 +1,18 @@
 import { motion } from "framer-motion";
 import { useOutletContext, Navigate } from "react-router-dom";
-import { IndianRupee, ShoppingCart, Package, Users } from "lucide-react";
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
-import { StatsCard } from "@/components/dashboard/StatsCard";
+import { CategoryStatsCard } from "@/components/dashboard/CategoryStatsCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { LowStockAlert } from "@/components/dashboard/LowStockAlert";
 import { SalesChart } from "@/components/dashboard/SalesChart";
 import { TodaySummary } from "@/components/dashboard/TodaySummary";
+import { CategoryTips } from "@/components/dashboard/CategoryTips";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardStatsSkeleton } from "@/components/ui/skeleton-loaders";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { getCategoryConfig } from "@/config/categoryConfig";
 
 interface DashboardContext {
   store: {
@@ -42,6 +43,9 @@ const DashboardHome = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Get category config for terminology
+  const categoryConfig = getCategoryConfig(store?.category);
 
   // Fetch product count
   const { data: productCount = 0 } = useQuery({
@@ -119,51 +123,55 @@ const DashboardHome = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Welcome Banner */}
-      <WelcomeBanner storeName={store?.name || "My Store"} isNewStore={isNewStore} />
+      {/* Welcome Banner - Category Themed */}
+      <WelcomeBanner 
+        storeName={store?.name || "My Store"} 
+        isNewStore={isNewStore}
+        storeCategory={store?.category}
+      />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
+      {/* Stats Grid - Category Themed */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <CategoryStatsCard
           title="Today's Revenue"
           value={`₹${(orderStats?.todayRevenue || 0).toLocaleString()}`}
-          change={orderStats?.newOrders ? `+${orderStats.newOrders} orders today` : "No orders yet"}
+          change={orderStats?.newOrders ? `+${orderStats.newOrders} ${categoryConfig.terminology.orderPlural} today` : `No ${categoryConfig.terminology.orderPlural} yet`}
           changeType={orderStats?.todayRevenue ? "positive" : "neutral"}
-          icon={IndianRupee}
-          iconColor="bg-green-500/10 text-green-600"
+          statType="revenue"
+          storeCategory={store?.category}
           delay={0.05}
         />
-        <StatsCard
-          title="Total Orders"
+        <CategoryStatsCard
+          title={`Total ${categoryConfig.terminology.orderPlural}`}
           value={String(orderStats?.total || 0)}
-          change={orderStats?.newOrders ? `+${orderStats.newOrders} today` : "No orders yet"}
+          change={orderStats?.newOrders ? `+${orderStats.newOrders} today` : `No ${categoryConfig.terminology.orderPlural} yet`}
           changeType={orderStats?.newOrders ? "positive" : "neutral"}
-          icon={ShoppingCart}
-          iconColor="bg-blue-500/10 text-blue-600"
+          statType="orders"
+          storeCategory={store?.category}
           delay={0.1}
         />
-        <StatsCard
-          title="Products"
+        <CategoryStatsCard
+          title={categoryConfig.terminology.productPlural}
           value={String(productCount)}
-          change={isNewStore ? "Add your first product" : "In catalogue"}
+          change={isNewStore ? `Add your first ${categoryConfig.terminology.product}` : "In catalogue"}
           changeType="neutral"
-          icon={Package}
-          iconColor="bg-purple-500/10 text-purple-600"
+          statType="products"
+          storeCategory={store?.category}
           delay={0.15}
         />
-        <StatsCard
-          title="Customers"
+        <CategoryStatsCard
+          title={categoryConfig.terminology.customerPlural}
           value={String(customerCount)}
-          change={customerCount === 0 ? "No customers yet" : "Total customers"}
+          change={customerCount === 0 ? `No ${categoryConfig.terminology.customerPlural} yet` : `Total ${categoryConfig.terminology.customerPlural}`}
           changeType="neutral"
-          icon={Users}
-          iconColor="bg-orange-500/10 text-orange-600"
+          statType="customers"
+          storeCategory={store?.category}
           delay={0.2}
         />
       </div>
 
-      {/* Quick Actions */}
-      <QuickActions />
+      {/* Quick Actions - Category Specific */}
+      <QuickActions storeCategory={store?.category} />
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
@@ -179,25 +187,40 @@ const DashboardHome = () => {
           {/* Today's Summary */}
           {store?.id && <TodaySummary storeId={store.id} />}
           
+          {/* Category Tips */}
+          <CategoryTips storeCategory={store?.category} />
+          
           {/* Low Stock Alert */}
           <LowStockAlert />
 
-          {/* Store Info Card */}
+          {/* Store Info Card - Category Themed */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="bg-card rounded-xl border border-border p-6"
+            className="bg-card rounded-xl border border-border overflow-hidden"
           >
-            <h3 className="font-semibold mb-4">Store Info</h3>
-            <div className="space-y-3 text-sm">
+            {/* Category header */}
+            <div className={`bg-gradient-to-r ${categoryConfig.theme.gradient} p-4`}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <categoryConfig.icon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Store Info</h3>
+                  <p className="text-xs text-white/80">{categoryConfig.label}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Store Name</span>
                 <span className="font-medium">{store?.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Category</span>
-                <span className="font-medium capitalize">{(store?.category || "").replace("-", " ")}</span>
+                <span className="font-medium">{categoryConfig.label}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Mode</span>

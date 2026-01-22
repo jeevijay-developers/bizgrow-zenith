@@ -265,13 +265,14 @@ const StoreCatalogue = () => {
     return products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 6);
   };
 
-  // Cart wrapper
+  // Cart wrapper - now includes stock_quantity for inventory limits
   const addToCart = (product: Product) => {
     addToCartHook({
       id: product.id,
       name: product.name,
       price: product.price,
       image_url: product.image_url,
+      stock_quantity: product.stock_quantity,
     });
     toast.success(`Added to cart`, { duration: 1500 });
   };
@@ -457,7 +458,7 @@ const StoreCatalogue = () => {
                     quantity={getItemQuantity(product.id)}
                     isFavorite={isFavorite(product.id)}
                     onAddToCart={() => addToCart(product)}
-                    onUpdateQuantity={(delta) => updateQuantity(product.id, getItemQuantity(product.id) + delta)}
+                    onUpdateQuantity={(delta) => updateQuantity(product.id, delta)}
                     onToggleFavorite={() => toggleFavorite(product.id)}
                     onViewDetails={() => {
                       setSelectedProduct(product);
@@ -490,7 +491,7 @@ const StoreCatalogue = () => {
         onOpenChange={setProductModalOpen}
         quantity={selectedProduct ? getItemQuantity(selectedProduct.id) : 0}
         onAddToCart={() => selectedProduct && addToCart(selectedProduct)}
-        onUpdateQuantity={(delta) => selectedProduct && updateQuantity(selectedProduct.id, getItemQuantity(selectedProduct.id) + delta)}
+        onUpdateQuantity={(delta) => selectedProduct && updateQuantity(selectedProduct.id, delta)}
         isFavorite={selectedProduct ? isFavorite(selectedProduct.id) : false}
         onToggleFavorite={() => selectedProduct && toggleFavorite(selectedProduct.id)}
         whatsappNumber={customization?.whatsapp_number}
@@ -605,14 +606,14 @@ const StoreCatalogue = () => {
                     </div>
                     <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.id, -1)}
                         className="p-1 sm:p-1.5 bg-muted-foreground/20 rounded-lg hover:bg-muted-foreground/30"
                       >
                         <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
                       <span className="font-bold w-5 sm:w-6 text-center text-sm">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id, 1)}
                         className="p-1 sm:p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                       >
                         <Plus className="h-3 w-3 sm:h-4 sm:w-4" />

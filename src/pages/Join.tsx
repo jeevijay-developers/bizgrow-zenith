@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
   Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock,
-  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star
+  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star, PartyPopper
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { validateStep, type JoinFormData } from "@/lib/validations";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 // AI-generated category images
@@ -218,7 +219,42 @@ const Join = () => {
   const totalSteps = user ? 5 : 6;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
+
+  // Confetti celebration effect
+  const triggerConfetti = useCallback(() => {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      // Confetti from both sides
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: ['#FF6B35', '#7C3AED', '#10B981', '#F59E0B', '#EC4899'],
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: ['#FF6B35', '#7C3AED', '#10B981', '#F59E0B', '#EC4899'],
+      });
+    }, 250);
+  }, []);
 
   const [formData, setFormData] = useState<Partial<JoinFormData> & { email?: string; password?: string }>({
     storeName: "",
@@ -388,15 +424,19 @@ const Join = () => {
         return;
       }
       
-      toast.success("Welcome to BizGrow 360! 🎉");
+      // Show success celebration
+      setIsSubmitting(false);
+      setShowSuccess(true);
+      triggerConfetti();
       
-      // Use replace to prevent going back to onboarding
-      navigate("/dashboard", { replace: true });
+      // Navigate to dashboard after celebration
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 3500);
       
     } catch (error) {
       console.error("Onboarding error:", error);
       toast.error("Something went wrong. Please try again.");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -465,6 +505,89 @@ const Join = () => {
                   </motion.div>
                 ))}
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Celebration Overlay */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-background flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", duration: 0.6, bounce: 0.4 }}
+              className="flex flex-col items-center gap-6 text-center px-6"
+            >
+              {/* Success Icon with Glow */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="relative"
+              >
+                <div className="absolute inset-0 w-24 h-24 bg-accent/30 rounded-full blur-xl animate-pulse" />
+                <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center shadow-lg shadow-accent/30">
+                  <PartyPopper className="w-12 h-12 text-accent-foreground" />
+                </div>
+              </motion.div>
+              
+              {/* Celebration Text */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-3"
+              >
+                <h2 className="text-3xl font-bold text-foreground">
+                  🎉 Congratulations!
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-sm">
+                  Your store <span className="font-semibold text-primary">{formData.storeName}</span> is ready!
+                </p>
+              </motion.div>
+              
+              {/* Features Preview */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-wrap items-center justify-center gap-3 mt-2"
+              >
+                {[
+                  { icon: Globe, label: "Online Store" },
+                  { icon: Camera, label: "AI Uploads" },
+                  { icon: BarChart3, label: "Analytics" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.7 + i * 0.1 }}
+                    className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full"
+                  >
+                    <item.icon className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{item.label}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+              
+              {/* Redirect Notice */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="text-sm text-muted-foreground mt-4 flex items-center gap-2"
+              >
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Taking you to your dashboard...
+              </motion.p>
             </motion.div>
           </motion.div>
         )}

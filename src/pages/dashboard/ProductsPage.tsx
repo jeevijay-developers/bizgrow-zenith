@@ -7,6 +7,7 @@ import {
   CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus
 } from "lucide-react";
 import BulkImageUpload from "@/components/dashboard/BulkImageUpload";
+import AIUploadPromoBanner from "@/components/dashboard/AIUploadPromoBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -348,6 +349,9 @@ const ProductsPage = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* AI Upload Promo Banner */}
+      <AIUploadPromoBanner />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

@@ -7,6 +7,7 @@ import {
   Wand2, Brain, Scan
 } from "lucide-react";
 import AIProcessingLoader from "@/components/dashboard/AIProcessingLoader";
+import AIProcessFlow from "@/components/dashboard/AIProcessFlow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -449,15 +450,24 @@ const AIUploadPage = () => {
 
       {/* Header */}
       <div className="text-center">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+        <motion.div 
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 border border-primary/20"
+          animate={{ scale: [1, 1.02, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           <Sparkles className="w-4 h-4" />
-          AI-Powered
-        </div>
-        <h1 className="text-xl sm:text-2xl font-bold">AI Product Upload</h1>
+          AI-Powered Product Upload
+        </motion.div>
+        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+          Add Products in Seconds
+        </h1>
         <p className="text-muted-foreground mt-2 max-w-lg mx-auto text-sm sm:text-base">
-          Snap a photo and let AI extract all product details and enhance images with clean white backgrounds.
+          The fastest way to build your catalogue. Just snap a photo and let AI do the rest.
         </p>
       </div>
+
+      {/* Process Flow */}
+      <AIProcessFlow />
 
       {/* Stats */}
       {/* Stats with enhanced styling */}

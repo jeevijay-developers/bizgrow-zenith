@@ -26,6 +26,7 @@ import BlinkitProductCard from "@/components/store/BlinkitProductCard";
 import BlinkitProductModal from "@/components/store/BlinkitProductModal";
 import BlinkitHeader from "@/components/store/BlinkitHeader";
 import BlinkitBottomNav from "@/components/store/BlinkitBottomNav";
+import DesktopStickyFooter from "@/components/store/DesktopStickyFooter";
 import CategorySidebar from "@/components/store/CategorySidebar";
 import IconCategoryTabs from "@/components/store/IconCategoryTabs";
 import FilterBar from "@/components/store/FilterBar";
@@ -356,7 +357,7 @@ const StoreCatalogue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-muted pb-28">
+    <div className="min-h-screen bg-gradient-to-b from-muted via-muted to-muted/80 pb-28 md:pb-24">
       {/* Header */}
       <BlinkitHeader
         storeName={store.name}
@@ -638,7 +639,7 @@ const StoreCatalogue = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Mobile */}
       <BlinkitBottomNav
         cartCount={cartCount}
         cartTotal={cartTotal}
@@ -646,6 +647,17 @@ const StoreCatalogue = () => {
         onCategoriesClick={() => setSelectedCategory(null)}
         onCartClick={() => setCartOpen(true)}
         onWhatsAppClick={handleWhatsAppChat}
+        showBackToTop={showBackToTop}
+        onBackToTop={scrollToTop}
+      />
+
+      {/* Desktop Sticky Footer */}
+      <DesktopStickyFooter
+        cartCount={cartCount}
+        cartTotal={cartTotal}
+        onCartClick={() => setCartOpen(true)}
+        onWhatsAppClick={handleWhatsAppChat}
+        storeName={store.name}
         showBackToTop={showBackToTop}
         onBackToTop={scrollToTop}
       />

@@ -4,8 +4,9 @@ import {
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
   X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download,
-  CheckSquare, Square, ToggleLeft, ToggleRight
+  CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus
 } from "lucide-react";
+import BulkImageUpload from "@/components/dashboard/BulkImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -71,6 +72,7 @@ const ProductsPage = () => {
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [bulkImageUploadOpen, setBulkImageUploadOpen] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -382,6 +384,21 @@ const ProductsPage = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          
+          {/* Bulk Image Upload Button */}
+          {products.filter(p => !p.image_url).length > 0 && (
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => setBulkImageUploadOpen(true)}
+            >
+              <ImagePlus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Images</span>
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                {products.filter(p => !p.image_url).length}
+              </Badge>
+            </Button>
+          )}
           
           <Link to="/dashboard/ai-upload">
             <Button variant="outline" className="gap-2">
@@ -996,6 +1013,19 @@ const ProductsPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bulk Image Upload Dialog */}
+      {store && (
+        <BulkImageUpload
+          storeId={store.id}
+          productsWithoutImages={products.filter(p => !p.image_url)}
+          open={bulkImageUploadOpen}
+          onOpenChange={setBulkImageUploadOpen}
+          onComplete={() => {
+            queryClient.invalidateQueries({ queryKey: ["products", store.id] });
+          }}
+        />
+      )}
     </div>
   );
 };

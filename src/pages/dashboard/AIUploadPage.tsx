@@ -180,8 +180,8 @@ const AIUploadPage = () => {
 
       if (data?.products && data.products.length > 0) {
         // Map AI results with uploaded images
-        const detectedWithImages: DetectedProduct[] = data.products.map((product: any, index: number) => ({
-          id: `prod-${Date.now()}-${index}`,
+        const newDetectedProducts: DetectedProduct[] = data.products.map((product: any, index: number) => ({
+          id: `prod-${Date.now()}-${index}-${Math.random().toString(36).substring(7)}`,
           name: product.name || `Product ${index + 1}`,
           price: product.price || 0,
           category: product.category || "Groceries",
@@ -194,12 +194,17 @@ const AIUploadPage = () => {
           stockQuantity: 10 // Default stock quantity - user can adjust
         }));
 
-        setDetectedProducts(detectedWithImages);
-        setSelectedProducts(new Set(detectedWithImages.map(p => p.id)));
+        // Append new products to existing ones (for "Upload More" functionality)
+        setDetectedProducts(prev => [...prev, ...newDetectedProducts]);
+        setSelectedProducts(prev => {
+          const newSet = new Set(prev);
+          newDetectedProducts.forEach(p => newSet.add(p.id));
+          return newSet;
+        });
         setUploadState("results");
         
-        const enhancedCount = detectedWithImages.filter(p => p.enhancedImage).length;
-        toast.success(`${detectedWithImages.length} products detected! ${enhancedCount > 0 ? `${enhancedCount} images enhanced.` : ''}`);
+        const enhancedCount = newDetectedProducts.filter(p => p.enhancedImage).length;
+        toast.success(`${newDetectedProducts.length} products detected! ${enhancedCount > 0 ? `${enhancedCount} images enhanced.` : ''}`);
       } else {
         toast.error("No products detected. Try with a clearer image.");
         setUploadState("idle");
@@ -234,12 +239,25 @@ const AIUploadPage = () => {
     });
   };
 
-  const resetUpload = () => {
+  const resetUpload = (keepProducts: boolean = false) => {
     setUploadState("idle");
     setUploadProgress(0);
-    setDetectedProducts([]);
-    setSelectedProducts(new Set());
+    if (!keepProducts) {
+      setDetectedProducts([]);
+      setSelectedProducts(new Set());
+    }
     // Revoke object URLs
+    uploadedImages.forEach(url => URL.revokeObjectURL(url));
+    setUploadedImages([]);
+    setUploadedFiles([]);
+  };
+
+  // Upload more products without clearing existing ones
+  const handleUploadMore = () => {
+    // Just reset to idle state but keep existing products
+    setUploadState("idle");
+    setUploadProgress(0);
+    // Revoke old URLs but don't clear detected products
     uploadedImages.forEach(url => URL.revokeObjectURL(url));
     setUploadedImages([]);
     setUploadedFiles([]);
@@ -674,7 +692,7 @@ const AIUploadPage = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={resetUpload} className="gap-2 flex-1 sm:flex-none">
+                <Button variant="outline" onClick={handleUploadMore} className="gap-2 flex-1 sm:flex-none">
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Upload More</span>
                   <span className="sm:hidden">More</span>

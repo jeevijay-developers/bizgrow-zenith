@@ -366,6 +366,7 @@ const StoreCatalogue = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         logoUrl={customization?.logo_url}
+        whatsappNumber={customization?.whatsapp_number}
       />
 
       {/* Desktop Container - Max Width for proper alignment */}
@@ -425,15 +426,16 @@ const StoreCatalogue = () => {
           />
 
           {/* Products Grid */}
-          <main className="flex-1 px-2 sm:px-0 lg:px-4 py-4">
+          <main className="flex-1 px-2 sm:px-0 lg:px-6 py-4 lg:py-6">
             {/* Section Header */}
-            <div className="flex items-center justify-between mb-3 sm:mb-4 px-1 sm:px-0">
+            <div className="flex items-center justify-between mb-4 sm:mb-5 px-1 sm:px-0">
               <div>
-                <h2 className="text-base sm:text-lg lg:text-xl font-bold text-foreground">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                   {selectedCategory || "All Products"}
                 </h2>
-                <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground mt-0.5">
+                <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-0.5">
                   {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} available
+                  {selectedCategory && ` in ${selectedCategory}`}
                 </p>
               </div>
             </div>
@@ -450,7 +452,7 @@ const StoreCatalogue = () => {
                 }} 
               />
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
                 {filteredProducts.map((product, index) => (
                   <BlinkitProductCard
                     key={product.id}

@@ -79,7 +79,17 @@ export function ImageUpload({
       
       // Generate unique filename
       const ext = file.name.split(".").pop() || "jpg";
-      const fileName = `${storeId}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      let fileName = `${storeId}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      // Storage RLS for product-images expects the first folder to be the authenticated user's id
+      if (bucket === "product-images") {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const user = userData?.user;
+        if (userError || !user) {
+          throw userError || new Error("Not authenticated");
+        }
+        fileName = `${user.id}/${storeId}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      }
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage

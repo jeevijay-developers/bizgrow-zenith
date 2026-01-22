@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Link2, Copy, ExternalLink, Share2, 
   Check, Eye, MessageCircle, Facebook, Twitter,
-  Smartphone, Monitor, RefreshCw, QrCode
+  Smartphone, Monitor, RefreshCw, QrCode, X, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,12 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface DashboardContext {
   store: {
@@ -39,6 +45,7 @@ const CatalogueLinkPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const [copied, setCopied] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"mobile" | "desktop">("mobile");
+  const [showShareSheet, setShowShareSheet] = useState(false);
 
   // Fetch store customizations for logo
   const { data: customization } = useQuery({
@@ -90,6 +97,22 @@ const CatalogueLinkPage = () => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(storeLink)}`, "_blank");
   };
 
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${store?.name} - Digital Store`,
+          text: `Check out my store "${store?.name}"!`,
+          url: storeLink,
+        });
+      } catch (err) {
+        // User cancelled or error
+      }
+    } else {
+      setShowShareSheet(true);
+    }
+  };
+
   if (!store) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
@@ -100,122 +123,164 @@ const CatalogueLinkPage = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Link2 className="w-6 h-6" />
-          Store Catalogue Link
-        </h1>
-        <p className="text-muted-foreground">
-          Share your digital catalogue with customers
-        </p>
-      </div>
-
-      {/* Store Status */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+    <>
+      <div className="space-y-6 max-w-4xl mx-auto pb-24 lg:pb-6">
+        {/* Prominent Share Store Hero - Mobile First */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/80 p-6 text-primary-foreground"
+        >
+          <div className="absolute top-0 right-0 w-40 h-40 bg-accent/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative z-10">
+            <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <CardTitle className="text-lg">{store.name}</CardTitle>
-                <CardDescription className="capitalize">
+                <Badge className="bg-white/20 text-white border-0 mb-2">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Your Digital Store
+                </Badge>
+                <h1 className="text-xl sm:text-2xl font-bold mb-1">{store.name}</h1>
+                <p className="text-white/70 text-sm capitalize">
                   {(store.category || "").replace("-", " ")} Store
-                </CardDescription>
+                </p>
               </div>
-              <Badge variant={store.is_active ? "default" : "secondary"}>
-                {store.is_active ? "Active" : "Inactive"}
+              <Badge 
+                className={store.is_active 
+                  ? "bg-green-500/20 text-green-300 border-green-500/30" 
+                  : "bg-white/10 text-white/60 border-white/20"
+                }
+              >
+                {store.is_active ? "● Live" : "○ Offline"}
               </Badge>
             </div>
-          </CardHeader>
-          <Separator />
-          <CardContent className="pt-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 relative">
-                <Input
-                  value={storeLink}
-                  readOnly
-                  className="pr-24 font-mono text-sm"
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 gap-1"
-                  onClick={handleCopy}
-                >
-                  {copied ? (
-                    <><Check className="w-3 h-3" /> Copied</>
-                  ) : (
-                    <><Copy className="w-3 h-3" /> Copy</>
-                  )}
-                </Button>
-              </div>
-              <Button onClick={handleOpenStore} className="gap-2">
+
+            {/* Big Share Button */}
+            <Button
+              size="lg"
+              onClick={handleNativeShare}
+              className="w-full bg-white text-primary hover:bg-white/90 font-semibold shadow-lg gap-2 h-12 text-base"
+            >
+              <Share2 className="w-5 h-5" />
+              Share Your Store
+            </Button>
+
+            {/* Quick Actions Row */}
+            <div className="flex gap-2 mt-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopy}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white gap-1.5"
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? "Copied!" : "Copy Link"}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleOpenStore}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white gap-1.5"
+              >
                 <ExternalLink className="w-4 h-4" />
                 View Store
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+          </div>
+        </motion.div>
 
-      {/* Share Options */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Share2 className="w-5 h-5" />
-              Share Your Store
-            </CardTitle>
-            <CardDescription>
-              Share your catalogue link on social media and messaging apps
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Button
-                variant="outline"
-                className="gap-2 h-auto py-4 flex-col"
-                onClick={handleShareWhatsApp}
-              >
-                <MessageCircle className="w-6 h-6 text-green-500" />
-                <span>WhatsApp</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 h-auto py-4 flex-col"
-                onClick={handleShareFacebook}
-              >
-                <Facebook className="w-6 h-6 text-blue-600" />
-                <span>Facebook</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 h-auto py-4 flex-col"
-                onClick={handleShareTwitter}
-              >
-                <Twitter className="w-6 h-6 text-sky-500" />
-                <span>Twitter</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 h-auto py-4 flex-col"
-                onClick={handleCopy}
-              >
-                <Copy className="w-6 h-6 text-muted-foreground" />
-                <span>Copy Link</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+        {/* Store Link Input Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Link2 className="w-4 h-4" />
+                Your Store Link
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <Input
+                    value={storeLink}
+                    readOnly
+                    className="pr-20 font-mono text-xs sm:text-sm bg-muted/50"
+                  />
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 gap-1 text-xs"
+                    onClick={handleCopy}
+                  >
+                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copied ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Share this link with customers to let them browse your products
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Share Options - Desktop Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="hidden sm:block"
+        >
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Share2 className="w-4 h-4" />
+                Quick Share
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-4 gap-3">
+                <Button
+                  variant="outline"
+                  className="gap-2 h-auto py-3 flex-col hover:bg-green-50 hover:border-green-200 dark:hover:bg-green-950"
+                  onClick={handleShareWhatsApp}
+                >
+                  <MessageCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-xs">WhatsApp</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2 h-auto py-3 flex-col hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-950"
+                  onClick={handleShareFacebook}
+                >
+                  <Facebook className="w-5 h-5 text-blue-600" />
+                  <span className="text-xs">Facebook</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2 h-auto py-3 flex-col hover:bg-sky-50 hover:border-sky-200 dark:hover:bg-sky-950"
+                  onClick={handleShareTwitter}
+                >
+                  <Twitter className="w-5 h-5 text-sky-500" />
+                  <span className="text-xs">Twitter</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2 h-auto py-3 flex-col"
+                  onClick={handleCopy}
+                >
+                  <Copy className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-xs">Copy Link</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
       {/* QR Code */}
       <motion.div
@@ -337,6 +402,72 @@ const CatalogueLinkPage = () => {
         </Card>
       </motion.div>
     </div>
+
+    {/* Mobile Share Sheet */}
+    <Sheet open={showShareSheet} onOpenChange={setShowShareSheet}>
+      <SheetContent side="bottom" className="h-auto rounded-t-2xl">
+        <SheetHeader className="pb-4">
+          <SheetTitle className="text-left flex items-center gap-2">
+            <Share2 className="w-5 h-5" />
+            Share Your Store
+          </SheetTitle>
+        </SheetHeader>
+        <div className="grid grid-cols-4 gap-4 py-4">
+          <button
+            onClick={() => { handleShareWhatsApp(); setShowShareSheet(false); }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
+              <MessageCircle className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-xs font-medium">WhatsApp</span>
+          </button>
+          <button
+            onClick={() => { handleShareFacebook(); setShowShareSheet(false); }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center shadow-lg">
+              <Facebook className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-xs font-medium">Facebook</span>
+          </button>
+          <button
+            onClick={() => { handleShareTwitter(); setShowShareSheet(false); }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 rounded-full bg-sky-500 flex items-center justify-center shadow-lg">
+              <Twitter className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-xs font-medium">Twitter</span>
+          </button>
+          <button
+            onClick={() => { handleCopy(); setShowShareSheet(false); }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center shadow-lg">
+              <Copy className="w-7 h-7 text-foreground" />
+            </div>
+            <span className="text-xs font-medium">Copy Link</span>
+          </button>
+        </div>
+      </SheetContent>
+    </Sheet>
+
+    {/* Floating Share Button - Mobile */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="lg:hidden fixed bottom-20 right-4 z-40"
+    >
+      <Button
+        size="lg"
+        onClick={handleNativeShare}
+        className="h-14 w-14 rounded-full shadow-xl bg-accent hover:bg-accent/90 p-0"
+      >
+        <Share2 className="w-6 h-6" />
+      </Button>
+    </motion.div>
+    </>
   );
 };
 

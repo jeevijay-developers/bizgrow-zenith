@@ -58,6 +58,12 @@ const defaultCategories = [
   "Pharmacy", "Cosmetics", "Jewelry", "Watches", "Bags", "Footwear"
 ];
 
+interface UploadFailure {
+  productName: string;
+  error: string;
+  type: 'image' | 'product';
+}
+
 const AIUploadPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "enhancing" | "results">("idle");
@@ -70,6 +76,7 @@ const AIUploadPage = () => {
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [newCategoryInput, setNewCategoryInput] = useState<string>("");
   const [showAddCategory, setShowAddCategory] = useState<string | null>(null);
+  const [uploadFailures, setUploadFailures] = useState<UploadFailure[]>([]);
   
   const allCategories = [...defaultCategories, ...customCategories];
   const [isAddingToCatalogue, setIsAddingToCatalogue] = useState(false);
@@ -253,11 +260,14 @@ const AIUploadPage = () => {
     }
 
     setIsAddingToCatalogue(true);
+    const failures: UploadFailure[] = [];
+    let successCount = 0;
 
     try {
       // Upload images to storage and create products
       for (const product of selectedProductsList) {
         let imageUrl = null;
+        let imageUploadFailed = false;
 
         // Get the selected image (original or enhanced)
         const imageToUpload = product.selectedImage === "enhanced" && product.enhancedImage 
@@ -309,6 +319,12 @@ const AIUploadPage = () => {
 
             if (uploadError) {
               console.error("Storage upload error:", uploadError);
+              imageUploadFailed = true;
+              failures.push({
+                productName: product.name,
+                error: uploadError.message || 'Storage upload failed',
+                type: 'image'
+              });
             } else if (uploadData) {
               const { data: publicUrl } = supabase.storage
                 .from('product-images')
@@ -318,6 +334,12 @@ const AIUploadPage = () => {
             }
           } catch (imgError) {
             console.error("Error uploading image:", imgError);
+            imageUploadFailed = true;
+            failures.push({
+              productName: product.name,
+              error: imgError instanceof Error ? imgError.message : 'Image processing failed',
+              type: 'image'
+            });
           }
         }
 
@@ -335,11 +357,29 @@ const AIUploadPage = () => {
 
         if (insertError) {
           console.error("Error adding product:", insertError);
+          failures.push({
+            productName: product.name,
+            error: insertError.message || 'Database insert failed',
+            type: 'product'
+          });
+        } else {
+          successCount++;
         }
       }
 
-      toast.success(`${selectedProductsList.length} products added to catalogue!`);
-      resetUpload();
+      // Update failures state for display
+      setUploadFailures(failures);
+
+      if (successCount > 0) {
+        if (failures.length > 0) {
+          toast.warning(`${successCount} products added, ${failures.length} failed`);
+        } else {
+          toast.success(`${successCount} products added to catalogue!`);
+          resetUpload();
+        }
+      } else if (failures.length > 0) {
+        toast.error("All uploads failed. Check the errors below.");
+      }
     } catch (err) {
       console.error("Error adding to catalogue:", err);
       toast.error("Failed to add products. Please try again.");
@@ -347,6 +387,8 @@ const AIUploadPage = () => {
       setIsAddingToCatalogue(false);
     }
   };
+
+  const clearFailures = () => setUploadFailures([]);
 
   const updateProductField = (id: string, field: keyof DetectedProduct, value: string | number) => {
     setDetectedProducts(prev => 
@@ -568,6 +610,49 @@ const AIUploadPage = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Upload Failures Banner */}
+            {uploadFailures.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-destructive/10 border border-destructive/30 rounded-xl p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-destructive text-sm">
+                        {uploadFailures.length} Upload{uploadFailures.length > 1 ? 's' : ''} Failed
+                      </h4>
+                      <div className="mt-2 space-y-1.5">
+                        {uploadFailures.map((failure, idx) => (
+                          <div key={idx} className="text-xs bg-background/50 rounded-lg px-2.5 py-1.5 flex items-start gap-2">
+                            <Badge variant="outline" className="flex-shrink-0 text-[9px] h-4">
+                              {failure.type === 'image' ? 'Image' : 'Product'}
+                            </Badge>
+                            <div className="min-w-0">
+                              <span className="font-medium text-foreground truncate block">{failure.productName}</span>
+                              <span className="text-muted-foreground truncate block">{failure.error}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 flex-shrink-0"
+                    onClick={clearFailures}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Products Grid */}
             <div className="grid gap-4">

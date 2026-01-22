@@ -27,11 +27,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
+import { getCategoryConfig } from "@/config/categoryConfig";
 
 interface DashboardContext {
   store: {
     id: string;
     name: string;
+    category?: string;
   } | null;
 }
 
@@ -68,6 +70,10 @@ const CustomersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
+  // Get category config for personalized content
+  const categoryConfig = getCategoryConfig(store?.category);
+  const { pageContent, terminology, icon: CategoryIcon, theme } = categoryConfig;
+
   // Fetch customers
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ["customers", store?.id],
@@ -95,9 +101,12 @@ const CustomersPage = () => {
   const totalSpent = customers.reduce((acc, c) => acc + c.total_spent, 0);
   const avgLifetimeValue = customers.length > 0 ? Math.round(totalSpent / customers.length) : 0;
 
+  // Capitalize first letter helper
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
   const stats = [
-    { label: "Total Customers", value: customers.length, icon: Users, color: "text-primary" },
-    { label: "VIP Customers", value: customers.filter(c => c.status === "vip").length, icon: Crown, color: "text-yellow-600" },
+    { label: `Total ${capitalize(terminology.customerPlural)}`, value: customers.length, icon: Users, color: "text-primary" },
+    { label: `VIP ${capitalize(terminology.customerPlural)}`, value: customers.filter(c => c.status === "vip").length, icon: Crown, color: "text-yellow-600" },
     { label: "New This Month", value: customers.filter(c => c.status === "new").length, icon: UserPlus, color: "text-green-600" },
     { label: "Avg. Lifetime Value", value: `₹${avgLifetimeValue.toLocaleString()}`, icon: TrendingUp, color: "text-blue-600" },
   ];
@@ -112,20 +121,25 @@ const CustomersPage = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
+      {/* Header with Category Theme */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Customers</h1>
-          <p className="text-muted-foreground">Manage your customer relationships</p>
+        <div className="flex items-start gap-3">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-lg`}>
+            <CategoryIcon className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{pageContent.customersTitle}</h1>
+            <p className="text-muted-foreground">{pageContent.customersDescription}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-2">
             <Download className="w-4 h-4" />
             Export
           </Button>
-          <Button size="sm" className="gap-2">
+          <Button size="sm" className={`gap-2 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}>
             <UserPlus className="w-4 h-4" />
-            Add Customer
+            {pageContent.addCustomerButton}
           </Button>
         </div>
       </div>
@@ -183,11 +197,19 @@ const CustomersPage = () => {
             exit={{ opacity: 0 }}
             className="bg-card rounded-xl border border-border p-12 text-center"
           >
-            <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No customers found</h3>
-            <p className="text-muted-foreground">
-              {searchQuery ? "Try adjusting your search" : "Customers will appear here when they make purchases"}
+            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center mx-auto mb-4 opacity-50`}>
+              <CategoryIcon className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">{pageContent.emptyCustomersTitle}</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              {searchQuery ? "Try adjusting your search" : pageContent.emptyCustomersDescription}
             </p>
+            {!searchQuery && (
+              <Button className={`mt-4 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}>
+                <UserPlus className="w-4 h-4 mr-2" />
+                {pageContent.addCustomerButton}
+              </Button>
+            )}
           </motion.div>
         ) : (
           <motion.div

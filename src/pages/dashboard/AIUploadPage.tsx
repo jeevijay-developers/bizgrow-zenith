@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Camera, Upload, Sparkles, Image, CheckCircle2, 
+  Camera, Upload, Sparkles, CheckCircle2, Image as ImageIcon,
   RefreshCw, Edit, Trash2, Plus, Package, Loader2,
-  Zap, Clock, Target, ImagePlus, AlertCircle, Check, X,
-  Wand2, ImageIcon
+  Zap, Clock, ImagePlus, AlertCircle, Check, X,
+  Wand2, Brain, Scan
 } from "lucide-react";
+import AIProcessingLoader from "@/components/dashboard/AIProcessingLoader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -459,20 +460,24 @@ const AIUploadPage = () => {
       </div>
 
       {/* Stats */}
+      {/* Stats with enhanced styling */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
-          { icon: Zap, label: "Instant Detection", value: "<5 sec" },
-          { icon: Wand2, label: "Auto Enhancement", value: "Clean BG" },
-          { icon: Clock, label: "Time Saved", value: "10x faster" },
+          { icon: Zap, label: "Instant Detection", value: "<5 sec", color: "text-amber-500" },
+          { icon: Wand2, label: "Auto Enhancement", value: "Clean BG", color: "text-purple-500" },
+          { icon: Clock, label: "Time Saved", value: "10x faster", color: "text-emerald-500" },
         ].map((stat, idx) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-card rounded-xl border border-border p-3 sm:p-4 text-center"
+            whileHover={{ scale: 1.02, y: -2 }}
+            className="bg-card rounded-xl border border-border p-3 sm:p-4 text-center shadow-sm hover:shadow-md transition-shadow"
           >
-            <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
+            <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mx-auto mb-2`}>
+              <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            </div>
             <p className="text-base sm:text-lg font-bold">{stat.value}</p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>
           </motion.div>
@@ -490,113 +495,98 @@ const AIUploadPage = () => {
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all bg-card ${
+            className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all bg-card overflow-hidden ${
               dragActive 
-                ? "border-primary bg-primary/5" 
+                ? "border-primary bg-primary/5 scale-[1.02]" 
                 : "border-border hover:border-primary/50"
             }`}
           >
-            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-light flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <ImagePlus className="w-8 sm:w-10 h-8 sm:h-10 text-white" />
-            </div>
+            {/* Animated background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-50" />
             
-            <h3 className="text-lg sm:text-xl font-semibold mb-2">Upload Product Images</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm sm:text-base">
-              Drag and drop images here, or use the buttons below. Our AI will extract details and enhance images automatically.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="gap-2 h-12"
-                onClick={() => cameraInputRef.current?.click()}
-              >
-                <Camera className="w-5 h-5" />
-                Take Photo
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="gap-2 h-12"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="w-5 h-5" />
-                Upload from Gallery
-              </Button>
-            </div>
+            {/* Animated corner decorations */}
+            <motion.div 
+              className="absolute top-4 left-4 w-12 h-12 border-l-2 border-t-2 border-primary/20 rounded-tl-lg"
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div 
+              className="absolute bottom-4 right-4 w-12 h-12 border-r-2 border-b-2 border-primary/20 rounded-br-lg"
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
 
-            <p className="text-xs text-muted-foreground mt-6">
-              Supports: JPG, PNG, HEIC • Max 10MB per image • Up to 20 images at once
-            </p>
+            <div className="relative z-10">
+              {/* Animated icon container */}
+              <motion.div 
+                className="w-20 sm:w-24 h-20 sm:h-24 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-xl"
+                animate={{ 
+                  boxShadow: [
+                    "0 10px 30px -10px rgba(var(--primary), 0.3)",
+                    "0 20px 40px -10px rgba(var(--primary), 0.4)",
+                    "0 10px 30px -10px rgba(var(--primary), 0.3)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                whileHover={{ scale: 1.05, rotate: 5 }}
+              >
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ImagePlus className="w-10 sm:w-12 h-10 sm:h-12 text-primary-foreground" />
+                </motion.div>
+              </motion.div>
+              
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">Upload Product Images</h3>
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm sm:text-base">
+                Drag and drop images here, or use the buttons below. Our AI will extract details and enhance images automatically.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Button 
+                  size="lg" 
+                  className="gap-2 h-12 px-6 shadow-lg hover:shadow-xl transition-shadow"
+                  onClick={() => cameraInputRef.current?.click()}
+                >
+                  <Camera className="w-5 h-5" />
+                  Take Photo
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="gap-2 h-12 px-6 hover:bg-muted/50"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-5 h-5" />
+                  Upload from Gallery
+                </Button>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  JPG, PNG, HEIC
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  Max 10MB each
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  Up to 20 images
+                </span>
+              </div>
+            </div>
           </motion.div>
         )}
 
         {(uploadState === "uploading" || uploadState === "processing" || uploadState === "enhancing") && (
-          <motion.div
-            key="processing"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-card rounded-2xl border border-border p-8 sm:p-12 text-center"
-          >
-            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-light flex items-center justify-center mx-auto mb-6 shadow-lg">
-              {uploadState === "uploading" ? (
-                <Upload className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-bounce" />
-              ) : uploadState === "processing" ? (
-                <Sparkles className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-pulse" />
-              ) : (
-                <Wand2 className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-pulse" />
-              )}
-            </div>
-
-            <h3 className="text-lg sm:text-xl font-semibold mb-2">
-              {uploadState === "uploading" 
-                ? "Uploading Images..." 
-                : uploadState === "processing" 
-                  ? "AI Analyzing..." 
-                  : "Enhancing Images..."
-              }
-            </h3>
-            <p className="text-muted-foreground mb-6 text-sm sm:text-base">
-              {uploadState === "uploading" 
-                ? "Please wait while we upload your images" 
-                : uploadState === "processing"
-                  ? "Detecting products and extracting details"
-                  : "Creating clean white backgrounds for your products"
-              }
-            </p>
-
-            {/* Preview uploaded images */}
-            {uploadedImages.length > 0 && (
-              <div className="flex justify-center gap-2 mb-6 flex-wrap">
-                {uploadedImages.slice(0, 4).map((url, idx) => (
-                  <img 
-                    key={idx}
-                    src={url} 
-                    alt={`Upload ${idx + 1}`}
-                    className="w-16 h-16 rounded-lg object-cover border-2 border-primary/20"
-                  />
-                ))}
-                {uploadedImages.length > 4 && (
-                  <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center text-sm font-medium">
-                    +{uploadedImages.length - 4}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="max-w-xs mx-auto space-y-2">
-              <Progress value={uploadState === "uploading" ? uploadProgress : 100} className="h-2" />
-              <p className="text-sm text-muted-foreground">
-                {uploadState === "uploading" 
-                  ? `${uploadProgress}%` 
-                  : uploadState === "processing"
-                    ? "Processing with AI..."
-                    : "Enhancing images..."
-                }
-              </p>
-            </div>
-          </motion.div>
+          <AIProcessingLoader
+            state={uploadState}
+            uploadProgress={uploadProgress}
+            uploadedImages={uploadedImages}
+          />
         )}
 
         {uploadState === "results" && (
@@ -972,7 +962,7 @@ const AIUploadPage = () => {
         >
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <Image className="w-5 h-5 text-primary" />
+              <ImageIcon className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h4 className="font-medium mb-2">Tips for best results</h4>

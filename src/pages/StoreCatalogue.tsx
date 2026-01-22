@@ -126,7 +126,6 @@ const StoreCatalogue = () => {
     address: "",
     notes: ""
   });
-  // Removed local favorites state - now using useWishlist hook
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -276,8 +275,6 @@ const StoreCatalogue = () => {
     toast.success(`Added to cart`, { duration: 1500 });
   };
 
-  // toggleFavorite is now provided by useWishlist hook
-
   const handleWhatsAppChat = () => {
     if (!customization?.whatsapp_number) {
       toast.info("WhatsApp contact not available");
@@ -370,7 +367,7 @@ const StoreCatalogue = () => {
       />
 
       {/* Desktop Container - Max Width for proper alignment */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-6">
         {/* Icon Category Tabs (Mobile) */}
         <IconCategoryTabs
           categories={categories}
@@ -379,23 +376,25 @@ const StoreCatalogue = () => {
         />
 
         {/* Filter Bar */}
-        <FilterBar
-          onSortChange={setSortOrder}
-          onPriceFilterChange={setPriceFilter}
-          currentSort={sortOrder}
-          currentPriceFilter={priceFilter}
-        />
+        <div className="px-2 sm:px-0">
+          <FilterBar
+            onSortChange={setSortOrder}
+            onPriceFilterChange={setPriceFilter}
+            currentSort={sortOrder}
+            currentPriceFilter={priceFilter}
+          />
+        </div>
 
         {/* Promotions Carousel */}
         {promotions.length > 0 && (
-          <div className="px-3 lg:px-6 py-3">
+          <div className="px-2 sm:px-0 py-3">
             <PromoBannerCarousel promotions={promotions} />
           </div>
         )}
 
         {/* Recently Viewed Section */}
         {recentlyViewed.length > 0 && !searchQuery && !selectedCategory && (
-          <div className="px-3 lg:px-6">
+          <div className="px-2 sm:px-0">
             <RecentlyViewedSection
               products={recentlyViewed}
               onProductClick={(productId) => {
@@ -424,14 +423,14 @@ const StoreCatalogue = () => {
           />
 
           {/* Products Grid */}
-          <main className="flex-1 px-3 lg:px-6 py-4">
+          <main className="flex-1 px-2 sm:px-0 lg:px-4 py-4">
             {/* Section Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3 sm:mb-4 px-1 sm:px-0">
               <div>
-                <h2 className="text-lg lg:text-xl font-bold text-foreground">
+                <h2 className="text-base sm:text-lg lg:text-xl font-bold text-foreground">
                   {selectedCategory || "All Products"}
                 </h2>
-                <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
+                <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground mt-0.5">
                   {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} available
                 </p>
               </div>
@@ -449,7 +448,7 @@ const StoreCatalogue = () => {
                 }} 
               />
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
                 {filteredProducts.map((product, index) => (
                   <BlinkitProductCard
                     key={product.id}
@@ -474,7 +473,7 @@ const StoreCatalogue = () => {
       </div>
 
       {/* Store Footer - Inside container */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         <StoreFooter
           storeName={store.name}
           storeAddress={store.address}
@@ -501,7 +500,7 @@ const StoreCatalogue = () => {
 
       {/* Cart Sheet */}
       <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-3 sm:px-6">
           <SheetHeader className="pb-4 border-b">
             <SheetTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
@@ -541,13 +540,13 @@ const StoreCatalogue = () => {
                   <RadioGroup value={deliveryMode} onValueChange={(v) => setDeliveryMode(v as any)}>
                     <div className="flex items-center space-x-2 p-3 border rounded-lg">
                       <RadioGroupItem value="takeaway" id="takeaway" />
-                      <Label htmlFor="takeaway" className="flex items-center gap-2 cursor-pointer">
+                      <Label htmlFor="takeaway" className="flex items-center gap-2 cursor-pointer flex-1">
                         <Store className="h-4 w-4" /> Store Pickup
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2 p-3 border rounded-lg">
                       <RadioGroupItem value="delivery" id="delivery" />
-                      <Label htmlFor="delivery" className="flex items-center gap-2 cursor-pointer">
+                      <Label htmlFor="delivery" className="flex items-center gap-2 cursor-pointer flex-1">
                         <Truck className="h-4 w-4" /> Home Delivery
                       </Label>
                     </div>
@@ -589,36 +588,36 @@ const StoreCatalogue = () => {
             <>
               <div className="py-4 space-y-3 overflow-y-auto max-h-[50vh]">
                 {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-xl">
-                    <div className="w-16 h-16 bg-card rounded-lg overflow-hidden">
+                  <div key={item.id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-muted rounded-xl">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-card rounded-lg overflow-hidden flex-shrink-0">
                       {item.image_url ? (
                         <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-                          <ShoppingCart className="h-6 w-6" />
+                          <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{item.name}</p>
-                      <p className="text-primary font-bold">₹{item.price}</p>
+                      <p className="font-medium text-xs sm:text-sm truncate">{item.name}</p>
+                      <p className="text-primary font-bold text-sm sm:text-base">₹{item.price}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1.5 bg-muted-foreground/20 rounded-lg hover:bg-muted-foreground/30"
+                        className="p-1 sm:p-1.5 bg-muted-foreground/20 rounded-lg hover:bg-muted-foreground/30"
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
-                      <span className="font-bold w-6 text-center">{item.quantity}</span>
+                      <span className="font-bold w-5 sm:w-6 text-center text-sm">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                        className="p-1 sm:p-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-muted-foreground hover:text-destructive">
+                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-muted-foreground hover:text-destructive flex-shrink-0">
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -626,7 +625,7 @@ const StoreCatalogue = () => {
               </div>
 
               <div className="border-t pt-4 space-y-3">
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-base sm:text-lg font-bold">
                   <span>Total</span>
                   <span className="text-primary">₹{cartTotal.toLocaleString()}</span>
                 </div>

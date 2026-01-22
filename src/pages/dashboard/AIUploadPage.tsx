@@ -39,7 +39,12 @@ interface DashboardContext {
   } | null;
 }
 
-const categories = ["Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household", "Electronics", "Clothing"];
+const defaultCategories = [
+  "Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", 
+  "Household", "Electronics", "Clothing", "Fruits", "Vegetables",
+  "Bakery", "Frozen Foods", "Meat & Seafood", "Health & Wellness",
+  "Baby Products", "Pet Supplies", "Stationery", "Home Decor"
+];
 
 const AIUploadPage = () => {
   const { store } = useOutletContext<DashboardContext>();
@@ -50,6 +55,11 @@ const AIUploadPage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [newCategoryInput, setNewCategoryInput] = useState<string>("");
+  const [showAddCategory, setShowAddCategory] = useState<string | null>(null);
+  
+  const allCategories = [...defaultCategories, ...customCategories];
   const [isAddingToCatalogue, setIsAddingToCatalogue] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -544,19 +554,85 @@ const AIUploadPage = () => {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-xs text-muted-foreground">Category</Label>
-                          <Select 
-                            value={product.category.toLowerCase()}
-                            onValueChange={(value) => updateProductField(product.id, 'category', value)}
-                          >
-                            <SelectTrigger className="h-9">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categories.map(cat => (
-                                <SelectItem key={cat} value={cat.toLowerCase()}>{cat}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          {showAddCategory === product.id ? (
+                            <div className="flex gap-2">
+                              <Input
+                                value={newCategoryInput}
+                                onChange={(e) => setNewCategoryInput(e.target.value)}
+                                placeholder="New category..."
+                                className="h-9 flex-1"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && newCategoryInput.trim()) {
+                                    const newCat = newCategoryInput.trim();
+                                    if (!allCategories.some(c => c.toLowerCase() === newCat.toLowerCase())) {
+                                      setCustomCategories(prev => [...prev, newCat]);
+                                    }
+                                    updateProductField(product.id, 'category', newCat.toLowerCase());
+                                    setNewCategoryInput("");
+                                    setShowAddCategory(null);
+                                  } else if (e.key === "Escape") {
+                                    setNewCategoryInput("");
+                                    setShowAddCategory(null);
+                                  }
+                                }}
+                              />
+                              <Button
+                                size="sm"
+                                className="h-9 px-3"
+                                onClick={() => {
+                                  if (newCategoryInput.trim()) {
+                                    const newCat = newCategoryInput.trim();
+                                    if (!allCategories.some(c => c.toLowerCase() === newCat.toLowerCase())) {
+                                      setCustomCategories(prev => [...prev, newCat]);
+                                    }
+                                    updateProductField(product.id, 'category', newCat.toLowerCase());
+                                    setNewCategoryInput("");
+                                    setShowAddCategory(null);
+                                  }
+                                }}
+                              >
+                                Add
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-9 px-2"
+                                onClick={() => {
+                                  setNewCategoryInput("");
+                                  setShowAddCategory(null);
+                                }}
+                              >
+                                ✕
+                              </Button>
+                            </div>
+                          ) : (
+                            <Select 
+                              value={product.category.toLowerCase()}
+                              onValueChange={(value) => {
+                                if (value === "__add_new__") {
+                                  setShowAddCategory(product.id);
+                                } else {
+                                  updateProductField(product.id, 'category', value);
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="h-9">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {allCategories.map(cat => (
+                                  <SelectItem key={cat} value={cat.toLowerCase()}>{cat}</SelectItem>
+                                ))}
+                                <SelectItem value="__add_new__" className="text-primary font-medium">
+                                  <span className="flex items-center gap-2">
+                                    <Plus className="w-3 h-3" />
+                                    Add Custom Category
+                                  </span>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </div>
                       </div>
                     </div>

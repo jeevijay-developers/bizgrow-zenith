@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MobileBottomNav } from "@/components/dashboard/MobileBottomNav";
+import { PWAInstallPrompt } from "@/components/dashboard/PWAInstallPrompt";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -10,8 +11,6 @@ import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { useDesktopNotifications } from "@/hooks/useDesktopNotifications";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { Bell, BellOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -94,6 +93,8 @@ export function DashboardLayout() {
         </div>
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
+        {/* PWA Install Prompt */}
+        <PWAInstallPrompt />
       </div>
     </SidebarProvider>
   );

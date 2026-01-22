@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Search, Phone, MessageCircle, 
   MoreVertical, ShoppingCart, TrendingUp, UserPlus,
-  Calendar, Download, Eye, Crown, Award, Star, Loader2, Mail
+  Calendar, Download, Eye, Crown, Award, Star, Loader2, Mail, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOutletContext } from "react-router-dom";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,14 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { getCategoryConfig } from "@/config/categoryConfig";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DashboardContext {
   store: {
@@ -51,6 +61,14 @@ interface Customer {
   updated_at: string;
 }
 
+interface NewCustomer {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  status: string;
+}
+
 const getStatusConfig = (status: string) => {
   switch (status) {
     case "vip":
@@ -66,9 +84,18 @@ const getStatusConfig = (status: string) => {
 
 const CustomersPage = () => {
   const { store } = useOutletContext<DashboardContext>();
+  const queryClient = useQueryClient();
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [addCustomerOpen, setAddCustomerOpen] = useState(false);
+  const [newCustomer, setNewCustomer] = useState<NewCustomer>({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    status: "new"
+  });
 
   // Get category config for personalized content
   const categoryConfig = getCategoryConfig(store?.category);
@@ -89,6 +116,50 @@ const CustomersPage = () => {
     },
     enabled: !!store?.id,
   });
+
+  // Add customer mutation
+  const addCustomerMutation = useMutation({
+    mutationFn: async (customer: NewCustomer) => {
+      if (!store?.id) throw new Error("Store not found");
+      const { data, error } = await supabase
+        .from("customers")
+        .insert({
+          store_id: store.id,
+          name: customer.name,
+          phone: customer.phone,
+          email: customer.email || null,
+          address: customer.address || null,
+          status: customer.status,
+          total_orders: 0,
+          total_spent: 0
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers", store?.id] });
+      toast.success(`${terminology.customer} added successfully!`);
+      setAddCustomerOpen(false);
+      setNewCustomer({ name: "", phone: "", email: "", address: "", status: "new" });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to add customer");
+    }
+  });
+
+  const handleAddCustomer = () => {
+    if (!newCustomer.name.trim()) {
+      toast.error("Please enter a name");
+      return;
+    }
+    if (!newCustomer.phone.trim()) {
+      toast.error("Please enter a phone number");
+      return;
+    }
+    addCustomerMutation.mutate(newCustomer);
+  };
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -137,7 +208,11 @@ const CustomersPage = () => {
             <Download className="w-4 h-4" />
             Export
           </Button>
-          <Button size="sm" className={`gap-2 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}>
+          <Button 
+            size="sm" 
+            className={`gap-2 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+            onClick={() => setAddCustomerOpen(true)}
+          >
             <UserPlus className="w-4 h-4" />
             {pageContent.addCustomerButton}
           </Button>
@@ -205,7 +280,10 @@ const CustomersPage = () => {
               {searchQuery ? "Try adjusting your search" : pageContent.emptyCustomersDescription}
             </p>
             {!searchQuery && (
-              <Button className={`mt-4 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}>
+              <Button 
+                className={`mt-4 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+                onClick={() => setAddCustomerOpen(true)}
+              >
                 <UserPlus className="w-4 h-4 mr-2" />
                 {pageContent.addCustomerButton}
               </Button>
@@ -291,8 +369,13 @@ const CustomersPage = () => {
                               <Phone className="w-4 h-4" />
                             </Button>
                             <DropdownMenu>
-                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-8 w-8"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
                                   <MoreVertical className="w-4 h-4" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -319,6 +402,117 @@ const CustomersPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Add Customer Dialog */}
+      <Dialog open={addCustomerOpen} onOpenChange={setAddCustomerOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}>
+                <UserPlus className="w-4 h-4 text-white" />
+              </div>
+              {pageContent.addCustomerButton}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="customer-name">Name *</Label>
+              <Input
+                id="customer-name"
+                placeholder={`Enter ${terminology.customer} name`}
+                value={newCustomer.name}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-phone">Phone Number *</Label>
+              <Input
+                id="customer-phone"
+                placeholder="Enter phone number"
+                value={newCustomer.phone}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-email">Email (Optional)</Label>
+              <Input
+                id="customer-email"
+                type="email"
+                placeholder="Enter email address"
+                value={newCustomer.email}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-address">Address (Optional)</Label>
+              <Textarea
+                id="customer-address"
+                placeholder="Enter address"
+                value={newCustomer.address}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, address: e.target.value }))}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-status">Status</Label>
+              <Select
+                value={newCustomer.status}
+                onValueChange={(value) => setNewCustomer(prev => ({ ...prev, status: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-3 h-3 text-green-600" />
+                      New
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="regular">
+                    <div className="flex items-center gap-2">
+                      <Award className="w-3 h-3 text-blue-600" />
+                      Regular
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="vip">
+                    <div className="flex items-center gap-2">
+                      <Crown className="w-3 h-3 text-yellow-600" />
+                      VIP
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setAddCustomerOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className={`flex-1 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+                onClick={handleAddCustomer}
+                disabled={addCustomerMutation.isPending}
+              >
+                {addCustomerMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Add {terminology.customer}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Customer Details Dialog */}
       <Dialog open={!!selectedCustomer} onOpenChange={() => setSelectedCustomer(null)}>
@@ -403,10 +597,6 @@ const CustomersPage = () => {
                 >
                   <Phone className="w-4 h-4" />
                   Call
-                </Button>
-                <Button className="flex-1 gap-2">
-                  <ShoppingCart className="w-4 h-4" />
-                  View Orders
                 </Button>
               </div>
             </div>

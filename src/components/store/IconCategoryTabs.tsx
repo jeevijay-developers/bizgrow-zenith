@@ -1,88 +1,12 @@
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-
-// Category images imports
-import allProductsImg from "@/assets/categories/all-products.png";
-import dairyImg from "@/assets/categories/dairy.png";
-import fruitsImg from "@/assets/categories/fruits.png";
-import vegetablesImg from "@/assets/categories/vegetables.png";
-import bakeryImg from "@/assets/categories/bakery.png";
-import beveragesImg from "@/assets/categories/beverages.png";
-import beautyImg from "@/assets/categories/beauty.png";
-import clothingImg from "@/assets/categories/clothing.png";
-import homeImg from "@/assets/categories/home.png";
-import electronicsImg from "@/assets/categories/electronics.png";
-import groceryImg from "@/assets/categories/grocery.png";
-import snacksImg from "@/assets/categories/snacks.png";
+import { useCategoryImages } from "@/hooks/useCategoryImages";
 
 interface IconCategoryTabsProps {
   categories: string[];
   activeCategory: string | null;
   onCategoryClick: (category: string | null) => void;
 }
-
-// Map category names to images
-const getCategoryImage = (category: string): string => {
-  const imageMap: Record<string, string> = {
-    "all": allProductsImg,
-    "dairy": dairyImg,
-    "milk": dairyImg,
-    "fruits": fruitsImg,
-    "fruit": fruitsImg,
-    "vegetables": vegetablesImg,
-    "vegetable": vegetablesImg,
-    "veggies": vegetablesImg,
-    "bakery": bakeryImg,
-    "bread": bakeryImg,
-    "cake": bakeryImg,
-    "beverages": beveragesImg,
-    "drinks": beveragesImg,
-    "juice": beveragesImg,
-    "coffee": beveragesImg,
-    "tea": beveragesImg,
-    "beauty": beautyImg,
-    "cosmetics": beautyImg,
-    "skincare": beautyImg,
-    "makeup": beautyImg,
-    "clothing": clothingImg,
-    "clothes": clothingImg,
-    "fashion": clothingImg,
-    "apparel": clothingImg,
-    "home": homeImg,
-    "decor": homeImg,
-    "furniture": homeImg,
-    "household": homeImg,
-    "electronics": electronicsImg,
-    "mobile": electronicsImg,
-    "phone": electronicsImg,
-    "gadgets": electronicsImg,
-    "tech": electronicsImg,
-    "grocery": groceryImg,
-    "groceries": groceryImg,
-    "staples": groceryImg,
-    "kirana": groceryImg,
-    "snacks": snacksImg,
-    "chips": snacksImg,
-    "biscuits": snacksImg,
-    "namkeen": snacksImg,
-  };
-
-  const lowerCategory = category.toLowerCase();
-  
-  // First check for exact match
-  if (imageMap[lowerCategory]) {
-    return imageMap[lowerCategory];
-  }
-  
-  // Then check for partial matches
-  for (const [key, img] of Object.entries(imageMap)) {
-    if (lowerCategory.includes(key) || key.includes(lowerCategory)) {
-      return img;
-    }
-  }
-  
-  return allProductsImg;
-};
 
 const IconCategoryTabs = ({ 
   categories, 
@@ -92,6 +16,7 @@ const IconCategoryTabs = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
   const allCategories = ["All", ...categories];
+  const { getCategoryImage } = useCategoryImages(categories);
 
   useEffect(() => {
     if (activeRef.current && scrollRef.current) {

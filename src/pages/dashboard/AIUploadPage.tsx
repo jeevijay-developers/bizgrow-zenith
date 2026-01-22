@@ -262,6 +262,7 @@ const AIUploadPage = () => {
     setIsAddingToCatalogue(true);
     const failures: UploadFailure[] = [];
     let successCount = 0;
+    const categoriesToGenerate = new Set<string>();
 
     try {
       // Upload images to storage and create products
@@ -364,7 +365,15 @@ const AIUploadPage = () => {
           });
         } else {
           successCount++;
+          // Track category for image generation (deduplicated later)
+          categoriesToGenerate.add(product.category.toLowerCase());
         }
+      }
+
+      // Generate category images for new categories (in background, don't block)
+      if (categoriesToGenerate.size > 0) {
+        // Fire and forget - don't await, let it run in background
+        generateCategoryImages(Array.from(categoriesToGenerate));
       }
 
       // Update failures state for display
@@ -385,6 +394,27 @@ const AIUploadPage = () => {
       toast.error("Failed to add products. Please try again.");
     } finally {
       setIsAddingToCatalogue(false);
+    }
+  };
+
+  // Generate category images in background (doesn't block UI)
+  const generateCategoryImages = async (categories: string[]) => {
+    for (const category of categories) {
+      try {
+        const { data, error } = await supabase.functions.invoke('generate-category-image', {
+          body: { category }
+        });
+        
+        if (error) {
+          console.error(`Failed to generate category image for ${category}:`, error);
+        } else if (data?.cached) {
+          console.log(`Category "${category}" image already exists (cached)`);
+        } else {
+          console.log(`Generated new category image for "${category}":`, data?.imageUrl);
+        }
+      } catch (err) {
+        console.error(`Error generating category image for ${category}:`, err);
+      }
     }
   };
 

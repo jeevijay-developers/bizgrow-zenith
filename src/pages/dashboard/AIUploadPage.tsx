@@ -238,6 +238,14 @@ const AIUploadPage = () => {
       return;
     }
 
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user) {
+      console.error("Auth error fetching user:", userError);
+      toast.error("Session expired. Please login again.");
+      return;
+    }
+
     const selectedProductsList = detectedProducts.filter(p => selectedProducts.has(p.id));
     if (selectedProductsList.length === 0) {
       toast.error("Please select at least one product.");
@@ -289,7 +297,8 @@ const AIUploadPage = () => {
             }
 
             const fileExt = blob.type.includes('png') ? 'png' : 'jpg';
-            const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            // Storage RLS expects the first folder to be the authenticated user's id
+            const fileName = `${user.id}/${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
             
             const { data: uploadData, error: uploadError } = await supabase.storage
               .from('product-images')

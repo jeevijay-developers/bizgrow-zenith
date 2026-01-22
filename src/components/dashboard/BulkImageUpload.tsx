@@ -158,6 +158,15 @@ const BulkImageUpload = ({
     setIsUploading(true);
     setUploadProgress(0);
 
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user) {
+      console.error("Auth error fetching user:", userError);
+      toast.error("Session expired. Please login again.");
+      setIsUploading(false);
+      return;
+    }
+
     let successCount = 0;
     const totalImages = imagesToUpload.length;
 
@@ -168,7 +177,8 @@ const BulkImageUpload = ({
         try {
           // Upload image to storage
           const fileExt = image.file.name.split(".").pop();
-          const fileName = `${storeId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          // Storage RLS expects the first folder to be the authenticated user's id
+          const fileName = `${user.id}/${storeId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
           
           const { error: uploadError, data: uploadData } = await supabase.storage
             .from("product-images")

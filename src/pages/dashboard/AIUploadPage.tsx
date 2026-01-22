@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Camera, Upload, Sparkles, Image, CheckCircle2, 
   RefreshCw, Edit, Trash2, Plus, Package, Loader2,
-  Zap, Clock, Target, ImagePlus, AlertCircle
+  Zap, Clock, Target, ImagePlus, AlertCircle, Check, X,
+  Wand2, ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface DetectedProduct {
   id: string;
@@ -27,7 +29,9 @@ interface DetectedProduct {
   price: number;
   category: string;
   confidence: number;
-  image: string;
+  originalImage: string;
+  enhancedImage?: string;
+  selectedImage: "original" | "enhanced";
   description?: string;
   brand?: string;
 }
@@ -48,12 +52,15 @@ const defaultCategories = [
   // Stationery specific
   "Pens", "Pencils", "Notebooks", "Books", "Stickers", "Art & Craft",
   "Paper & Notebooks", "Stamps", "Gifts & Decor", "Frames & Decor",
-  "Accessories", "Party Supplies", "Office Supplies", "School Supplies"
+  "Accessories", "Party Supplies", "Office Supplies", "School Supplies",
+  // Additional categories
+  "Toys", "Games", "Sports", "Automotive", "Garden", "Hardware",
+  "Pharmacy", "Cosmetics", "Jewelry", "Watches", "Bags", "Footwear"
 ];
 
 const AIUploadPage = () => {
   const { store } = useOutletContext<DashboardContext>();
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "results">("idle");
+  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "processing" | "enhancing" | "results">("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [detectedProducts, setDetectedProducts] = useState<DetectedProduct[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
@@ -127,9 +134,13 @@ const AIUploadPage = () => {
       setUploadProgress(100);
       setUploadState("processing");
 
-      // Call AI edge function
+      // Small delay before moving to enhancing state
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setUploadState("enhancing");
+
+      // Call AI edge function with enhancement enabled
       const { data, error } = await supabase.functions.invoke('ai-product-detection', {
-        body: { images: base64Images }
+        body: { images: base64Images, enhanceImages: true }
       });
 
       clearInterval(progressInterval);
@@ -149,7 +160,9 @@ const AIUploadPage = () => {
           price: product.price || 0,
           category: product.category || "Groceries",
           confidence: product.confidence || 85,
-          image: imageUrls[index] || imageUrls[0],
+          originalImage: product.originalImage || imageUrls[index] || imageUrls[0],
+          enhancedImage: product.enhancedImage,
+          selectedImage: product.enhancedImage ? "enhanced" : "original",
           description: product.description,
           brand: product.brand
         }));
@@ -157,7 +170,9 @@ const AIUploadPage = () => {
         setDetectedProducts(detectedWithImages);
         setSelectedProducts(new Set(detectedWithImages.map(p => p.id)));
         setUploadState("results");
-        toast.success(`${detectedWithImages.length} products detected!`);
+        
+        const enhancedCount = detectedWithImages.filter(p => p.enhancedImage).length;
+        toast.success(`${detectedWithImages.length} products detected! ${enhancedCount > 0 ? `${enhancedCount} images enhanced.` : ''}`);
       } else {
         toast.error("No products detected. Try with a clearer image.");
         setUploadState("idle");
@@ -203,6 +218,20 @@ const AIUploadPage = () => {
     setUploadedFiles([]);
   };
 
+  const toggleImageSelection = (productId: string) => {
+    setDetectedProducts(prev => 
+      prev.map(p => {
+        if (p.id === productId && p.enhancedImage) {
+          return { 
+            ...p, 
+            selectedImage: p.selectedImage === "original" ? "enhanced" : "original" 
+          };
+        }
+        return p;
+      })
+    );
+  };
+
   const handleAddToCatalogue = async () => {
     if (!store) {
       toast.error("Store not found. Please try again.");
@@ -220,25 +249,52 @@ const AIUploadPage = () => {
     try {
       // Upload images to storage and create products
       for (const product of selectedProductsList) {
-        const fileIndex = detectedProducts.indexOf(product);
-        const file = uploadedFiles[fileIndex] || uploadedFiles[0];
-        
         let imageUrl = null;
 
-        // Upload image to storage
-        if (file) {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-          
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, file);
+        // Get the selected image (original or enhanced)
+        const imageToUpload = product.selectedImage === "enhanced" && product.enhancedImage 
+          ? product.enhancedImage 
+          : product.originalImage;
 
-          if (!uploadError && uploadData) {
-            const { data: publicUrl } = supabase.storage
+        // Convert base64 to blob and upload
+        if (imageToUpload) {
+          try {
+            // Handle both base64 and blob URLs
+            let blob: Blob;
+            
+            if (imageToUpload.startsWith('data:')) {
+              // Base64 image
+              const response = await fetch(imageToUpload);
+              blob = await response.blob();
+            } else if (imageToUpload.startsWith('blob:')) {
+              // Blob URL - find the original file
+              const fileIndex = detectedProducts.indexOf(product);
+              const file = uploadedFiles[fileIndex] || uploadedFiles[0];
+              if (file) {
+                blob = file;
+              } else {
+                const response = await fetch(imageToUpload);
+                blob = await response.blob();
+              }
+            } else {
+              const response = await fetch(imageToUpload);
+              blob = await response.blob();
+            }
+
+            const fileName = `${store.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
               .from('product-images')
-              .getPublicUrl(uploadData.path);
-            imageUrl = publicUrl.publicUrl;
+              .upload(fileName, blob, { contentType: 'image/jpeg' });
+
+            if (!uploadError && uploadData) {
+              const { data: publicUrl } = supabase.storage
+                .from('product-images')
+                .getPublicUrl(uploadData.path);
+              imageUrl = publicUrl.publicUrl;
+            }
+          } catch (imgError) {
+            console.error("Error uploading image:", imgError);
           }
         }
 
@@ -303,7 +359,7 @@ const AIUploadPage = () => {
         </div>
         <h1 className="text-xl sm:text-2xl font-bold">AI Product Upload</h1>
         <p className="text-muted-foreground mt-2 max-w-lg mx-auto text-sm sm:text-base">
-          Snap a photo and let AI extract all product details automatically. Save hours of manual data entry.
+          Snap a photo and let AI extract all product details and enhance images with clean white backgrounds.
         </p>
       </div>
 
@@ -311,7 +367,7 @@ const AIUploadPage = () => {
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { icon: Zap, label: "Instant Detection", value: "<5 sec" },
-          { icon: Target, label: "Accuracy Rate", value: "95%" },
+          { icon: Wand2, label: "Auto Enhancement", value: "Clean BG" },
           { icon: Clock, label: "Time Saved", value: "10x faster" },
         ].map((stat, idx) => (
           <motion.div
@@ -351,7 +407,7 @@ const AIUploadPage = () => {
             
             <h3 className="text-lg sm:text-xl font-semibold mb-2">Upload Product Images</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm sm:text-base">
-              Drag and drop images here, or use the buttons below. Our AI will extract name, price, and details automatically.
+              Drag and drop images here, or use the buttons below. Our AI will extract details and enhance images automatically.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
@@ -380,7 +436,7 @@ const AIUploadPage = () => {
           </motion.div>
         )}
 
-        {(uploadState === "uploading" || uploadState === "processing") && (
+        {(uploadState === "uploading" || uploadState === "processing" || uploadState === "enhancing") && (
           <motion.div
             key="processing"
             initial={{ opacity: 0, y: 20 }}
@@ -391,18 +447,27 @@ const AIUploadPage = () => {
             <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-purple-light flex items-center justify-center mx-auto mb-6 shadow-lg">
               {uploadState === "uploading" ? (
                 <Upload className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-bounce" />
-              ) : (
+              ) : uploadState === "processing" ? (
                 <Sparkles className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-pulse" />
+              ) : (
+                <Wand2 className="w-8 sm:w-10 h-8 sm:h-10 text-white animate-pulse" />
               )}
             </div>
 
             <h3 className="text-lg sm:text-xl font-semibold mb-2">
-              {uploadState === "uploading" ? "Uploading Images..." : "AI Analyzing..."}
+              {uploadState === "uploading" 
+                ? "Uploading Images..." 
+                : uploadState === "processing" 
+                  ? "AI Analyzing..." 
+                  : "Enhancing Images..."
+              }
             </h3>
             <p className="text-muted-foreground mb-6 text-sm sm:text-base">
               {uploadState === "uploading" 
                 ? "Please wait while we upload your images" 
-                : "Detecting products and extracting details"
+                : uploadState === "processing"
+                  ? "Detecting products and extracting details"
+                  : "Creating clean white backgrounds for your products"
               }
             </p>
 
@@ -428,7 +493,12 @@ const AIUploadPage = () => {
             <div className="max-w-xs mx-auto space-y-2">
               <Progress value={uploadState === "uploading" ? uploadProgress : 100} className="h-2" />
               <p className="text-sm text-muted-foreground">
-                {uploadState === "uploading" ? `${uploadProgress}%` : "Processing with AI..."}
+                {uploadState === "uploading" 
+                  ? `${uploadProgress}%` 
+                  : uploadState === "processing"
+                    ? "Processing with AI..."
+                    : "Enhancing images..."
+                }
               </p>
             </div>
           </motion.div>
@@ -490,24 +560,78 @@ const AIUploadPage = () => {
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  <div className="flex gap-4">
-                    {/* Image */}
-                    <div className="relative flex-shrink-0">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover"
-                      />
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Image Selection */}
+                    <div className="flex-shrink-0">
+                      <div className="flex gap-2 sm:flex-col">
+                        {/* Original Image */}
+                        <div 
+                          onClick={() => product.enhancedImage && updateProductField(product.id, 'selectedImage' as any, 'original')}
+                          className={`relative cursor-pointer transition-all ${
+                            product.selectedImage === "original" || !product.enhancedImage
+                              ? "ring-2 ring-primary rounded-lg" 
+                              : "opacity-60 hover:opacity-100"
+                          }`}
+                        >
+                          <img
+                            src={product.originalImage}
+                            alt={`${product.name} - Original`}
+                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover"
+                          />
+                          <div className="absolute -top-1 -left-1 bg-muted text-muted-foreground text-[8px] px-1.5 py-0.5 rounded-full font-medium">
+                            Original
+                          </div>
+                          {(product.selectedImage === "original" || !product.enhancedImage) && (
+                            <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-primary-foreground" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Enhanced Image */}
+                        {product.enhancedImage && (
+                          <div 
+                            onClick={() => updateProductField(product.id, 'selectedImage' as any, 'enhanced')}
+                            className={`relative cursor-pointer transition-all ${
+                              product.selectedImage === "enhanced" 
+                                ? "ring-2 ring-primary rounded-lg" 
+                                : "opacity-60 hover:opacity-100"
+                            }`}
+                          >
+                            <img
+                              src={product.enhancedImage}
+                              alt={`${product.name} - Enhanced`}
+                              className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover bg-white"
+                            />
+                            <div className="absolute -top-1 -left-1 bg-primary text-primary-foreground text-[8px] px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                              <Wand2 className="w-2 h-2" />
+                              Enhanced
+                            </div>
+                            {product.selectedImage === "enhanced" && (
+                              <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="w-3 h-3 text-primary-foreground" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Select/Deselect checkbox */}
                       <button
                         onClick={() => toggleProductSelection(product.id)}
-                        className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                        className={`mt-2 w-full text-xs py-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors ${
                           selectedProducts.has(product.id)
-                            ? "bg-primary text-white"
-                            : "bg-muted border border-border"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80"
                         }`}
                       >
-                        {selectedProducts.has(product.id) && (
-                          <CheckCircle2 className="w-4 h-4" />
+                        {selectedProducts.has(product.id) ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3" />
+                            Selected
+                          </>
+                        ) : (
+                          "Select"
                         )}
                       </button>
                     </div>
@@ -526,6 +650,12 @@ const AIUploadPage = () => {
                             <Badge variant="secondary" className="text-xs">
                               {product.confidence}% match
                             </Badge>
+                            {product.enhancedImage && (
+                              <Badge variant="outline" className="text-xs text-primary border-primary/30">
+                                <Wand2 className="w-2.5 h-2.5 mr-1" />
+                                AI Enhanced
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         <div className="flex gap-1 flex-shrink-0">
@@ -659,7 +789,7 @@ const AIUploadPage = () => {
         >
           <h3 className="text-lg font-semibold mb-6 text-center">How AI Upload Works</h3>
           
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-4 gap-6">
             {[
               {
                 icon: Camera,
@@ -672,9 +802,14 @@ const AIUploadPage = () => {
                 description: "Our AI extracts name, price, category & more",
               },
               {
+                icon: Wand2,
+                title: "3. Enhancement",
+                description: "AI enhances images with clean white backgrounds",
+              },
+              {
                 icon: CheckCircle2,
-                title: "3. Review & Add",
-                description: "Review details and add to your catalogue",
+                title: "4. Review & Add",
+                description: "Compare images, review details and add to catalogue",
               },
             ].map((step, index) => (
               <div key={index} className="text-center">
@@ -707,8 +842,8 @@ const AIUploadPage = () => {
                 <li>• Use good lighting - avoid shadows and glare</li>
                 <li>• Capture the product label clearly</li>
                 <li>• Include price tags if visible</li>
-                <li>• Take photos in landscape for better accuracy</li>
-                <li>• Upload multiple products in one image for batch processing</li>
+                <li>• AI will enhance images with clean white backgrounds</li>
+                <li>• You can choose between original or enhanced image</li>
               </ul>
             </div>
           </div>

@@ -12,7 +12,25 @@ interface ProductDetection {
   description: string;
   brand: string;
   confidence: number;
+  originalImage: string;
+  enhancedImage?: string;
 }
+
+// Extended category list for better detection
+const ALL_CATEGORIES = [
+  // General
+  "Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", 
+  "Household", "Electronics", "Clothing", "Fruits", "Vegetables",
+  "Bakery", "Frozen Foods", "Meat & Seafood", "Health & Wellness",
+  "Baby Products", "Pet Supplies", "Home Decor",
+  // Stationery specific
+  "Pens", "Pencils", "Notebooks", "Books", "Stickers", "Art & Craft",
+  "Paper & Notebooks", "Stamps", "Gifts & Decor", "Frames & Decor",
+  "Accessories", "Party Supplies", "Office Supplies", "School Supplies",
+  // Additional
+  "Toys", "Games", "Sports", "Automotive", "Garden", "Hardware",
+  "Pharmacy", "Cosmetics", "Jewelry", "Watches", "Bags", "Footwear"
+];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -20,7 +38,7 @@ serve(async (req) => {
   }
 
   try {
-    const { images } = await req.json();
+    const { images, enhanceImages = true } = await req.json();
     
     if (!images || !Array.isArray(images) || images.length === 0) {
       return new Response(
@@ -40,8 +58,12 @@ serve(async (req) => {
 
     const detectedProducts: ProductDetection[] = [];
 
-    for (const imageData of images) {
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    for (let i = 0; i < images.length; i++) {
+      const imageData = images[i];
+      console.log(`Processing image ${i + 1} of ${images.length}`);
+
+      // Step 1: Analyze product details
+      const analysisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
@@ -54,7 +76,10 @@ serve(async (req) => {
               role: "system",
               content: `You are an AI assistant specialized in analyzing product images for Indian retail stores. 
               Analyze the image and extract product information. Be accurate with pricing in Indian Rupees (₹).
-              Common categories: Groceries, Dairy, Snacks, Beverages, Personal Care, Household, Electronics, Clothing, Fruits, Vegetables.
+              
+              Available categories: ${ALL_CATEGORIES.join(", ")}
+              
+              Choose the most specific category that fits the product. For stationery items, use specific categories like "Pens", "Notebooks", "Books" etc.
               Estimate reasonable prices based on the Indian market.`
             },
             {
@@ -62,7 +87,7 @@ serve(async (req) => {
               content: [
                 {
                   type: "text",
-                  text: "Analyze this product image and extract the product details."
+                  text: "Analyze this product image and extract the product details. Choose the most specific category from the available list."
                 },
                 {
                   type: "image_url",
@@ -82,7 +107,7 @@ serve(async (req) => {
                   properties: {
                     name: {
                       type: "string",
-                      description: "Product name (e.g., 'Amul Butter 500g')"
+                      description: "Product name (e.g., 'Amul Butter 500g', 'Cello Butterflo Ball Pen')"
                     },
                     price: {
                       type: "number",
@@ -90,12 +115,12 @@ serve(async (req) => {
                     },
                     category: {
                       type: "string",
-                      enum: ["Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household", "Electronics", "Clothing", "Fruits", "Vegetables"],
-                      description: "Product category"
+                      enum: ALL_CATEGORIES,
+                      description: "Product category - choose the most specific one"
                     },
                     description: {
                       type: "string",
-                      description: "Brief product description"
+                      description: "Brief product description including size/quantity if visible"
                     },
                     brand: {
                       type: "string",
@@ -116,51 +141,106 @@ serve(async (req) => {
         }),
       });
 
-      if (!response.ok) {
-        if (response.status === 429) {
+      if (!analysisResponse.ok) {
+        if (analysisResponse.status === 429) {
           console.error("Rate limited");
           return new Response(
             JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
             { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        if (response.status === 402) {
+        if (analysisResponse.status === 402) {
           return new Response(
             JSON.stringify({ error: "AI credits exhausted. Please add credits." }),
             { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        const errorText = await response.text();
-        console.error("AI gateway error:", response.status, errorText);
+        const errorText = await analysisResponse.text();
+        console.error("AI gateway error:", analysisResponse.status, errorText);
         continue;
       }
 
-      const result = await response.json();
-      const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
+      const analysisResult = await analysisResponse.json();
+      const toolCall = analysisResult.choices?.[0]?.message?.tool_calls?.[0];
       
+      let productData = {
+        name: "Unknown Product",
+        price: 99,
+        category: "Groceries",
+        description: "",
+        brand: "",
+        confidence: 70
+      };
+
       if (toolCall?.function?.arguments) {
         try {
-          const productData = JSON.parse(toolCall.function.arguments);
-          detectedProducts.push({
-            name: productData.name || "Unknown Product",
-            price: productData.price || 99,
-            category: productData.category || "Groceries",
-            description: productData.description || "",
-            brand: productData.brand || "",
-            confidence: productData.confidence || 85
-          });
+          const parsed = JSON.parse(toolCall.function.arguments);
+          productData = {
+            name: parsed.name || "Unknown Product",
+            price: parsed.price || 99,
+            category: parsed.category || "Groceries",
+            description: parsed.description || "",
+            brand: parsed.brand || "",
+            confidence: parsed.confidence || 85
+          };
         } catch (parseError) {
           console.error("Failed to parse AI response:", parseError);
-          detectedProducts.push({
-            name: "Product",
-            price: 99,
-            category: "Groceries",
-            description: "Product detected",
-            brand: "",
-            confidence: 70
-          });
         }
       }
+
+      // Step 2: Enhance image with white background (if enabled)
+      let enhancedImageUrl: string | undefined;
+      
+      if (enhanceImages) {
+        try {
+          console.log(`Enhancing image ${i + 1}...`);
+          const enhanceResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash-image-preview",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    {
+                      type: "text",
+                      text: "Please edit this product image to have a clean, pure white background. Keep the product itself clear and well-lit. Remove any shadows, clutter, or distracting elements. Make it look professional and suitable for an e-commerce catalog. Maintain the product's natural colors and details."
+                    },
+                    {
+                      type: "image_url",
+                      image_url: { url: imageData }
+                    }
+                  ]
+                }
+              ],
+              modalities: ["image", "text"]
+            }),
+          });
+
+          if (enhanceResponse.ok) {
+            const enhanceResult = await enhanceResponse.json();
+            const enhancedImage = enhanceResult.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+            if (enhancedImage) {
+              enhancedImageUrl = enhancedImage;
+              console.log(`Image ${i + 1} enhanced successfully`);
+            }
+          } else {
+            console.log(`Image enhancement failed for image ${i + 1}, using original`);
+          }
+        } catch (enhanceError) {
+          console.error("Enhancement error:", enhanceError);
+        }
+      }
+
+      detectedProducts.push({
+        ...productData,
+        originalImage: imageData,
+        enhancedImage: enhancedImageUrl
+      });
     }
 
     console.log(`Detected ${detectedProducts.length} products from ${images.length} images`);

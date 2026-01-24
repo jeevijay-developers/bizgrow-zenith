@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 const Navbar = () => {
@@ -117,88 +118,95 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button - Enhanced visibility */}
-          <button
-            className="lg:hidden text-white p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/15 border border-white/25 active:scale-95"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+          {/* Mobile Menu (Sheet portal avoids fixed-position issues inside blurred navbar) */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <button
+                className="lg:hidden text-white p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/15 border border-white/25 active:scale-95"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </SheetTrigger>
 
-        {/* Mobile Menu - Fixed positioning and improved visibility */}
-        {isOpen && (
-          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-primary z-[60] overflow-y-auto overscroll-contain">
-            <div className="flex flex-col p-4 pb-24">
-              {/* Navigation Links */}
-              <div className="flex flex-col gap-1">
-                {navLinks.map((link) => (
-                  <div key={link.label}>
-                    {link.dropdown ? (
-                      <>
-                        <button
-                          onClick={() => toggleMobileDropdown(link.label)}
-                          className="w-full text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center justify-between active:bg-white/20 transition-colors"
-                        >
-                          <span className="text-base">{link.label}</span>
-                          <ChevronRight className={`w-5 h-5 text-white transition-transform duration-200 ${mobileExpanded === link.label ? 'rotate-90' : ''}`} />
-                        </button>
-                        {mobileExpanded === link.label && (
-                          <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-xl py-3 animate-fade-in">
-                            {link.dropdown.map((item) => (
-                              <Link
-                                key={item.label}
-                                to={item.href}
-                                className="text-white/90 hover:text-white text-sm py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3 active:bg-white/15 transition-colors"
-                                onClick={() => setIsOpen(false)}
-                              >
-                                {item.icon && (
-                                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                                    <item.icon className="w-4 h-4 text-accent" />
+            <SheetContent
+              side="right"
+              className="w-[min(92vw,380px)] p-0 bg-primary text-primary-foreground border-l border-border"
+            >
+              <div className="flex h-full flex-col p-4 pt-14 overflow-y-auto overscroll-contain">
+                {/* Navigation Links */}
+                <div className="flex flex-col gap-1">
+                  {navLinks.map((link) => (
+                    <div key={link.label}>
+                      {link.dropdown ? (
+                        <>
+                          <button
+                            onClick={() => toggleMobileDropdown(link.label)}
+                            className="w-full text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center justify-between active:bg-white/20 transition-colors"
+                          >
+                            <span className="text-base">{link.label}</span>
+                            <ChevronRight
+                              className={`w-5 h-5 text-white transition-transform duration-200 ${
+                                mobileExpanded === link.label ? "rotate-90" : ""
+                              }`}
+                            />
+                          </button>
+                          {mobileExpanded === link.label && (
+                            <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-xl py-3 animate-fade-in">
+                              {link.dropdown.map((item) => (
+                                <Link
+                                  key={item.label}
+                                  to={item.href}
+                                  className="text-white/90 hover:text-white text-sm py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3 active:bg-white/15 transition-colors"
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  {item.icon && (
+                                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                                      <item.icon className="w-4 h-4 text-accent" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <span className="font-medium block">{item.label}</span>
+                                    {item.desc && <p className="text-xs text-white/60 mt-0.5">{item.desc}</p>}
                                   </div>
-                                )}
-                                <div>
-                                  <span className="font-medium block">{item.label}</span>
-                                  {item.desc && <p className="text-xs text-white/60 mt-0.5">{item.desc}</p>}
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <a
-                        href={link.href}
-                        className="text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center text-base active:bg-white/20 transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.label}
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center text-base active:bg-white/20 transition-colors"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {link.label}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
 
-              {/* Mobile CTAs */}
-              <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-white/20">
-                <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button 
-                    variant="outline" 
-                    className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
-                  >
-                    Seller Login
-                  </Button>
-                </Link>
-                <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
-                    Start Free Trial
-                  </Button>
-                </Link>
+                {/* Mobile CTAs */}
+                <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-white/20">
+                  <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
+                    >
+                      Seller Login
+                    </Button>
+                  </Link>
+                  <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
+                    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
+                      Start Free Trial
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   );

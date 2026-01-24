@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef, ForwardedRef } from "react";
 
 interface UseScrollAnimationOptions {
   threshold?: number;
@@ -85,36 +85,49 @@ export const AnimatedSection = ({
   );
 };
 
-// Staggered children animation wrapper
+// Staggered children animation wrapper - with forwardRef support
 interface StaggeredContainerProps {
   children: React.ReactNode;
   className?: string;
   staggerDelay?: number;
 }
 
-export const StaggeredContainer = ({
-  children,
-  className = "",
-  staggerDelay = 100,
-}: StaggeredContainerProps) => {
-  const { ref, isVisible } = useScrollAnimation();
+export const StaggeredContainer = forwardRef<HTMLDivElement, StaggeredContainerProps>(
+  ({ children, className = "", staggerDelay = 100 }, forwardedRef: ForwardedRef<HTMLDivElement>) => {
+    const { ref: animationRef, isVisible } = useScrollAnimation();
 
-  return (
-    <div ref={ref} className={className}>
-      {Array.isArray(children)
-        ? children.map((child, index) => (
-            <div
-              key={index}
-              style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? "translateY(0)" : "translateY(30px)",
-                transition: `opacity 0.5s ease-out ${index * staggerDelay}ms, transform 0.5s ease-out ${index * staggerDelay}ms`,
-              }}
-            >
-              {child}
-            </div>
-          ))
-        : children}
-    </div>
-  );
-};
+    // Combine refs if needed
+    const setRefs = (node: HTMLDivElement | null) => {
+      // Set the internal animation ref
+      (animationRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      
+      // Set the forwarded ref
+      if (typeof forwardedRef === 'function') {
+        forwardedRef(node);
+      } else if (forwardedRef) {
+        forwardedRef.current = node;
+      }
+    };
+
+    return (
+      <div ref={setRefs} className={className}>
+        {Array.isArray(children)
+          ? children.map((child, index) => (
+              <div
+                key={index}
+                style={{
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? "translateY(0)" : "translateY(30px)",
+                  transition: `opacity 0.5s ease-out ${index * staggerDelay}ms, transform 0.5s ease-out ${index * staggerDelay}ms`,
+                }}
+              >
+                {child}
+              </div>
+            ))
+          : children}
+      </div>
+    );
+  }
+);
+
+StaggeredContainer.displayName = "StaggeredContainer";

@@ -55,8 +55,8 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <img src={logoDarkBg} alt="BizGrow 360" className="h-9 md:h-10 w-auto" />
+          <Link to="/" className="flex items-center shrink-0">
+            <img src={logoDarkBg} alt="BizGrow 360" className="h-8 sm:h-9 md:h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -78,23 +78,23 @@ const Navbar = () => {
                 
                 {link.dropdown && activeDropdown === link.label && (
                   <div className="absolute top-full left-0 pt-2 w-64 animate-fade-in z-50">
-                    <div className="bg-primary rounded-xl shadow-2xl border border-white/10 p-2 backdrop-blur-xl">
+                    <div className="bg-white rounded-xl shadow-2xl border border-border p-2">
                       {link.dropdown.map((item) => (
-                        <a
+                        <Link
                           key={item.label}
-                          href={item.href}
-                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-white/10 transition-colors group"
+                          to={item.href}
+                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-muted transition-colors group"
                         >
                           {item.icon && (
-                            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0 group-hover:bg-accent/30 transition-colors">
-                              <item.icon className="w-4 h-4 text-accent" />
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <item.icon className="w-4 h-4 text-primary" />
                             </div>
                           )}
                           <div>
-                            <p className="font-medium text-white">{item.label}</p>
-                            {item.desc && <p className="text-xs text-white/60">{item.desc}</p>}
+                            <p className="font-medium text-foreground">{item.label}</p>
+                            {item.desc && <p className="text-xs text-muted-foreground">{item.desc}</p>}
                           </div>
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   </div>
@@ -117,9 +117,9 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Enhanced visibility */}
           <button
-            className="lg:hidden text-white p-2.5 hover:bg-white/20 rounded-lg transition-colors bg-white/10"
+            className="lg:hidden text-white p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/15 border border-white/25 active:scale-95"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -127,10 +127,10 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Fixed positioning and improved visibility */}
         {isOpen && (
-          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-primary z-50 overflow-y-auto animate-slide-up">
-            <div className="flex flex-col p-4 pb-8">
+          <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-primary z-[60] overflow-y-auto overscroll-contain">
+            <div className="flex flex-col p-4 pb-24">
               {/* Navigation Links */}
               <div className="flex flex-col gap-1">
                 {navLinks.map((link) => (
@@ -139,26 +139,30 @@ const Navbar = () => {
                       <>
                         <button
                           onClick={() => toggleMobileDropdown(link.label)}
-                          className="w-full text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center justify-between"
+                          className="w-full text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center justify-between active:bg-white/20 transition-colors"
                         >
-                          <span>{link.label}</span>
-                          <ChevronRight className={`w-5 h-5 text-white transition-transform ${mobileExpanded === link.label ? 'rotate-90' : ''}`} />
+                          <span className="text-base">{link.label}</span>
+                          <ChevronRight className={`w-5 h-5 text-white transition-transform duration-200 ${mobileExpanded === link.label ? 'rotate-90' : ''}`} />
                         </button>
                         {mobileExpanded === link.label && (
-                          <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-lg py-2">
+                          <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-xl py-3 animate-fade-in">
                             {link.dropdown.map((item) => (
-                              <a
+                              <Link
                                 key={item.label}
-                                href={item.href}
-                                className="text-white/90 hover:text-white text-sm py-2.5 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3"
+                                to={item.href}
+                                className="text-white/90 hover:text-white text-sm py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3 active:bg-white/15 transition-colors"
                                 onClick={() => setIsOpen(false)}
                               >
-                                {item.icon && <item.icon className="w-4 h-4 text-accent" />}
+                                {item.icon && (
+                                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                                    <item.icon className="w-4 h-4 text-accent" />
+                                  </div>
+                                )}
                                 <div>
-                                  <span className="font-medium">{item.label}</span>
-                                  {item.desc && <p className="text-xs text-white/60">{item.desc}</p>}
+                                  <span className="font-medium block">{item.label}</span>
+                                  {item.desc && <p className="text-xs text-white/60 mt-0.5">{item.desc}</p>}
                                 </div>
-                              </a>
+                              </Link>
                             ))}
                           </div>
                         )}
@@ -166,7 +170,7 @@ const Navbar = () => {
                     ) : (
                       <a
                         href={link.href}
-                        className="text-white font-medium py-3 px-4 rounded-lg hover:bg-white/15 flex items-center"
+                        className="text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center text-base active:bg-white/20 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {link.label}

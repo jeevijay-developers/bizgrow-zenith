@@ -65,7 +65,7 @@ const plans = [
 
 const PricingSection = () => {
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95 relative overflow-hidden" id="pricing">
+    <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95 relative overflow-hidden" id="pricing">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse,_rgba(255,208,102,0.1)_0%,_transparent_60%)]" />
@@ -74,68 +74,68 @@ const PricingSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <AnimatedSection className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-4">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-accent text-sm font-bold">Simple Pricing</span>
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-8 sm:mb-10 md:mb-12 lg:mb-16 px-2">
+          <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-3 py-1.5 sm:px-4 sm:py-1.5 mb-3 sm:mb-4">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
+            <span className="text-accent text-xs sm:text-sm font-bold">Simple Pricing</span>
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 font-display">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 font-display">
             Choose Your Plan
           </h2>
-          <p className="text-base md:text-lg text-white/70">
+          <p className="text-sm sm:text-base md:text-lg text-white/70 px-2">
             Start with a 14-day free trial. No credit card required. 
             Cancel anytime.
           </p>
         </AnimatedSection>
 
         {/* Pricing Cards */}
-        <StaggeredContainer className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto" staggerDelay={150}>
+        <StaggeredContainer className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto" staggerDelay={150}>
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-2xl p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] ${
+              className={`relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] ${
                 plan.popular 
-                  ? "ring-2 ring-accent shadow-2xl shadow-accent/20 md:scale-105" 
+                  ? "ring-2 ring-accent shadow-2xl shadow-accent/20 md:scale-105 order-first md:order-none" 
                   : "shadow-xl"
               }`}
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 bg-accent text-accent-foreground px-4 py-1.5 rounded-full text-sm font-bold shadow-lg">
-                    <Sparkles className="w-4 h-4" />
+                <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 bg-accent text-accent-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-lg whitespace-nowrap">
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
                     Most Popular
                   </span>
                 </div>
               )}
 
               {/* Plan Header */}
-              <div className="text-center mb-6">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mx-auto mb-4`}>
-                  <plan.icon className="w-6 h-6 text-white" />
+              <div className={`text-center mb-5 sm:mb-6 ${plan.popular ? 'mt-2 sm:mt-0' : ''}`}>
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
+                  <plan.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">
                   {plan.name}
                 </h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                  <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                     {plan.price}
                   </span>
-                  <span className="text-gray-500">{plan.period}</span>
+                  <span className="text-gray-500 text-sm sm:text-base">{plan.period}</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2 px-2">
                   {plan.description}
                 </p>
               </div>
 
               {/* Features */}
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-green-600" />
+                  <li key={feature} className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" />
                     </div>
-                    <span className="text-gray-700 text-sm">{feature}</span>
+                    <span className="text-gray-700 text-xs sm:text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -143,7 +143,7 @@ const PricingSection = () => {
               {/* CTA */}
               <Link to="/join" className="block">
                 <Button 
-                  className={`w-full py-5 text-base font-semibold rounded-xl ${
+                  className={`w-full py-4 sm:py-5 text-sm sm:text-base font-semibold rounded-lg sm:rounded-xl ${
                     plan.popular 
                       ? "bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" 
                       : "bg-gray-100 hover:bg-gray-200 text-gray-900"
@@ -157,8 +157,8 @@ const PricingSection = () => {
         </StaggeredContainer>
 
         {/* Trust Note */}
-        <AnimatedSection className="text-center mt-10" delay={300}>
-          <p className="text-white/60 text-sm">
+        <AnimatedSection className="text-center mt-8 sm:mt-10" delay={300}>
+          <p className="text-white/60 text-xs sm:text-sm px-4">
             🔒 All plans include SSL security, daily backups, and 99.9% uptime guarantee.
           </p>
         </AnimatedSection>

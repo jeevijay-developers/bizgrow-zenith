@@ -1,7 +1,11 @@
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
-import USPSection from "@/components/landing/USPSection";
-import FeaturesSection from "@/components/landing/FeaturesSection";
+import TransformationSection from "@/components/landing/TransformationSection";
+import AIScanningSection from "@/components/landing/AIScanningSection";
+import WhatsAppSection from "@/components/landing/WhatsAppSection";
+import FlyerSection from "@/components/landing/FlyerSection";
+import RegionalLanguageSection from "@/components/landing/RegionalLanguageSection";
+import RevenueGrowthSection from "@/components/landing/RevenueGrowthSection";
 import StoreTypesSection from "@/components/landing/StoreTypesSection";
 import SocialProofSection from "@/components/landing/SocialProofSection";
 import PricingSection from "@/components/landing/PricingSection";
@@ -13,8 +17,12 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
-      <USPSection />
-      <FeaturesSection />
+      <TransformationSection />
+      <AIScanningSection />
+      <WhatsAppSection />
+      <FlyerSection />
+      <RegionalLanguageSection />
+      <RevenueGrowthSection />
       <StoreTypesSection />
       <SocialProofSection />
       <PricingSection />

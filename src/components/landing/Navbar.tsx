@@ -122,10 +122,10 @@ const Navbar = () => {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <button
-                className="lg:hidden text-white p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/15 border border-white/25 active:scale-95"
-                aria-label="Toggle menu"
+                className="lg:hidden flex items-center justify-center text-white p-2.5 sm:p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/20 border-2 border-white/40 active:scale-95 shadow-lg min-w-[44px] min-h-[44px]"
+                aria-label="Open menu"
               >
-                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <Menu className="w-6 h-6" />
               </button>
             </SheetTrigger>
 

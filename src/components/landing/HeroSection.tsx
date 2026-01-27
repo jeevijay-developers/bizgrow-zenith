@@ -136,9 +136,9 @@ const HeroSection = () => {
               />
             </div>
 
-            {/* Floating Cards - Smaller & better positioned */}
+            {/* Floating Cards - Hidden on very small screens, show progressively */}
             {/* Order notification - Top left */}
-            <div className="absolute top-0 -left-2 sm:left-0 md:top-4 md:-left-8 float-animation z-20">
+            <div className="absolute top-4 left-0 sm:-left-2 md:top-4 md:-left-8 float-animation z-20 hidden sm:block">
               <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-32 sm:w-40">
                 <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
@@ -155,8 +155,8 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* AI Magic - Right side */}
-            <div className="absolute top-1/4 -right-2 sm:right-0 md:top-1/3 md:-right-4 float-animation-delayed z-20">
+            {/* AI Magic - Right side - Hidden on mobile */}
+            <div className="absolute top-1/4 right-0 sm:-right-2 md:top-1/3 md:-right-4 float-animation-delayed z-20 hidden md:block">
               <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-28 sm:w-36">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
@@ -171,8 +171,8 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Sales Card - Bottom left - Hidden on very small screens */}
-            <div className="absolute bottom-8 sm:bottom-12 -left-2 sm:left-0 md:-left-6 float-animation z-20 hidden sm:block">
+            {/* Sales Card - Bottom left - Hidden on small screens */}
+            <div className="absolute bottom-12 sm:bottom-16 left-0 sm:-left-2 md:-left-6 float-animation z-20 hidden md:block">
               <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-32 sm:w-40">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-1">
@@ -185,8 +185,8 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Stock Alert - Bottom right */}
-            <div className="absolute bottom-2 sm:bottom-4 right-0 md:right-4 float-animation-delayed z-20">
+            {/* Stock Alert - Bottom right - Show on larger mobile and up */}
+            <div className="absolute bottom-4 right-0 sm:right-2 md:right-4 float-animation-delayed z-20 hidden sm:block">
               <div className="bg-white/95 backdrop-blur-xl rounded-lg shadow-lg p-1.5 sm:p-2 border border-gray-100/50">
                 <div className="flex items-center gap-1.5">
                   <div className="relative">

@@ -184,23 +184,23 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - Slim */}
+        {/* Bottom Bar - Slim with safe-area support */}
         <div className="border-t border-white/10">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-              <p className="text-white/40 text-xs text-center sm:text-left flex items-center gap-1">
+              <p className="text-white/40 text-xs text-center sm:text-left flex items-center gap-1 flex-wrap justify-center">
                 © {new Date().getFullYear()} BizGrow 360. Made with 
-                <Heart className="w-3 h-3 text-destructive fill-destructive" /> 
+                <Heart className="w-3 h-3 text-destructive fill-destructive inline-block mx-0.5" /> 
                 in India
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-xs">
-                <a href="#" className="text-white/40 hover:text-accent transition-colors">
+                <a href="#" className="text-white/40 hover:text-accent transition-colors py-1">
                   Privacy
                 </a>
-                <a href="#" className="text-white/40 hover:text-accent transition-colors">
+                <a href="#" className="text-white/40 hover:text-accent transition-colors py-1">
                   Terms
                 </a>
-                <a href="#" className="text-white/40 hover:text-accent transition-colors">
+                <a href="#" className="text-white/40 hover:text-accent transition-colors py-1">
                   Cookies
                 </a>
               </div>

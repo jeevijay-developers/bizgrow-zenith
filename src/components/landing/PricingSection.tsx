@@ -1,167 +1,217 @@
-import { Check, Sparkles, Zap, Crown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatedSection, StaggeredContainer } from "@/hooks/useScrollAnimation";
+import { motion } from "framer-motion";
+import { Check, Star, Zap, Building2 } from "lucide-react";
+import { RippleButton } from "@/components/ui/ripple-button";
 
 const plans = [
   {
-    name: "Starter",
+    name: "Free",
     icon: Zap,
-    price: "₹499",
-    period: "/month",
-    description: "Perfect for small shops just getting started",
+    description: "Perfect to get started",
+    price: "₹0",
+    period: "forever",
     features: [
-      "Up to 100 products",
+      "Up to 50 products",
       "Digital catalogue",
-      "WhatsApp notifications",
-      "Basic inventory",
-      "5 invoices/day",
-      "Email support",
+      "WhatsApp orders",
+      "Basic analytics",
+      "1 staff account",
     ],
-    cta: "Start Free Trial",
+    cta: "Start Free",
     popular: false,
-    color: "from-gray-500 to-gray-600",
+    bgClass: "bg-card",
+    borderClass: "border-border",
   },
   {
     name: "Pro",
-    icon: Sparkles,
-    price: "₹999",
+    icon: Star,
+    description: "For growing businesses",
+    price: "₹499",
     period: "/month",
-    description: "For growing businesses with more needs",
     features: [
       "Unlimited products",
       "AI product upload",
-      "Advanced inventory",
-      "Customer CRM",
-      "Unlimited invoices",
-      "GST reports",
-      "Analytics dashboard",
       "Priority WhatsApp support",
+      "Advanced analytics",
+      "5 staff accounts",
+      "Custom domain",
+      "GST invoicing",
     ],
     cta: "Start Free Trial",
     popular: true,
-    color: "from-primary to-purple-700",
+    bgClass: "bg-primary",
+    borderClass: "border-primary",
   },
   {
     name: "Enterprise",
-    icon: Crown,
+    icon: Building2,
+    description: "For large retailers",
     price: "Custom",
     period: "",
-    description: "For large retailers and chains",
     features: [
       "Everything in Pro",
       "Multi-store management",
-      "Custom integrations",
-      "Dedicated account manager",
+      "Unlimited staff accounts",
       "API access",
+      "Dedicated support",
+      "Custom integrations",
       "SLA guarantee",
-      "On-site training",
     ],
     cta: "Contact Sales",
     popular: false,
-    color: "from-amber-500 to-orange-500",
+    bgClass: "bg-card",
+    borderClass: "border-border",
   },
 ];
 
 const PricingSection = () => {
+  const [isAnnual, setIsAnnual] = useState(true);
+
   return (
-    <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-primary via-primary to-primary/95 relative overflow-hidden" id="pricing">
-      {/* Background effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse,_rgba(255,208,102,0.1)_0%,_transparent_60%)]" />
-        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse,_rgba(255,255,255,0.05)_0%,_transparent_60%)]" />
+    <section className="py-20 md:py-28 bg-background relative overflow-hidden" id="pricing">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-[5%] w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-[5%] w-80 h-80 bg-accent/10 rounded-full blur-[120px]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <AnimatedSection className="text-center max-w-3xl mx-auto mb-8 sm:mb-10 md:mb-12 lg:mb-16 px-2">
-          <div className="inline-flex items-center gap-2 bg-accent/20 rounded-full px-3 py-1.5 sm:px-4 sm:py-1.5 mb-3 sm:mb-4">
-            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
-            <span className="text-accent text-xs sm:text-sm font-bold">Simple Pricing</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
+        >
+          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
+            <span className="text-sm font-semibold text-accent-foreground">Simple Pricing</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 font-display">
-            Choose Your Plan
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            Plans That Grow
+            <span className="text-primary block mt-2">With Your Business</span>
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-white/70 px-2">
-            Start with a 14-day free trial. No credit card required. 
-            Cancel anytime.
+          <p className="text-lg text-muted-foreground mb-8">
+            Start free, upgrade when you need. No hidden fees, cancel anytime.
           </p>
-        </AnimatedSection>
+
+          {/* Billing Toggle */}
+          <div className="inline-flex items-center gap-3 bg-muted rounded-full p-1.5">
+            <button
+              onClick={() => setIsAnnual(false)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                !isAnnual ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setIsAnnual(true)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                isAnnual ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Annual
+              <span className="text-xs bg-accent text-accent-foreground px-2 py-0.5 rounded-full font-bold">
+                Save 20%
+              </span>
+            </button>
+          </div>
+        </motion.div>
 
         {/* Pricing Cards */}
-        <StaggeredContainer className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto" staggerDelay={150}>
-          {plans.map((plan) => (
-            <div
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {plans.map((plan, index) => (
+            <motion.div
               key={plan.name}
-              className={`relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 transition-all duration-300 hover:scale-[1.02] ${
-                plan.popular 
-                  ? "ring-2 ring-accent shadow-2xl shadow-accent/20 md:scale-105 order-first md:order-none" 
-                  : "shadow-xl"
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className={`relative rounded-2xl border ${plan.borderClass} ${plan.bgClass} ${
+                plan.popular ? "text-primary-foreground scale-105 shadow-2xl shadow-primary/20" : ""
+              } overflow-hidden`}
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5 bg-accent text-accent-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-lg whitespace-nowrap">
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                    Most Popular
-                  </span>
+                <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center py-1.5 text-xs font-bold">
+                  MOST POPULAR
                 </div>
               )}
 
-              {/* Plan Header */}
-              <div className={`text-center mb-5 sm:mb-6 ${plan.popular ? 'mt-2 sm:mt-0' : ''}`}>
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${plan.color} flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
-                  <plan.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
+                {/* Plan Icon & Name */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>
+                    <plan.icon className={`w-5 h-5 ${plan.popular ? "text-white" : "text-primary"}`} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                    <p className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
+                      {plan.description}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">
-                  {plan.name}
-                </h3>
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-                    {plan.price}
+
+                {/* Price */}
+                <div className="mb-6">
+                  <span className="text-4xl sm:text-5xl font-bold">
+                    {plan.price === "₹499" && isAnnual ? "₹399" : plan.price}
                   </span>
-                  <span className="text-gray-500 text-sm sm:text-base">{plan.period}</span>
+                  <span className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
+                    {plan.period}
+                  </span>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-500 mt-1.5 sm:mt-2 px-2">
-                  {plan.description}
-                </p>
+
+                {/* CTA Button */}
+                <Link to="/join" className="block mb-6">
+                  <RippleButton
+                    className={`w-full h-12 font-bold ${
+                      plan.popular
+                        ? "bg-white text-primary hover:bg-white/90"
+                        : "bg-primary text-primary-foreground hover:bg-primary/90"
+                    }`}
+                  >
+                    {plan.cta}
+                  </RippleButton>
+                </Link>
+
+                {/* Features List */}
+                <ul className="space-y-3">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <Check className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-primary"}`} />
+                      <span className={`text-sm ${plan.popular ? "text-white/90" : "text-foreground"}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              {/* Features */}
-              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 sm:gap-3">
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 text-xs sm:text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              <Link to="/join" className="block">
-                <Button 
-                  className={`w-full py-4 sm:py-5 text-sm sm:text-base font-semibold rounded-lg sm:rounded-xl ${
-                    plan.popular 
-                      ? "bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" 
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
-              </Link>
-            </div>
+            </motion.div>
           ))}
-        </StaggeredContainer>
+        </div>
 
-        {/* Trust Note */}
-        <AnimatedSection className="text-center mt-8 sm:mt-10" delay={300}>
-          <p className="text-white/60 text-xs sm:text-sm px-4">
-            🔒 All plans include SSL security, daily backups, and 99.9% uptime guarantee.
-          </p>
-        </AnimatedSection>
+        {/* Trust badges */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-muted-foreground"
+        >
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-primary" />
+            No credit card required
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-primary" />
+            Cancel anytime
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-primary" />
+            24/7 support
+          </div>
+        </motion.div>
       </div>
     </section>
   );

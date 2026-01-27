@@ -1,216 +1,266 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { RippleButton } from "@/components/ui/ripple-button";
-import { ArrowRight, MessageCircle, Star, Sparkles, Clock, CheckCircle, Calendar, TrendingUp, Package } from "lucide-react";
-import modelImage from "@/assets/bizgrow-model.png";
+import { ArrowRight, Play, Star, CheckCircle, Sparkles, Users, Store } from "lucide-react";
 import ScheduleDemoModal from "./ScheduleDemoModal";
 
 const HeroSection = () => {
   const [showDemoModal, setShowDemoModal] = useState(false);
 
+  const stats = [
+    { icon: Store, value: "10,000+", label: "Active Stores" },
+    { icon: Users, value: "500K+", label: "Happy Customers" },
+    { icon: Star, value: "4.9/5", label: "Store Rating" },
+  ];
+
   return (
-    <section className="relative min-h-[100svh] bg-gradient-to-br from-primary via-primary to-primary/95 overflow-hidden pt-16 md:pt-20">
+    <section className="relative min-h-[100svh] overflow-hidden pt-20 md:pt-24">
       {/* Schedule Demo Modal */}
       <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
 
-      {/* Simplified gradient background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_rgba(255,208,102,0.15)_0%,_transparent_50%)]" />
-        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,_rgba(255,208,102,0.1)_0%,_transparent_50%)]" />
+      {/* Warm gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary via-background to-background" />
+      
+      {/* Decorative shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-[10%] w-72 h-72 bg-accent/20 rounded-full blur-[100px]" />
+        <div className="absolute top-40 right-[15%] w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-20 left-[30%] w-64 h-64 bg-accent/15 rounded-full blur-[80px]" />
       </div>
 
-      {/* Subtle floating orbs - reduced on mobile */}
-      <div className="absolute top-20 left-[10%] w-20 md:w-32 h-20 md:h-32 bg-accent/20 rounded-full blur-3xl animate-pulse hidden sm:block" />
-      <div className="absolute bottom-32 right-[15%] w-24 md:w-40 h-24 md:h-40 bg-accent/15 rounded-full blur-3xl animate-pulse hidden sm:block" style={{ animationDelay: '1s' }} />
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }}
+      />
 
-      <div className="container mx-auto px-4 py-6 md:py-10 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center min-h-[calc(100svh-100px)] md:min-h-[calc(100vh-140px)]">
-          
-          {/* Left Content - Compact & Aligned */}
-          <div className="text-center lg:text-left space-y-4 md:space-y-5 order-2 lg:order-1">
-            {/* Live Badge - Compact */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-              </span>
-              <span className="text-white/90 text-xs font-medium">
-                2,847 retailers went digital this week
-              </span>
-            </div>
-
-            {/* Headline - Tighter spacing */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] font-display">
-              Your Shop,{" "}
-              <span className="relative inline-block">
-                <span className="text-accent">Online</span>
-                <svg className="absolute -bottom-0.5 left-0 w-full h-2" viewBox="0 0 200 12" fill="none">
-                  <path d="M2 8C50 2 150 2 198 8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="text-accent/60" />
-                </svg>
-              </span>
-              <br />
-              <span className="text-white/90">in 60 Seconds</span>
-            </h1>
-
-            {/* Subtitle - Cleaner */}
-            <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-md mx-auto lg:mx-0 leading-relaxed">
-              AI-powered catalogue • WhatsApp orders • Smart inventory
-              <span className="block mt-0.5 text-white/50 text-xs sm:text-sm">Made for Bharat's retailers</span>
-            </p>
-
-            {/* Feature Pills - Compact row */}
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-              {[
-                { icon: Sparkles, text: "AI Upload", color: "from-amber-400 to-orange-500" },
-                { icon: Clock, text: "60s Setup", color: "from-green-400 to-emerald-500" },
-                { icon: MessageCircle, text: "WhatsApp", color: "from-green-500 to-green-600" },
-              ].map((item) => (
-                <div key={item.text} className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/15">
-                  <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center`}>
-                    <item.icon className="w-2 h-2 text-white" />
-                  </div>
-                  <span className="text-white/90 text-xs font-medium">{item.text}</span>
+      <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
+        {/* Centered Hero Content */}
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Trust Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 mb-6 shadow-sm"
+          >
+            <div className="flex -space-x-1.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-bizgrow-yellow-dark border-2 border-background flex items-center justify-center text-[8px] font-bold text-accent-foreground"
+                >
+                  {["A", "R", "S", "P"][i - 1]}
                 </div>
               ))}
             </div>
+            <span className="text-sm text-muted-foreground">
+              Trusted by <span className="font-semibold text-foreground">10,000+</span> retailers
+            </span>
+          </motion.div>
 
-            {/* CTAs - Compact buttons */}
-            <div className="flex flex-col sm:flex-row gap-2.5 justify-center lg:justify-start pt-1">
-              <Link to="/join" className="w-full sm:w-auto">
-                <RippleButton size="lg" variant="glow-accent" className="font-bold w-full sm:w-auto group text-sm h-11">
-                  Start Free — No Card Needed
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </RippleButton>
-              </Link>
-              <RippleButton 
-                size="lg" 
-                variant="outline-light" 
-                className="w-full sm:w-auto group text-sm h-11"
-                onClick={() => setShowDemoModal(true)}
+          {/* Main Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] mb-6 font-display"
+          >
+            Grow Your Shop
+            <span className="block mt-2">
+              <span className="relative inline-block">
+                <span className="text-primary">Digitally</span>
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+                  <path d="M2 8C50 2 150 2 198 8" stroke="hsl(var(--accent))" strokeWidth="4" strokeLinecap="round" />
+                </svg>
+              </span>
+            </span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed"
+          >
+            Create your online store in 60 seconds with AI-powered tools.
+            <span className="block mt-1 text-foreground/70">
+              No technical skills needed. Made for Indian retailers.
+            </span>
+          </motion.p>
+
+          {/* Feature Pills */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-wrap gap-3 justify-center mb-10"
+          >
+            {[
+              { icon: Sparkles, text: "AI Product Upload" },
+              { icon: CheckCircle, text: "WhatsApp Orders" },
+              { icon: CheckCircle, text: "Free Forever Plan" },
+            ].map((item) => (
+              <div
+                key={item.text}
+                className="flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 text-sm font-medium text-foreground shadow-sm"
               >
-                <Calendar className="w-3.5 h-3.5 mr-2" />
-                Schedule Demo
-              </RippleButton>
-            </div>
+                <item.icon className="w-4 h-4 text-primary" />
+                {item.text}
+              </div>
+            ))}
+          </motion.div>
 
-            {/* Trust Indicators - Compact single row */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-3 justify-center lg:justify-start">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {["RS", "PP", "MI", "SD"].map((initials, i) => (
-                    <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-accent to-amber-400 flex items-center justify-center text-[9px] font-bold text-primary border-2 border-primary" style={{ zIndex: 5 - i }}>
-                      {initials}
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+          >
+            <Link to="/join">
+              <RippleButton
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 h-14 text-lg group shadow-lg shadow-primary/20"
+              >
+                Start Free — No Card Needed
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </RippleButton>
+            </Link>
+            <RippleButton
+              size="lg"
+              variant="outline"
+              className="h-14 px-6 text-lg font-medium border-2 group"
+              onClick={() => setShowDemoModal(true)}
+            >
+              <Play className="w-5 h-5 mr-2 text-primary" />
+              Watch Demo
+            </RippleButton>
+          </motion.div>
+
+          {/* Stats Row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-16"
+          >
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <stat.icon className="w-5 h-5 text-accent" />
+                  <span className="text-2xl sm:text-3xl font-bold text-foreground">{stat.value}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Dashboard Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="relative max-w-5xl mx-auto"
+          >
+            {/* Glow effect behind */}
+            <div className="absolute inset-0 bg-gradient-to-t from-accent/20 via-primary/10 to-transparent rounded-3xl blur-2xl scale-95" />
+            
+            {/* Browser mockup */}
+            <div className="relative bg-card border border-border rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
+              {/* Browser header */}
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/50">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-destructive/60" />
+                  <div className="w-3 h-3 rounded-full bg-accent/60" />
+                  <div className="w-3 h-3 rounded-full bg-primary/40" />
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <div className="bg-background border border-border rounded-lg px-4 py-1.5 text-xs text-muted-foreground flex items-center gap-2 w-full max-w-xs">
+                    <span className="truncate">yourstore.bizgrow360.com</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dashboard content placeholder */}
+              <div className="aspect-[16/9] bg-gradient-to-br from-muted/30 to-muted/50 p-4 sm:p-6 md:p-8">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  {["Today's Sales", "Orders", "Products", "Customers"].map((label, i) => (
+                    <div key={label} className="bg-card border border-border rounded-xl p-3 sm:p-4">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">{label}</p>
+                      <p className="text-lg sm:text-xl font-bold text-foreground">
+                        {["₹12,450", "23", "156", "89"][i]}
+                      </p>
                     </div>
                   ))}
                 </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-accent text-accent" />
-                    ))}
-                    <span className="text-accent font-bold ml-1 text-xs">4.9</span>
-                  </div>
-                  <span className="text-white/60 text-[10px]">1,000+ Retailers</span>
-                </div>
-              </div>
-              <div className="hidden sm:flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span className="text-white/70 text-xs">Free Forever Plan</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Content - Model with floating cards */}
-          <div className="relative flex justify-center items-center order-1 lg:order-2">
-            {/* Glow backdrop */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-accent/25 to-accent/5 rounded-full blur-3xl" />
-            </div>
-
-            {/* Main Model Image - Responsive sizing */}
-            <div className="relative z-10">
-              <img
-                src={modelImage}
-                alt="Indian retailer using BizGrow 360"
-                className="w-full max-w-[200px] sm:max-w-[260px] md:max-w-[320px] lg:max-w-[380px] object-contain drop-shadow-2xl"
-              />
-            </div>
-
-            {/* Floating Cards - Hidden on very small screens, show progressively */}
-            {/* Order notification - Top left */}
-            <div className="absolute top-4 left-0 sm:-left-2 md:top-4 md:-left-8 float-animation z-20 hidden sm:block">
-              <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-32 sm:w-40">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                    <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 text-[10px] sm:text-xs">New Order! 🎉</p>
-                    <p className="text-[8px] sm:text-[10px] text-gray-500">WhatsApp</p>
-                  </div>
-                </div>
-                <div className="bg-green-50 rounded-lg p-1.5 sm:p-2">
-                  <p className="text-[10px] sm:text-xs text-green-800 font-medium">Priya • ₹850</p>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Magic - Right side - Hidden on mobile */}
-            <div className="absolute top-1/4 right-0 sm:-right-2 md:top-1/3 md:-right-4 float-animation-delayed z-20 hidden md:block">
-              <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-28 sm:w-36">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" />
-                  </div>
-                  <p className="font-bold text-gray-900 text-[10px] sm:text-xs">AI Magic</p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
-                  <p className="text-[9px] sm:text-[10px] text-gray-700 truncate">Parle-G ₹20</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Sales Card - Bottom left - Hidden on small screens */}
-            <div className="absolute bottom-12 sm:bottom-16 left-0 sm:-left-2 md:-left-6 float-animation z-20 hidden md:block">
-              <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl p-2 sm:p-3 border border-gray-100/50 w-32 sm:w-40">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
-                    <p className="font-bold text-gray-900 text-[10px] sm:text-xs">Today</p>
-                  </div>
-                  <span className="text-[8px] sm:text-[10px] text-green-600 bg-green-100 px-1 py-0.5 rounded-full font-bold">+23%</span>
-                </div>
-                <p className="text-lg sm:text-xl font-bold text-gray-900">₹12,450</p>
-              </div>
-            </div>
-
-            {/* Stock Alert - Bottom right - Show on larger mobile and up */}
-            <div className="absolute bottom-4 right-0 sm:right-2 md:right-4 float-animation-delayed z-20 hidden sm:block">
-              <div className="bg-white/95 backdrop-blur-xl rounded-lg shadow-lg p-1.5 sm:p-2 border border-gray-100/50">
-                <div className="flex items-center gap-1.5">
-                  <div className="relative">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center">
-                      <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="sm:col-span-2 bg-card border border-border rounded-xl p-4 h-32 sm:h-40">
+                    <p className="text-xs text-muted-foreground mb-3">Sales Overview</p>
+                    <div className="flex items-end gap-1 h-20 sm:h-24">
+                      {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
+                        <div
+                          key={i}
+                          className="flex-1 bg-gradient-to-t from-primary to-primary/50 rounded-t"
+                          style={{ height: `${h}%` }}
+                        />
+                      ))}
                     </div>
-                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full flex items-center justify-center text-[6px] sm:text-[8px] text-white font-bold">3</span>
                   </div>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-gray-800">Low Stock</span>
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <p className="text-xs text-muted-foreground mb-3">Top Products</p>
+                    <div className="space-y-2">
+                      {["Parle-G", "Amul Milk", "Maggi"].map((name, i) => (
+                        <div key={name} className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded bg-muted" />
+                          <span className="text-xs text-foreground truncate">{name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Wave transition */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-12 md:h-16" preserveAspectRatio="none">
-          <path
-            d="M0 80L60 72C120 64 240 48 360 40C480 32 600 32 720 36C840 40 960 48 1080 52C1200 56 1320 56 1380 52L1440 48V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z"
-            fill="hsl(var(--background))"
-          />
-        </svg>
+            {/* Floating cards */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -left-4 sm:-left-8 top-1/4 bg-card border border-border rounded-xl p-3 shadow-xl hidden md:block"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground">AI Detected</p>
+                  <p className="text-[10px] text-muted-foreground">5 products added</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -right-4 sm:-right-8 top-1/3 bg-card border border-border rounded-xl p-3 shadow-xl hidden md:block"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-bizgrow-yellow-dark flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-accent-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground">New Order! 🎉</p>
+                  <p className="text-[10px] text-muted-foreground">₹850 via WhatsApp</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

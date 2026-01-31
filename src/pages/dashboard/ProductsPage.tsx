@@ -4,8 +4,10 @@ import {
   Package, Plus, Search, Filter, Grid, List, MoreVertical, 
   Edit, Trash2, Eye, Star, TrendingUp, AlertTriangle,
   X, Upload, Camera, Loader2, ImageIcon, FileSpreadsheet, Download,
-  CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus, Minus, Box
+  CheckSquare, Square, ToggleLeft, ToggleRight, ImagePlus, Minus, Box,
+  Sparkles, Share2
 } from "lucide-react";
+import { ProductFlyerModal } from "@/components/product/ProductFlyerModal";
 import BulkImageUpload from "@/components/dashboard/BulkImageUpload";
 import AIUploadPromoBanner from "@/components/dashboard/AIUploadPromoBanner";
 import { Button } from "@/components/ui/button";
@@ -75,6 +77,9 @@ const ProductsPage = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [bulkImageUploadOpen, setBulkImageUploadOpen] = useState(false);
+  const [flyerProduct, setFlyerProduct] = useState<Product | null>(null);
+  const [showFlyerModal, setShowFlyerModal] = useState(false);
+  const [lastAddedProduct, setLastAddedProduct] = useState<Product | null>(null);
   const [bulkStockValue, setBulkStockValue] = useState("");
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -169,7 +174,7 @@ const ProductsPage = () => {
   const addProductMutation = useMutation({
     mutationFn: async () => {
       if (!store?.id) throw new Error("No store found");
-      const { error } = await supabase.from("products").insert({
+      const { data, error } = await supabase.from("products").insert({
         store_id: store.id,
         name: newProduct.name,
         price: parseFloat(newProduct.price) || 0,
@@ -179,12 +184,13 @@ const ProductsPage = () => {
         description: newProduct.description || null,
         is_available: newProduct.is_available,
         image_url: newProduct.image_url || null,
-      });
+      }).select().single();
       if (error) throw error;
+      return data as Product;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
-      toast.success("Product added successfully!");
+      setLastAddedProduct(data);
       setAddProductOpen(false);
       setNewProduct({
         name: "",
@@ -196,6 +202,23 @@ const ProductsPage = () => {
         is_available: true,
         image_url: "",
       });
+      // Show success with flyer option
+      toast.success(
+        <div className="flex items-center gap-3">
+          <span>Product added successfully!</span>
+          <button
+            onClick={() => {
+              setFlyerProduct(data);
+              setShowFlyerModal(true);
+            }}
+            className="flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground rounded text-xs font-medium hover:bg-primary/90"
+          >
+            <Sparkles className="w-3 h-3" />
+            Create Flyer
+          </button>
+        </div>,
+        { duration: 8000 }
+      );
     },
     onError: (error) => {
       toast.error("Failed to add product: " + error.message);
@@ -1035,6 +1058,14 @@ const ProductsPage = () => {
                             <Edit className="w-4 h-4 mr-2" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem 
+                            onClick={() => {
+                              setFlyerProduct(product);
+                              setShowFlyerModal(true);
+                            }}
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" /> Create Flyer
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
                             className="text-destructive"
                             onClick={() => deleteProductMutation.mutate(product.id)}
                           >
@@ -1173,6 +1204,18 @@ const ProductsPage = () => {
                           <Button 
                             variant="ghost" 
                             size="icon" 
+                            className="h-8 w-8 text-primary"
+                            onClick={() => {
+                              setFlyerProduct(product);
+                              setShowFlyerModal(true);
+                            }}
+                            title="Create Flyer"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
                             className="h-8 w-8 text-destructive"
                             onClick={() => deleteProductMutation.mutate(product.id)}
                           >
@@ -1199,6 +1242,19 @@ const ProductsPage = () => {
           onComplete={() => {
             queryClient.invalidateQueries({ queryKey: ["products", store.id] });
           }}
+        />
+      )}
+
+      {/* Product Flyer Modal */}
+      {flyerProduct && (
+        <ProductFlyerModal
+          isOpen={showFlyerModal}
+          onClose={() => {
+            setShowFlyerModal(false);
+            setFlyerProduct(null);
+          }}
+          product={flyerProduct}
+          storeName={store?.name}
         />
       )}
     </div>

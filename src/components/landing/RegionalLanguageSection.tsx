@@ -1,20 +1,21 @@
 import { motion } from "framer-motion";
 import { Globe, Mic, MessageCircle, ArrowRight, Check, Volume2 } from "lucide-react";
+import { HiFlag } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 
 const languages = [
-  { code: "hi", name: "हिंदी", english: "Hindi", flag: "🇮🇳" },
-  { code: "ta", name: "தமிழ்", english: "Tamil", flag: "🇮🇳" },
-  { code: "te", name: "తెలుగు", english: "Telugu", flag: "🇮🇳" },
-  { code: "kn", name: "ಕನ್ನಡ", english: "Kannada", flag: "🇮🇳" },
-  { code: "ml", name: "മലയാളം", english: "Malayalam", flag: "🇮🇳" },
-  { code: "bn", name: "বাংলা", english: "Bengali", flag: "🇮🇳" },
-  { code: "mr", name: "मराठी", english: "Marathi", flag: "🇮🇳" },
-  { code: "gu", name: "ગુજરાતી", english: "Gujarati", flag: "🇮🇳" },
-  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", flag: "🇮🇳" },
-  { code: "or", name: "ଓଡ଼ିଆ", english: "Odia", flag: "🇮🇳" },
-  { code: "en", name: "English", english: "English", flag: "🌐" },
+  { code: "hi", name: "हिंदी", english: "Hindi", useIcon: true },
+  { code: "ta", name: "தமிழ்", english: "Tamil", useIcon: true },
+  { code: "te", name: "తెలుగు", english: "Telugu", useIcon: true },
+  { code: "kn", name: "ಕನ್ನಡ", english: "Kannada", useIcon: true },
+  { code: "ml", name: "മലയാളം", english: "Malayalam", useIcon: true },
+  { code: "bn", name: "বাংলা", english: "Bengali", useIcon: true },
+  { code: "mr", name: "मराठी", english: "Marathi", useIcon: true },
+  { code: "gu", name: "ગુજરાતી", english: "Gujarati", useIcon: true },
+  { code: "pa", name: "ਪੰਜਾਬੀ", english: "Punjabi", useIcon: true },
+  { code: "or", name: "ଓଡ଼ିଆ", english: "Odia", useIcon: true },
+  { code: "en", name: "English", english: "English", useIcon: false },
 ];
 
 const languageFeatures = [
@@ -69,7 +70,9 @@ const RegionalLanguageSection = () => {
               transition={{ delay: index * 0.05 }}
               className="bg-card border border-border rounded-xl px-4 py-3 flex items-center gap-3 hover:border-primary/50 hover:shadow-lg transition-all group cursor-pointer"
             >
-              <span className="text-2xl">{lang.flag}</span>
+              <span className="text-2xl flex items-center justify-center">
+                {lang.useIcon ? <HiFlag className="w-6 h-6 text-orange-500" /> : <Globe className="w-6 h-6 text-primary" />}
+              </span>
               <div>
                 <p className="font-bold text-foreground group-hover:text-primary transition-colors">{lang.name}</p>
                 <p className="text-xs text-muted-foreground">{lang.english}</p>

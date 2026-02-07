@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Cake, Clock, Calendar, 
@@ -42,11 +41,7 @@ const BakeryStorePage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <div>
               <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <Cake className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Bakeries & Confectioneries
@@ -67,29 +62,24 @@ const BakeryStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            <div
               className="relative mt-6 lg:mt-0"
             >
               <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <img src={bakeryMockup} alt="Bakery Dashboard" className="w-full h-auto" />
               </div>
               
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
+              <div
                 className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-4 shadow-xl hidden sm:block"
               >
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 fill-red-500" />
                   <span className="font-semibold text-xs sm:text-sm">45 Pre-orders Today</span>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -97,10 +87,7 @@ const BakeryStorePage = () => {
       {/* Features Grid */}
       <section className="py-12 sm:py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
             className="text-center mb-8 sm:mb-10 md:mb-12"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
@@ -109,16 +96,12 @@ const BakeryStorePage = () => {
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
               Features that help bakeries serve customers better.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-            {features.map((feature, index) => (
-              <motion.div
+            {features.map((feature) => (
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
                 className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-5 md:p-6 hover:shadow-lg hover:border-primary/20 transition-all group"
               >
                 <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
@@ -126,7 +109,7 @@ const BakeryStorePage = () => {
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground text-sm sm:text-base">{feature.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -136,30 +119,22 @@ const BakeryStorePage = () => {
       <section className="py-12 sm:py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                 Why Bakers Love{" "}
                 <span className="text-primary">BizGrow 360</span>
               </h2>
               <div className="space-y-3 sm:space-y-4">
                 {benefits.map((benefit, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-center gap-2.5 sm:gap-3"
                   >
                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600" />
                     </div>
                     <span className="text-sm sm:text-base md:text-lg">{benefit}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
               
@@ -171,12 +146,9 @@ const BakeryStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+            <div
               className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mt-6 lg:mt-0"
             >
               {[
@@ -191,7 +163,7 @@ const BakeryStorePage = () => {
                   <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

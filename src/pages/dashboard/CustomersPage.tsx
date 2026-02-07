@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -195,7 +196,7 @@ const CustomersPage = () => {
       {/* Header with Category Theme */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-lg`}>
+          <div className="w-12 h-12 rounded-xl bg-[hsl(284,100%,25%)] flex items-center justify-center shadow-lg">
             <CategoryIcon className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -210,7 +211,7 @@ const CustomersPage = () => {
           </Button>
           <Button 
             size="sm" 
-            className={`gap-2 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+            className="gap-2 bg-[hsl(284,100%,25%)] hover:opacity-90 text-white"
             onClick={() => setAddCustomerOpen(true)}
           >
             <UserPlus className="w-4 h-4" />
@@ -272,7 +273,7 @@ const CustomersPage = () => {
             exit={{ opacity: 0 }}
             className="bg-card rounded-xl border border-border p-12 text-center"
           >
-            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center mx-auto mb-4 opacity-50`}>
+            <div className="w-16 h-16 rounded-2xl bg-[hsl(284,100%,25%)] flex items-center justify-center mx-auto mb-4 opacity-50">
               <CategoryIcon className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-semibold mb-2">{pageContent.emptyCustomersTitle}</h3>
@@ -281,7 +282,7 @@ const CustomersPage = () => {
             </p>
             {!searchQuery && (
               <Button 
-                className={`mt-4 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+                className="mt-4 bg-[hsl(284,100%,25%)] hover:opacity-90 text-white"
                 onClick={() => setAddCustomerOpen(true)}
               >
                 <UserPlus className="w-4 h-4 mr-2" />
@@ -408,7 +409,7 @@ const CustomersPage = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(284,100%,15%)] to-[hsl(284,100%,25%)] flex items-center justify-center">
                 <UserPlus className="w-4 h-4 text-white" />
               </div>
               {pageContent.addCustomerButton}
@@ -493,7 +494,7 @@ const CustomersPage = () => {
                 Cancel
               </Button>
               <Button 
-                className={`flex-1 bg-gradient-to-r ${theme.gradient} hover:opacity-90`}
+                className="flex-1 bgbg-[hsl(284,100%,25%)]-[hsl(284,100%,25%)] hover:opacity-90 text-white"
                 onClick={handleAddCustomer}
                 disabled={addCustomerMutation.isPending}
               >

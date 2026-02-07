@@ -370,11 +370,11 @@ export function ProductFlyerModal({ isOpen, onClose, product, storeName = "BizGr
                   <Sparkles className="w-4 h-4" />
                   Pro Tips
                 </h4>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  <li>• Download as PNG for best quality on social media</li>
-                  <li>• Use WhatsApp to share directly with customers</li>
-                  <li>• Try different templates for different occasions</li>
-                  <li>• Add to WhatsApp Status for maximum reach</li>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Download as PNG for best quality on social media</li>
+                  <li>Use WhatsApp to share directly with customers</li>
+                  <li>Try different templates for different occasions</li>
+                  <li>Add to WhatsApp Status for maximum reach</li>
                 </ul>
               </div>
             </div>

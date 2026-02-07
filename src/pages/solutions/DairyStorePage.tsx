@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Milk, Clock, Calendar, 
@@ -42,11 +41,7 @@ const DairyStorePage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <div>
               <div className="inline-flex items-center gap-2 bg-blue-400/20 text-blue-300 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <Milk className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Dairy & Milk Delivery
@@ -67,23 +62,14 @@ const DairyStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative mt-6 lg:mt-0"
-            >
+            <div className="relative mt-6 lg:mt-0">
               <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <img src={dairyMockup} alt="Dairy Store Dashboard" className="w-full h-auto" />
               </div>
               
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-4 shadow-xl hidden sm:block"
-              >
+              <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-4 shadow-xl hidden sm:block">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
@@ -93,8 +79,8 @@ const DairyStorePage = () => {
                     <p className="text-[10px] sm:text-xs text-blue-600">2,500+ customers</p>
                   </div>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -102,28 +88,19 @@ const DairyStorePage = () => {
       {/* Features Grid */}
       <section className="py-12 sm:py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-10 md:mb-12"
-          >
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Built for <span className="text-primary">Dairy Business</span>
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
               Features designed for freshness and timely delivery.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
                 className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-5 md:p-6 hover:shadow-lg hover:border-primary/20 transition-all group"
               >
                 <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
@@ -131,7 +108,7 @@ const DairyStorePage = () => {
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground text-sm sm:text-base">{feature.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -141,30 +118,22 @@ const DairyStorePage = () => {
       <section className="py-12 sm:py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                 Why Dairy Owners Love{" "}
                 <span className="text-primary">BizGrow 360</span>
               </h2>
               <div className="space-y-3 sm:space-y-4">
                 {benefits.map((benefit, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-center gap-2.5 sm:gap-3"
                   >
                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                     </div>
                     <span className="text-sm sm:text-base md:text-lg">{benefit}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
               
@@ -176,14 +145,9 @@ const DairyStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mt-6 lg:mt-0"
-            >
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mt-6 lg:mt-0">
               {[
                 { icon: Milk, value: "3K+", label: "Dairy Shops" },
                 { icon: Calendar, value: "50K+", label: "Subscriptions" },
@@ -196,7 +160,7 @@ const DairyStorePage = () => {
                   <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

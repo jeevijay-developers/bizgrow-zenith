@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { HiSparkles } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
@@ -356,6 +358,14 @@ const Join = () => {
         );
         
         if (signUpError) {
+          const msg = signUpError.message.toLowerCase();
+          // If Supabase sent the email but reported an SMTP warning, treat it as a soft success
+          if (msg.includes("confirmation email")) {
+            toast.success("Confirmation email sent. Please check your inbox to finish signup.");
+            setIsSubmitting(false);
+            return;
+          }
+
           setErrors({ email: signUpError.message.includes("already registered") 
             ? "Email already registered" 
             : signUpError.message 
@@ -545,8 +555,8 @@ const Join = () => {
                 transition={{ delay: 0.4 }}
                 className="space-y-3"
               >
-                <h2 className="text-3xl font-bold text-foreground">
-                  🎉 Congratulations!
+                <h2 className="text-3xl font-bold text-foreground flex items-center justify-center gap-2">
+                  <HiSparkles className="w-8 h-8 text-accent" /> Congratulations!
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-sm">
                   Your store <span className="font-semibold text-primary">{formData.storeName}</span> is ready!

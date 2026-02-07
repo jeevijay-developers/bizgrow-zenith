@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp, Clock, IndianRupee, FileText, Smartphone, ChartBar } from "lucide-react";
+import { ArrowRight, TrendingUp, Clock, IndianRupee, FileText, Smartphone, ChartBar, XCircle, CheckCircle } from "lucide-react";
 import beforeAfterImage from "@/assets/before-after-transform.jpg";
 
 const transformMetrics = [
@@ -79,13 +79,13 @@ const TransformationSection = () => {
             {/* Overlay Labels */}
             <div className="absolute inset-0 flex">
               <div className="w-1/2 flex items-end p-6">
-                <div className="bg-red-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold">
-                  ❌ BEFORE
+                <div className="bg-red-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+                  <XCircle className="w-4 h-4" /> BEFORE
                 </div>
               </div>
               <div className="w-1/2 flex items-end justify-end p-6">
-                <div className="bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold">
-                  ✅ AFTER
+                <div className="bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" /> AFTER
                 </div>
               </div>
             </div>

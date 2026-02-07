@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, MessageSquare, Bell, Send, Users, 
-  Clock, Smartphone, MessageCircle, CheckCheck, Zap, Shield
+  Clock, Smartphone, MessageCircle, CheckCheck, Zap, Shield, ShoppingCart, CheckCircle
 } from "lucide-react";
+import { HiSparkles } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -47,25 +48,25 @@ const workflow = [
     step: "1",
     title: "Customer Orders",
     description: "Customer browses your catalogue and adds items to cart",
-    icon: "🛒"
+    IconComponent: ShoppingCart
   },
   {
     step: "2",
     title: "WhatsApp Checkout",
     description: "Order is sent to you via WhatsApp with full details",
-    icon: "📱"
+    IconComponent: Smartphone
   },
   {
     step: "3",
     title: "You Get Notified",
     description: "Instant notification on your phone and dashboard",
-    icon: "🔔"
+    IconComponent: Bell
   },
   {
     step: "4",
     title: "Confirm & Fulfill",
     description: "Accept order, prepare items, and update customer",
-    icon: "✅"
+    IconComponent: CheckCircle
   }
 ];
 
@@ -174,7 +175,7 @@ const WhatsAppOrdersPage = () => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="absolute -bottom-4 -right-4 bg-green-500 text-white rounded-2xl rounded-br-sm p-3 shadow-xl"
               >
-                <p className="text-sm font-medium">Order confirmed! 🎉</p>
+                <p className="text-sm font-medium flex items-center gap-1">Order confirmed! <HiSparkles className="w-4 h-4" /></p>
               </motion.div>
             </motion.div>
           </div>
@@ -230,7 +231,9 @@ const WhatsAppOrdersPage = () => {
                 className="relative"
               >
                 <div className="bg-card rounded-2xl border border-border p-6 text-center hover:shadow-lg hover:border-green-500/20 transition-all h-full">
-                  <div className="text-5xl mb-4">{item.icon}</div>
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-500/10 flex items-center justify-center">
+                    <item.IconComponent className="w-7 h-7 text-green-500" />
+                  </div>
                   <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold mx-auto mb-3">
                     {item.step}
                   </div>

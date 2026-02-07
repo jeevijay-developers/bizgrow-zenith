@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useOutletContext, Navigate } from "react-router-dom";
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
 import { CategoryStatsCard } from "@/components/dashboard/CategoryStatsCard";
@@ -194,10 +193,7 @@ const DashboardHome = () => {
           <LowStockAlert />
 
           {/* Store Info Card - Category Themed */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
+          <div
             className="bg-card rounded-xl border border-border overflow-hidden"
           >
             {/* Category header */}
@@ -235,7 +231,7 @@ const DashboardHome = () => {
                 <span className="text-green-600 font-medium">Active</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

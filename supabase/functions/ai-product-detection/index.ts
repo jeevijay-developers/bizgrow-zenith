@@ -47,11 +47,11 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY not configured");
       return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
+        JSON.stringify({ error: "AI service not configured. Please set GEMINI_API_KEY." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -62,82 +62,59 @@ serve(async (req) => {
       const imageData = images[i];
       console.log(`Processing image ${i + 1} of ${images.length}`);
 
-      // Step 1: Analyze product details
-      const analysisResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      // Extract base64 data from data URL
+      const base64Match = imageData.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (!base64Match) {
+        console.error(`Invalid image format for image ${i + 1}`);
+        continue;
+      }
+      const mimeType = `image/${base64Match[1]}`;
+      const base64Data = base64Match[2];
+
+      // Step 1: Analyze product details using Gemini API directly
+      const analysisResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
+          contents: [
             {
-              role: "system",
-              content: `You are an AI assistant specialized in analyzing product images for Indian retail stores. 
-              Analyze the image and extract product information. Be accurate with pricing in Indian Rupees (₹).
-              
-              Available categories: ${ALL_CATEGORIES.join(", ")}
-              
-              Choose the most specific category that fits the product. For stationery items, use specific categories like "Pens", "Notebooks", "Books" etc.
-              Estimate reasonable prices based on the Indian market.`
-            },
-            {
-              role: "user",
-              content: [
+              parts: [
                 {
-                  type: "text",
-                  text: "Analyze this product image and extract the product details. Choose the most specific category from the available list."
+                  text: `You are an AI assistant specialized in analyzing product images for Indian retail stores. 
+Analyze this product image and extract the product details.
+
+Available categories: ${ALL_CATEGORIES.join(", ")}
+
+Choose the most specific category that fits the product. For stationery items, use specific categories like "Pens", "Notebooks", "Books" etc.
+Estimate reasonable prices based on the Indian market in Indian Rupees (₹).
+
+Respond ONLY with a valid JSON object in this exact format (no markdown, no code blocks):
+{
+  "name": "Product name with size/quantity",
+  "price": 99,
+  "category": "Category from the list",
+  "description": "Brief description",
+  "brand": "Brand name if visible",
+  "confidence": 85
+}`
                 },
                 {
-                  type: "image_url",
-                  image_url: { url: imageData }
+                  inlineData: {
+                    mimeType: mimeType,
+                    data: base64Data
+                  }
                 }
               ]
             }
           ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "extract_product_details",
-                description: "Extract product details from the analyzed image",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    name: {
-                      type: "string",
-                      description: "Product name (e.g., 'Amul Butter 500g', 'Cello Butterflo Ball Pen')"
-                    },
-                    price: {
-                      type: "number",
-                      description: "Estimated price in Indian Rupees"
-                    },
-                    category: {
-                      type: "string",
-                      enum: ALL_CATEGORIES,
-                      description: "Product category - choose the most specific one"
-                    },
-                    description: {
-                      type: "string",
-                      description: "Brief product description including size/quantity if visible"
-                    },
-                    brand: {
-                      type: "string",
-                      description: "Brand name if identifiable"
-                    },
-                    confidence: {
-                      type: "number",
-                      description: "Confidence score 0-100"
-                    }
-                  },
-                  required: ["name", "price", "category", "description", "confidence"],
-                  additionalProperties: false
-                }
-              }
-            }
-          ],
-          tool_choice: { type: "function", function: { name: "extract_product_details" } }
+          generationConfig: {
+            temperature: 0.2,
+            topK: 32,
+            topP: 1,
+            maxOutputTokens: 1024,
+          }
         }),
       });
 
@@ -149,19 +126,24 @@ serve(async (req) => {
             { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        if (analysisResponse.status === 402) {
-          return new Response(
-            JSON.stringify({ error: "AI credits exhausted. Please add credits." }),
-            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
         const errorText = await analysisResponse.text();
-        console.error("AI gateway error:", analysisResponse.status, errorText);
+        console.error("Gemini API error:", analysisResponse.status, errorText);
+        // Still add a placeholder product with error info for debugging
+        detectedProducts.push({
+          name: "Analysis Failed",
+          price: 0,
+          category: "Groceries",
+          description: `Error: ${analysisResponse.status}`,
+          brand: "",
+          confidence: 0,
+          originalImage: imageData,
+          enhancedImage: undefined
+        });
         continue;
       }
 
       const analysisResult = await analysisResponse.json();
-      const toolCall = analysisResult.choices?.[0]?.message?.tool_calls?.[0];
+      console.log("Gemini API response received:", JSON.stringify(analysisResult).substring(0, 500));
       
       let productData = {
         name: "Unknown Product",
@@ -172,74 +154,41 @@ serve(async (req) => {
         confidence: 70
       };
 
-      if (toolCall?.function?.arguments) {
+      // Parse Gemini response
+      const responseText = analysisResult.candidates?.[0]?.content?.parts?.[0]?.text;
+      console.log("Response text from Gemini:", responseText ? responseText.substring(0, 300) : "EMPTY");
+      
+      if (responseText) {
         try {
-          const parsed = JSON.parse(toolCall.function.arguments);
+          // Clean up the response - remove markdown code blocks if present
+          let cleanJson = responseText.trim();
+          if (cleanJson.startsWith("```json")) {
+            cleanJson = cleanJson.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+          } else if (cleanJson.startsWith("```")) {
+            cleanJson = cleanJson.replace(/^```\s*/, "").replace(/\s*```$/, "");
+          }
+          
+          const parsed = JSON.parse(cleanJson);
           productData = {
             name: parsed.name || "Unknown Product",
-            price: parsed.price || 99,
-            category: parsed.category || "Groceries",
+            price: typeof parsed.price === 'number' ? parsed.price : parseInt(parsed.price) || 99,
+            category: ALL_CATEGORIES.includes(parsed.category) ? parsed.category : "Groceries",
             description: parsed.description || "",
             brand: parsed.brand || "",
             confidence: parsed.confidence || 85
           };
         } catch (parseError) {
-          console.error("Failed to parse AI response:", parseError);
+          console.error("Failed to parse Gemini response:", parseError, responseText);
         }
       }
 
-      // Step 2: Enhance image with white background (if enabled)
-      let enhancedImageUrl: string | undefined;
-      
-      if (enhanceImages) {
-        try {
-          console.log(`Enhancing image ${i + 1}...`);
-          const enhanceResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-2.5-flash-image-preview",
-              messages: [
-                {
-                  role: "user",
-                  content: [
-                    {
-                      type: "text",
-                      text: "Please edit this product image to have a clean, pure white background. Keep the product itself clear and well-lit. Remove any shadows, clutter, or distracting elements. Make it look professional and suitable for an e-commerce catalog. Maintain the product's natural colors and details."
-                    },
-                    {
-                      type: "image_url",
-                      image_url: { url: imageData }
-                    }
-                  ]
-                }
-              ],
-              modalities: ["image", "text"]
-            }),
-          });
-
-          if (enhanceResponse.ok) {
-            const enhanceResult = await enhanceResponse.json();
-            const enhancedImage = enhanceResult.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-            if (enhancedImage) {
-              enhancedImageUrl = enhancedImage;
-              console.log(`Image ${i + 1} enhanced successfully`);
-            }
-          } else {
-            console.log(`Image enhancement failed for image ${i + 1}, using original`);
-          }
-        } catch (enhanceError) {
-          console.error("Enhancement error:", enhanceError);
-        }
-      }
+      // Step 2: Image enhancement is not available with direct Gemini API
+      // Using original image only
 
       detectedProducts.push({
         ...productData,
         originalImage: imageData,
-        enhancedImage: enhancedImageUrl
+        enhancedImage: undefined
       });
     }
 

@@ -1063,12 +1063,12 @@ const AIUploadPage = () => {
             </div>
             <div>
               <h4 className="font-medium mb-2">Tips for best results</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Use good lighting - avoid shadows and glare</li>
-                <li>• Capture the product label clearly</li>
-                <li>• Include price tags if visible</li>
-                <li>• AI will enhance images with clean white backgrounds</li>
-                <li>• You can choose between original or enhanced image</li>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                <li>Use good lighting - avoid shadows and glare</li>
+                <li>Capture the product label clearly</li>
+                <li>Include price tags if visible</li>
+                <li>AI will enhance images with clean white backgrounds</li>
+                <li>You can choose between original or enhanced image</li>
               </ul>
             </div>
           </div>

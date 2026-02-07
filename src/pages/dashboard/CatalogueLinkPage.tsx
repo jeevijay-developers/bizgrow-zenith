@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Link2, Copy, ExternalLink, Share2, 
   Check, Eye, MessageCircle, Facebook, Twitter,
-  Smartphone, Monitor, RefreshCw, QrCode, X, Sparkles
+  Smartphone, Monitor, RefreshCw, QrCode, X, Sparkles, Lightbulb, Circle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,7 +152,8 @@ const CatalogueLinkPage = () => {
                   : "bg-white/10 text-white/60 border-white/20"
                 }
               >
-                {store.is_active ? "● Live" : "○ Offline"}
+                <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${store.is_active ? "bg-green-400" : "bg-gray-400"}`}></span>
+                {store.is_active ? "Live" : "Offline"}
               </Badge>
             </div>
 
@@ -311,11 +312,11 @@ const CatalogueLinkPage = () => {
                   Customers can scan this QR code to instantly access your digital catalogue. 
                   Perfect for:
                 </p>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• In-store counter display</li>
-                  <li>• Business cards</li>
-                  <li>• Flyers and posters</li>
-                  <li>• Product packaging</li>
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>In-store counter display</li>
+                  <li>Business cards</li>
+                  <li>Flyers and posters</li>
+                  <li>Product packaging</li>
                 </ul>
               </div>
             </div>
@@ -390,13 +391,13 @@ const CatalogueLinkPage = () => {
       >
         <Card className="bg-accent/10 border-accent/20">
           <CardContent className="pt-6">
-            <h3 className="font-semibold mb-3">💡 Tips to get more customers</h3>
+            <h3 className="font-semibold mb-3 flex items-center gap-2"><Lightbulb className="w-4 h-4 text-accent" /> Tips to get more customers</h3>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li>• Share your store link on WhatsApp status daily</li>
-              <li>• Add products with good photos and descriptions</li>
-              <li>• Keep your product prices updated</li>
-              <li>• Print QR code and display it at your store counter</li>
-              <li>• Add your store link to your business card</li>
+              <li className="flex items-start gap-2"><Circle className="w-1.5 h-1.5 mt-1.5 fill-current" /> Share your store link on WhatsApp status daily</li>
+              <li className="flex items-start gap-2"><Circle className="w-1.5 h-1.5 mt-1.5 fill-current" /> Add products with good photos and descriptions</li>
+              <li className="flex items-start gap-2"><Circle className="w-1.5 h-1.5 mt-1.5 fill-current" /> Keep your product prices updated</li>
+              <li className="flex items-start gap-2"><Circle className="w-1.5 h-1.5 mt-1.5 fill-current" /> Print QR code and display it at your store counter</li>
+              <li className="flex items-start gap-2"><Circle className="w-1.5 h-1.5 mt-1.5 fill-current" /> Add your store link to your business card</li>
             </ul>
           </CardContent>
         </Card>

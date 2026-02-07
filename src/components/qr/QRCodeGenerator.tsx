@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
-import { Download, Image, FileCode, Printer, Store } from "lucide-react";
+import { Download, Image, FileCode, Printer, Store, Smartphone } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -122,7 +122,7 @@ export function QRCodeGenerator({ url, storeName, themeColor = "#10b981", logoUr
         </head>
         <body>
           <div class="store-name">${storeName}</div>
-          <div class="tagline">📱 Scan to browse our products</div>
+          <div class="tagline">Scan to browse our products</div>
           <div class="qr-container">
             ${svgRef.current?.innerHTML || ''}
           </div>

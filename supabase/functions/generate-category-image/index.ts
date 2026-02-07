@@ -52,126 +52,34 @@ serve(async (req) => {
     }
 
     // Generate new category image using AI
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
-      return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log(`Generating new category image for: ${normalizedCategory}`);
-
-    const prompt = `Generate a clean, modern category icon image for "${category}" products. 
-    The image should be:
-    - A simple, flat design illustration style
-    - Feature typical items from the "${category}" category arranged nicely
-    - Have a clean white or very light gradient background
-    - Be colorful and appealing for an e-commerce store
-    - Professional looking, suitable for a category thumbnail
-    - Square aspect ratio
-    - No text or labels in the image
-    Examples: For "Pens" show colorful pens, for "Books" show stacked books, for "Dairy" show milk and cheese, etc.`;
-
-    const generateResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image-preview",
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        modalities: ["image", "text"]
-      }),
-    });
-
-    if (!generateResponse.ok) {
-      if (generateResponse.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (generateResponse.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const errorText = await generateResponse.text();
-      console.error("AI generation error:", generateResponse.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "Failed to generate category image" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const generateResult = await generateResponse.json();
-    const generatedImageBase64 = generateResult.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-
-    if (!generatedImageBase64) {
-      console.error("No image in AI response");
-      return new Response(
-        JSON.stringify({ error: "AI did not return an image" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Upload to storage
-    const base64Data = generatedImageBase64.split(",")[1];
-    const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    // Note: Direct Gemini API doesn't support image generation in the same way
+    // Using a placeholder approach for now - in production, you could use:
+    // 1. Imagen API for image generation
+    // 2. Pre-made category images
+    // 3. A different image generation service
     
-    const fileName = `categories/${normalizedCategory.replace(/[^a-z0-9]/g, "-")}-${Date.now()}.png`;
-    
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("store-assets")
-      .upload(fileName, binaryData, {
-        contentType: "image/png",
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error("Storage upload error:", uploadError);
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      console.log("GEMINI_API_KEY not configured, using placeholder");
+      // Return a placeholder or skip image generation
       return new Response(
-        JSON.stringify({ error: "Failed to save category image" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ 
+          error: "Category image generation not available. Please upload a custom image.",
+          category: normalizedCategory 
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Get public URL
-    const { data: publicUrl } = supabase.storage
-      .from("store-assets")
-      .getPublicUrl(fileName);
-
-    const imageUrl = publicUrl.publicUrl;
-
-    // Save to database for future reuse
-    const { error: insertError } = await supabase
-      .from("category_images")
-      .insert({
-        category_name: normalizedCategory,
-        image_url: imageUrl
-      });
-
-    if (insertError) {
-      console.error("Database insert error:", insertError);
-      // Still return the image even if DB save fails
-    }
-
-    console.log(`Category image generated and saved for: ${normalizedCategory}`);
-
+    console.log(`Category image generation requested for: ${normalizedCategory}`);
+    console.log("Note: Direct image generation requires Imagen API or alternative service");
+    
+    // For now, return a message indicating manual upload is needed
     return new Response(
       JSON.stringify({ 
-        imageUrl, 
-        cached: false,
-        category: normalizedCategory 
+        message: "Please upload a custom category image",
+        category: normalizedCategory,
+        imageUrl: null
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

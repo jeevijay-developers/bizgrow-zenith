@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check, Star, Zap, Building2, Sparkles } from "lucide-react";
+import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
 
 const plans = [
@@ -135,8 +136,8 @@ const PricingSection = () => {
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center py-2 text-xs font-bold tracking-wide">
-                  ⭐ MOST POPULAR ⭐
+                <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center py-2 text-xs font-bold tracking-wide flex items-center justify-center gap-1">
+                  <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
                 </div>
               )}
 

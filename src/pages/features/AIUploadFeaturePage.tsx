@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Sparkles, Camera, Cpu, Clock, 
-  Target, Zap, Upload, Brain, Scan, Wand2
+  Target, Zap, Upload, Brain, Scan, Wand2, Pencil, CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/landing/Navbar";
@@ -47,25 +47,25 @@ const steps = [
     number: "01",
     title: "Capture Product",
     description: "Take a clear photo of the product, packaging, or price tag.",
-    visual: "📸"
+    IconComponent: Camera
   },
   {
     number: "02", 
     title: "AI Analysis",
     description: "Our neural network analyzes the image in under 5 seconds.",
-    visual: "🧠"
+    IconComponent: Brain
   },
   {
     number: "03",
     title: "Review & Edit",
     description: "Verify the extracted details and make any adjustments needed.",
-    visual: "✏️"
+    IconComponent: Pencil
   },
   {
     number: "04",
     title: "Add to Catalogue",
     description: "One click to add the product to your store catalogue.",
-    visual: "✅"
+    IconComponent: CheckCircle
   }
 ];
 
@@ -184,7 +184,7 @@ const AIUploadFeaturePage = () => {
                   </div>
                   <div>
                     <p className="font-bold text-lg">Detected!</p>
-                    <p className="text-sm text-muted-foreground">Tata Salt 1kg • ₹28</p>
+                    <p className="text-sm text-muted-foreground">Tata Salt 1kg — ₹28</p>
                   </div>
                 </div>
               </motion.div>
@@ -221,7 +221,9 @@ const AIUploadFeaturePage = () => {
                 className="relative"
               >
                 <div className="bg-card rounded-2xl border border-border p-6 h-full hover:shadow-lg hover:border-primary/20 transition-all">
-                  <div className="text-5xl mb-4">{step.visual}</div>
+                  <div className="w-14 h-14 mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <step.IconComponent className="w-7 h-7 text-primary" />
+                  </div>
                   <div className="text-primary font-bold text-sm mb-2">{step.number}</div>
                   <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
                   <p className="text-muted-foreground text-sm">{step.description}</p>

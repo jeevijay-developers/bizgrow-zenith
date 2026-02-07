@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Image as ImageIcon, Palette, Share2, ArrowRight, Sparkles, Check, Instagram, Facebook } from "lucide-react";
+import { Image as ImageIcon, Palette, Share2, ArrowRight, Sparkles, Check, Instagram, Facebook, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 
@@ -62,8 +62,8 @@ const FlyerSection = () => {
                   ))}
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-white text-xs">📍 Valid till 15 Nov</p>
-                  <p className="text-white text-xs">📞 98765 43210</p>
+                  <p className="text-white text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> Valid till 15 Nov</p>
+                  <p className="text-white text-xs flex items-center gap-1"><Phone className="w-3 h-3" /> 98765 43210</p>
                 </div>
               </div>
             </motion.div>

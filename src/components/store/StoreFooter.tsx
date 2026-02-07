@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { 
   Shield, Lock, CreditCard, Headphones, 
   Zap, Heart, Star, Gift, Truck, Clock,
-  MapPin, Phone, Mail
+  MapPin, Phone, Mail, Instagram, Facebook
 } from "lucide-react";
 
 interface StoreFooterProps {
@@ -144,7 +144,7 @@ const StoreFooter = ({
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-500/10 text-pink-600 hover:bg-pink-500/20 transition-colors border border-pink-500/20"
                   >
-                    <span className="text-base">📸</span>
+                    <Instagram className="w-4 h-4" />
                     <span className="text-sm font-medium">Instagram</span>
                   </motion.a>
                 )}
@@ -157,7 +157,7 @@ const StoreFooter = ({
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
                   >
-                    <span className="text-base">📘</span>
+                    <Facebook className="w-4 h-4" />
                     <span className="text-sm font-medium">Facebook</span>
                   </motion.a>
                 )}

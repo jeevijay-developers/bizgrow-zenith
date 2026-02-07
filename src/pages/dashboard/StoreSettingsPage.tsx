@@ -52,7 +52,7 @@ const categories = [
 const businessModes = [
   "walk-in",
   "delivery",
-  "walk-in-delivery"
+  "walk-in + delivery"
 ];
 
 const StoreSettingsPage = () => {
@@ -192,7 +192,9 @@ const StoreSettingsPage = () => {
               <SelectContent>
                 {businessModes.map(mode => (
                   <SelectItem key={mode} value={mode}>
-                    {mode.replace("-", " + ").replace(/\b\w/g, l => l.toUpperCase())}
+                    {mode.split(' ').map(word => 
+                      word.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('-')
+                    ).join(' ')}
                   </SelectItem>
                 ))}
               </SelectContent>

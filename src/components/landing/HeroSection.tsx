@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { ArrowRight, Play, Star, Shield, Zap, Globe, Sparkles, CheckCircle, MessageSquare, Image } from "lucide-react";
+import { HiSparkles, HiStar } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import ScheduleDemoModal from "./ScheduleDemoModal";
@@ -15,7 +15,7 @@ const trustBadges = [
 const floatingStats = [
   { value: "10K+", label: "Active Stores", color: "from-green-400 to-emerald-500" },
   { value: "₹50Cr+", label: "Monthly GMV", color: "from-amber-400 to-orange-500" },
-  { value: "4.9★", label: "User Rating", color: "from-purple-400 to-pink-500" },
+  { value: "4.9", label: "User Rating", color: "from-purple-400 to-pink-500", hasStarIcon: true },
 ];
 
 const HeroSection = () => {
@@ -39,23 +39,17 @@ const HeroSection = () => {
       </div>
 
       {/* Floating decorative elements */}
-      <div className="absolute top-20 right-[20%] w-72 h-72 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-20 left-[10%] w-96 h-96 bg-accent/15 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute top-20 right-[20%] w-72 h-72 bg-primary/20 rounded-full blur-[100px]" />
+      <div className="absolute bottom-20 left-[10%] w-96 h-96 bg-accent/15 rounded-full blur-[120px]" />
 
       <div className="container mx-auto px-4 relative z-10 pt-20 pb-12">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+          <div
             className="text-center lg:text-left"
           >
             {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+            <div
               className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8"
             >
               {trustBadges.map((badge) => (
@@ -67,37 +61,28 @@ const HeroSection = () => {
                   <span className="text-foreground font-medium">{badge.text}</span>
                 </div>
               ))}
-            </motion.div>
+            </div>
 
             {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+            <h1
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6 font-display"
             >
               Apni Dukaan Ko
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
                 Digital Banao
               </span>
-            </motion.h1>
+            </h1>
 
             {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+            <p
               className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
               AI-powered platform to digitize your store, accept WhatsApp orders, 
               create marketing posters, and grow your business — all in your language.
-            </motion.p>
+            </p>
 
             {/* Feature Pills */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+            <div
               className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10"
             >
               {["AI Product Upload", "WhatsApp Orders", "Auto Flyers", "GST Billing", "Hindi/Regional"].map((feature) => (
@@ -109,13 +94,10 @@ const HeroSection = () => {
                   {feature}
                 </span>
               ))}
-            </motion.div>
+            </div>
 
             {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+            <div
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
             >
               <Link to="/join">
@@ -133,13 +115,10 @@ const HeroSection = () => {
                 <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
                 Watch Demo
               </RippleButton>
-            </motion.div>
+            </div>
 
             {/* Social Proof */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
+            <div
               className="flex items-center justify-center lg:justify-start gap-4"
             >
               <div className="flex -space-x-3">
@@ -161,47 +140,36 @@ const HeroSection = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">10,000+ stores trust us</p>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Right - Floating Stats Cards (visible on larger screens) */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+          <div
             className="hidden lg:block relative"
           >
-            <div className="relative h-[500px]">
-              {/* Floating stat cards */}
+            <div className="relative h-[550px] w-full">
+              {/* Floating stat cards - Better positioned */}
               {floatingStats.map((stat, index) => (
-                <motion.div
+                <div
                   key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + index * 0.2 }}
                   className="absolute bg-background/90 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-2xl"
                   style={{
-                    top: index === 0 ? "10%" : index === 1 ? "40%" : "70%",
-                    right: index === 0 ? "10%" : index === 1 ? "0%" : "20%",
+                    top: index === 0 ? "5%" : index === 1 ? "35%" : "65%",
+                    right: index === 0 ? "5%" : index === 1 ? "25%" : "10%",
                   }}
                 >
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
-                  >
+                  <div>
                     <p className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                       {stat.value}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               ))}
 
-              {/* Floating Feature Cards */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute left-[5%] bottom-[15%] bg-background border border-border rounded-xl p-3 shadow-xl z-30"
+              {/* Floating Feature Cards - Repositioned to avoid overlaps */}
+              <div
+                className="absolute left-[8%] top-[15%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
@@ -212,12 +180,34 @@ const HeroSection = () => {
                     <p className="text-[10px] text-muted-foreground">+ 9 more languages</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, delay: 0.5 }}
-                className="absolute right-[5%] bottom-[20%] bg-background border border-border rounded-xl p-3 shadow-xl z-30"
+              <div
+                className="absolute left-[5%] top-[52%] bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary-foreground" />
+                  <div>
+                    <p className="text-xs font-bold text-primary-foreground flex items-center gap-1">New Order! <HiSparkles className="w-3 h-3" /></p>
+                    <p className="text-[10px] text-primary-foreground/80">₹1,250 via WhatsApp</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute right-[12%] top-[24%] bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
+                  <div>
+                    <p className="text-xs font-bold text-primary-foreground">AI Detected</p>
+                    <p className="text-[10px] text-primary-foreground/80">8 products added</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute left-[15%] bottom-[12%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
@@ -228,71 +218,30 @@ const HeroSection = () => {
                     <p className="text-[10px] text-muted-foreground">Ready to share</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, delay: 1 }}
-                className="absolute left-[15%] top-[10%] bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-3 shadow-xl z-30"
+              {/* AI Badge - Repositioned */}
+              <div
+                className="absolute bottom-[8%] right-[30%] bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl p-4 shadow-xl z-10"
               >
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-primary-foreground" />
-                  <div>
-                    <p className="text-xs font-bold text-primary-foreground">New Order! 🎉</p>
-                    <p className="text-[10px] text-primary-foreground/80">₹1,250 via WhatsApp</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, delay: 1.5 }}
-                className="absolute right-[10%] top-[5%] bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-3 shadow-xl z-30"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary-foreground" />
-                  <div>
-                    <p className="text-xs font-bold text-primary-foreground">AI Detected</p>
-                    <p className="text-[10px] text-primary-foreground/80">8 products added</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* AI Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2 }}
-                className="absolute top-[25%] left-[5%] bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl p-4 shadow-xl"
-              >
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                >
-                  <Sparkles className="w-8 h-8" />
-                </motion.div>
+                <Sparkles className="w-8 h-8" />
                 <p className="text-sm font-bold mt-2">AI Powered</p>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+      <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2"
+        <div
+          className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 animate-bounce"
         >
           <div className="w-1.5 h-2.5 bg-primary rounded-full" />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 };

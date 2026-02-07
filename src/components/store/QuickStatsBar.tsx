@@ -32,7 +32,7 @@ const QuickStatsBar = ({
     },
     { 
       icon: Star, 
-      label: "4.8 ★ Rated", 
+      label: "4.8 Rated", 
       color: "from-amber-500 to-orange-500", 
       bg: "from-amber-50 to-orange-50 dark:from-amber-500/10 dark:to-orange-500/10",
       iconBg: "bg-gradient-to-br from-amber-500 to-orange-500"

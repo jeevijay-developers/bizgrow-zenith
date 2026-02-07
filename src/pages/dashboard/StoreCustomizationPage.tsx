@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { 
@@ -409,294 +410,428 @@ const StoreCustomizationPage = () => {
         </TabsList>
 
         {/* Banner Tab */}
-        <TabsContent value="banner" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Image className="w-5 h-5" />
-                Store Banner
-              </CardTitle>
-              <CardDescription>
-                Add an eye-catching banner to your store
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Show Banner</Label>
-                  <p className="text-sm text-muted-foreground">Display banner on your store</p>
-                </div>
-                <Switch
-                  checked={formData.show_banner}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_banner: checked }))}
-                />
-              </div>
+        <TabsContent value="banner">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Column - Configuration */}
+            <div className="lg:col-span-7 space-y-6">
+              <Card>
+                <CardContent className="pt-6 space-y-8">
+                  {/* Show Banner Toggle */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-base mb-1">Show Banner</h3>
+                      <p className="text-sm text-muted-foreground">Display the banner on your store homepage</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {formData.show_banner ? "On" : "Off"}
+                      </span>
+                      <Switch
+                        checked={formData.show_banner}
+                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_banner: checked }))}
+                      />
+                    </div>
+                  </div>
 
-              {formData.show_banner && (
-                <>
-                  {/* Banner Image Upload */}
-                  <div className="space-y-3">
-                    <Label>Banner Image</Label>
-                    <input
-                      type="file"
-                      ref={bannerInputRef}
-                      onChange={handleBannerUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    {formData.banner_image_url ? (
-                      <div className="relative rounded-xl overflow-hidden">
-                        <img 
-                          src={formData.banner_image_url} 
-                          alt="Banner" 
-                          className="w-full h-40 object-cover"
+                  {formData.show_banner && (
+                    <>
+                      {/* Banner Image Upload */}
+                      <div className="space-y-3">
+                        <input
+                          type="file"
+                          ref={bannerInputRef}
+                          onChange={handleBannerUpload}
+                          accept="image/*"
+                          className="hidden"
                         />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={() => setFormData(prev => ({ ...prev, banner_image_url: null }))}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div 
-                        onClick={() => bannerInputRef.current?.click()}
-                        className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:border-primary transition-colors"
-                        style={{ 
-                          background: `linear-gradient(135deg, ${formData.theme_color}20, ${formData.accent_color}20)` 
-                        }}
-                      >
-                        {uploadingBanner ? (
-                          <Loader2 className="w-8 h-8 mx-auto animate-spin text-muted-foreground" />
+                        {formData.banner_image_url ? (
+                          <div className="relative rounded-xl overflow-hidden">
+                            <img 
+                              src={formData.banner_image_url} 
+                              alt="Banner" 
+                              className="w-full h-64 object-cover"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-4 right-4"
+                              onClick={() => setFormData(prev => ({ ...prev, banner_image_url: null }))}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
                         ) : (
-                          <>
-                            <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-sm font-medium">Click to upload banner</p>
-                            <p className="text-xs text-muted-foreground">Recommended: 1200x400px, Max 5MB</p>
-                          </>
+                          <div 
+                            onClick={() => bannerInputRef.current?.click()}
+                            className="w-full h-64 border-2 border-dashed border-gray-300 bg-muted/30 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-muted/50 hover:border-primary/50 transition-all group"
+                          >
+                            {uploadingBanner ? (
+                              <Loader2 className="w-12 h-12 mx-auto animate-spin text-muted-foreground" />
+                            ) : (
+                              <>
+                                <Upload className="w-12 h-12 text-muted-foreground mb-4 group-hover:text-primary transition-colors" />
+                                <p className="font-medium text-slate-700 mb-1">Click or drag and drop to upload banner image</p>
+                                <p className="text-sm text-muted-foreground">Recommended: 1200x400px, Max 5MB</p>
+                              </>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Banner Title</Label>
-                      <Input
-                        value={formData.banner_text || ""}
-                        onChange={(e) => setFormData(prev => ({ ...prev, banner_text: e.target.value }))}
-                        placeholder="Welcome to our store!"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Banner Subtitle</Label>
-                      <Input
-                        value={formData.banner_subtitle || ""}
-                        onChange={(e) => setFormData(prev => ({ ...prev, banner_subtitle: e.target.value }))}
-                        placeholder="Discover amazing products"
-                      />
-                    </div>
-                  </div>
+                      {/* Banner Title Input */}
+                      <div className="space-y-2">
+                        <Label htmlFor="banner-title" className="text-sm font-semibold">Banner Title</Label>
+                        <Input
+                          id="banner-title"
+                          value={formData.banner_text || ""}
+                          onChange={(e) => setFormData(prev => ({ ...prev, banner_text: e.target.value }))}
+                          placeholder="Welcome to our store!"
+                          className="h-11"
+                        />
+                      </div>
 
-                  {/* Banner Preview */}
-                  <div className="space-y-2">
-                    <Label>Preview</Label>
-                    <div 
-                      className="relative h-32 rounded-xl overflow-hidden flex items-center justify-center"
-                      style={{
-                        background: formData.banner_image_url 
-                          ? `url(${formData.banner_image_url}) center/cover` 
-                          : `linear-gradient(135deg, ${formData.theme_color}, ${formData.accent_color})`
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-black/30" />
-                      <div className="relative text-center text-white">
-                        <h3 className="text-xl font-bold">{formData.banner_text || "Banner Title"}</h3>
-                        <p className="text-sm opacity-90">{formData.banner_subtitle || "Banner subtitle"}</p>
+                      {/* Banner Subtitle Input */}
+                      <div className="space-y-2">
+                        <Label htmlFor="banner-subtitle" className="text-sm font-semibold">Banner Subtitle</Label>
+                        <Input
+                          id="banner-subtitle"
+                          value={formData.banner_subtitle || ""}
+                          onChange={(e) => setFormData(prev => ({ ...prev, banner_subtitle: e.target.value }))}
+                          placeholder="Discover amazing products and deals"
+                          className="h-11"
+                        />
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Preview & Announcement */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Live Preview */}
+              {formData.show_banner && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Live Preview</CardTitle>
+                    <CardDescription className="text-sm">
+                      How your banner will appear to customers
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Browser Mockup */}
+                    <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-white">
+                      {/* Browser Chrome */}
+                      <div className="bg-gray-200 px-4 py-2 flex items-center h-8">
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                        </div>
+                        <div className="w-1/2 h-3 bg-gray-300 rounded-full mx-auto"></div>
+                      </div>
+                      {/* Banner Preview */}
+                      <div 
+                        className="h-64 w-full flex flex-col items-center justify-center text-center p-8 relative"
+                        style={{
+                          background: formData.banner_image_url 
+                            ? `url(${formData.banner_image_url}) center/cover` 
+                            : `linear-gradient(135deg, ${formData.theme_color}, ${formData.accent_color})`
+                        }}
+                      >
+                        <div className="absolute inset-0 bg-black/20"></div>
+                        <div className="relative z-10">
+                          <h3 className="text-white text-2xl font-bold mb-4">
+                            {formData.banner_text || "Welcome to BizGrow360!"}
+                          </h3>
+                          <p className="text-white opacity-90 text-sm mb-6">
+                            {formData.banner_subtitle || "Discover amazing products and deals"}
+                          </p>
+                          <button className="bg-white text-black px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition shadow-sm">
+                            Shop Now
+                          </button>
+                        </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Announcement Bar */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Megaphone className="w-5 h-5" />
+                    Announcement Bar
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Display important announcements at the top of your store
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Toggle Row */}
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-sm">Show Announcement</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {formData.announcement_active ? "On" : "Off"}
+                      </span>
+                      <Switch
+                        checked={formData.announcement_active}
+                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, announcement_active: checked }))}
+                      />
+                    </div>
                   </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
 
-          {/* Announcement Bar */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Megaphone className="w-5 h-5" />
-                Announcement Bar
-              </CardTitle>
-              <CardDescription>
-                Show important announcements at the top of your store
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Show Announcement</Label>
-                  <p className="text-sm text-muted-foreground">Display announcement banner</p>
-                </div>
-                <Switch
-                  checked={formData.announcement_active}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, announcement_active: checked }))}
-                />
-              </div>
-
-              {formData.announcement_active && (
-                <div className="space-y-2">
-                  <Label>Announcement Text</Label>
-                  <Input
-                    value={formData.announcement_text || ""}
-                    onChange={(e) => setFormData(prev => ({ ...prev, announcement_text: e.target.value }))}
-                    placeholder="🎉 Free delivery on orders above ₹500!"
-                  />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  {/* Announcement Text Input */}
+                  <div className="space-y-2">
+                    <Label htmlFor="announce-text" className="text-sm font-semibold">Announcement Text</Label>
+                    <Input
+                      id="announce-text"
+                      value={formData.announcement_text || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, announcement_text: e.target.value }))}
+                      placeholder="Free delivery on orders above ₹500!"
+                      disabled={!formData.announcement_active}
+                      className={`h-11 ${!formData.announcement_active ? 'bg-muted cursor-not-allowed' : ''}`}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Theme Tab */}
         <TabsContent value="theme" className="space-y-6">
+          {/* Color Selection & Preview Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Column - Color Selection */}
+            <div className="lg:col-span-4">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">Color Selection</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                  {/* Primary Color */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold">Primary Color</Label>
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {themeColors.map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => setFormData(prev => ({ ...prev, theme_color: color.value }))}
+                          className={`w-8 h-8 rounded-full transition-all hover:scale-110 ${
+                            formData.theme_color === color.value 
+                              ? "ring-2 ring-offset-2 ring-slate-400 scale-110" 
+                              : "ring-2 ring-transparent"
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          title={color.name}
+                        />
+                      ))}
+                    </div>
+                    {/* Color Input with Preview */}
+                    <div className="relative flex items-center">
+                      <div 
+                        className="absolute left-3 w-4 h-4 rounded-full border border-gray-200"
+                        style={{ backgroundColor: formData.theme_color }}
+                      />
+                      <Input
+                        value={formData.theme_color}
+                        onChange={(e) => setFormData(prev => ({ ...prev, theme_color: e.target.value }))}
+                        className="pl-10 pr-10 h-10 font-mono text-sm"
+                        placeholder="#000000"
+                      />
+                      <Palette className="absolute right-3 w-5 h-5 text-muted-foreground" />
+                    </div>
+                  </div>
+
+                  {/* Accent Color */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-semibold">Accent Color</Label>
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {themeColors.map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => setFormData(prev => ({ ...prev, accent_color: color.value }))}
+                          className={`w-8 h-8 rounded-full transition-all hover:scale-110 ${
+                            formData.accent_color === color.value 
+                              ? "ring-2 ring-offset-2 ring-slate-400 scale-110" 
+                              : "ring-2 ring-transparent"
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          title={color.name}
+                        />
+                      ))}
+                    </div>
+                    {/* Color Input with Preview */}
+                    <div className="relative flex items-center">
+                      <div 
+                        className="absolute left-3 w-4 h-4 rounded-full border border-gray-200"
+                        style={{ backgroundColor: formData.accent_color }}
+                      />
+                      <Input
+                        value={formData.accent_color}
+                        onChange={(e) => setFormData(prev => ({ ...prev, accent_color: e.target.value }))}
+                        className="pl-10 pr-10 h-10 font-mono text-sm"
+                        placeholder="#000000"
+                      />
+                      <Palette className="absolute right-3 w-5 h-5 text-muted-foreground" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Live Preview */}
+            <div className="lg:col-span-8">
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Live Store Preview</CardTitle>
+                    <span className="text-sm text-muted-foreground hidden sm:block">Changes apply instantly</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Store Mockup */}
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                    {/* Mockup Navbar */}
+                    <div 
+                      className="text-white px-4 py-3 flex items-center justify-between"
+                      style={{ backgroundColor: formData.theme_color }}
+                    >
+                      <div className="bg-white/20 px-3 py-1 rounded text-xs font-semibold tracking-wider uppercase">
+                        {store.name}
+                      </div>
+                      <div className="hidden md:flex space-x-6 text-sm font-medium">
+                        <span className="opacity-100">Home</span>
+                        <span className="opacity-80">Products</span>
+                        <span className="opacity-80">About</span>
+                      </div>
+                    </div>
+
+                    {/* Mockup Hero */}
+                    <div 
+                      className="relative h-48 md:h-56 flex items-center justify-center"
+                      style={{
+                        background: `linear-gradient(135deg, ${formData.theme_color}, ${formData.accent_color})`
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-black/30"></div>
+                      <div className="relative text-center z-10 px-4">
+                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                          {formData.banner_text || "Welcome to our store!"}
+                        </h3>
+                        <button 
+                          className="text-white px-6 py-2 rounded text-sm font-semibold transition shadow-md"
+                          style={{ backgroundColor: formData.theme_color }}
+                        >
+                          Shop Now
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mockup Products */}
+                    <div className="p-6">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="bg-white rounded shadow-sm p-3 flex flex-col">
+                            <div className="w-full h-24 bg-slate-200 rounded mb-3"></div>
+                            <h4 className="text-xs font-bold text-slate-800 mb-1">Product {i}</h4>
+                            <p className="text-xs text-slate-500 mb-3">₹{(i * 100).toFixed(2)}</p>
+                            <button 
+                              className="mt-auto text-white text-[10px] py-1.5 px-2 rounded transition"
+                              style={{ backgroundColor: formData.theme_color }}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Store Branding Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                Theme Colors
-              </CardTitle>
-              <CardDescription>
-                Choose colors that match your brand
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label>Primary Color</Label>
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                  {themeColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setFormData(prev => ({ ...prev, theme_color: color.value }))}
-                      className={`w-full aspect-square rounded-xl border-2 transition-all ${
-                        formData.theme_color === color.value 
-                          ? "border-foreground scale-110 shadow-lg" 
-                          : "border-transparent hover:scale-105"
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <Label className="text-sm">Custom:</Label>
-                  <Input
-                    type="color"
-                    value={formData.theme_color}
-                    onChange={(e) => setFormData(prev => ({ ...prev, theme_color: e.target.value }))}
-                    className="w-12 h-8 p-0 border-0"
-                  />
-                  <Input
-                    value={formData.theme_color}
-                    onChange={(e) => setFormData(prev => ({ ...prev, theme_color: e.target.value }))}
-                    className="w-24 font-mono text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label>Accent Color</Label>
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                  {themeColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setFormData(prev => ({ ...prev, accent_color: color.value }))}
-                      className={`w-full aspect-square rounded-xl border-2 transition-all ${
-                        formData.accent_color === color.value 
-                          ? "border-foreground scale-110 shadow-lg" 
-                          : "border-transparent hover:scale-105"
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="text-lg flex items-center gap-2">
                 <Type className="w-5 h-5" />
                 Store Branding
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Logo Upload */}
-              <div className="space-y-3">
-                <Label>Store Logo</Label>
-                <input
-                  type="file"
-                  ref={logoInputRef}
-                  onChange={handleLogoUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <div className="flex items-center gap-4">
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Logo Upload */}
+                <div className="flex flex-col h-full">
+                  <Label className="text-sm font-semibold mb-3">Store Logo</Label>
+                  <input
+                    type="file"
+                    ref={logoInputRef}
+                    onChange={handleLogoUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
                   {formData.logo_url ? (
-                    <div className="relative">
+                    <div className="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center p-4">
                       <img 
                         src={formData.logo_url} 
                         alt="Logo" 
-                        className="w-20 h-20 object-contain rounded-xl border"
+                        className="max-w-full max-h-full object-contain"
                       />
                       <Button
                         variant="destructive"
                         size="icon"
-                        className="absolute -top-2 -right-2 h-6 w-6"
+                        className="absolute top-2 right-2 h-7 w-7"
                         onClick={() => setFormData(prev => ({ ...prev, logo_url: null }))}
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </Button>
                     </div>
                   ) : (
                     <div 
                       onClick={() => logoInputRef.current?.click()}
-                      className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                      className="w-full h-40 border-2 border-dashed border-gray-300 bg-muted/30 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors"
                     >
                       {uploadingLogo ? (
-                        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mb-3" />
                       ) : (
-                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <>
+                          <Upload className="w-8 h-8 text-muted-foreground mb-3" />
+                          <Button variant="secondary" size="sm" className="mb-2">
+                            Upload Logo
+                          </Button>
+                        </>
                       )}
+                      <p className="text-xs text-muted-foreground">200x200px, Max 2MB</p>
                     </div>
                   )}
-                  <div className="text-sm text-muted-foreground">
-                    <p>Upload your store logo</p>
-                    <p className="text-xs">200x200px recommended, Max 2MB</p>
-                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label>Store Tagline</Label>
-                <Input
-                  value={formData.tagline || ""}
-                  onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                  placeholder="Quality products at best prices"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Welcome Message</Label>
-                <Textarea
-                  value={formData.welcome_message || ""}
-                  onChange={(e) => setFormData(prev => ({ ...prev, welcome_message: e.target.value }))}
-                  placeholder="Welcome to our store! We are happy to serve you."
-                  rows={3}
-                />
+                {/* Tagline */}
+                <div className="flex flex-col">
+                  <Label className="text-sm font-semibold mb-3">Store Tagline</Label>
+                  <Input
+                    value={formData.tagline || ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
+                    placeholder="Quality products at best prices"
+                    className="h-11"
+                  />
+                </div>
+
+                {/* Welcome Message */}
+                <div className="flex flex-col">
+                  <Label className="text-sm font-semibold mb-3">Welcome Message</Label>
+                  <Textarea
+                    value={formData.welcome_message || ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, welcome_message: e.target.value }))}
+                    placeholder="Welcome to our store! We are happy to serve you."
+                    className="h-32 resize-none"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>

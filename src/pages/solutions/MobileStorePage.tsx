@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Smartphone, Shield, CreditCard, 
@@ -42,12 +41,7 @@ const MobileStorePage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center lg:text-left"
-            >
+            <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-violet-500/20 text-violet-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Mobile Phone Shops
@@ -68,29 +62,20 @@ const MobileStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
+            <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <img src={mobileMockup} alt="Mobile Store Dashboard" className="w-full h-auto" />
               </div>
               
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl"
-              >
+              <div className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl">
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-violet-500" />
                   <span className="font-semibold text-sm">25 Phones Sold Today</span>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -98,28 +83,19 @@ const MobileStorePage = () => {
       {/* Features Grid */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Built for <span className="text-primary">Mobile Retail</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Features designed specifically for phone and accessory shops.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
                 className="bg-card rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 hover:shadow-lg hover:border-primary/20 transition-all group"
               >
                 <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
@@ -127,7 +103,7 @@ const MobileStorePage = () => {
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">{feature.title}</h3>
                 <p className="text-sm sm:text-base text-muted-foreground">{feature.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -137,30 +113,22 @@ const MobileStorePage = () => {
       <section className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-center lg:text-left">
                 Why Mobile Retailers Love{" "}
                 <span className="text-primary">BizGrow 360</span>
               </h2>
               <div className="space-y-3 sm:space-y-4">
                 {benefits.map((benefit, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-start sm:items-center gap-3"
                   >
                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
                       <Check className="w-3 h-3 sm:w-4 sm:h-4 text-violet-600" />
                     </div>
                     <span className="text-sm sm:text-base lg:text-lg">{benefit}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
               
@@ -172,14 +140,9 @@ const MobileStorePage = () => {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 gap-3 sm:gap-6"
-            >
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
               {[
                 { icon: Smartphone, value: "7K+", label: "Mobile Shops" },
                 { icon: Shield, value: "500K+", label: "Devices Tracked" },
@@ -192,7 +155,7 @@ const MobileStorePage = () => {
                   <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

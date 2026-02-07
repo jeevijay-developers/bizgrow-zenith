@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Data migration scripts with sensitive keys
+src/lib/data-migration.js
+src/lib/data-migration-fixed.js

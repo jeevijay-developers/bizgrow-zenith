@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { getCategoryConfig } from "@/config/categoryConfig";
 import { LucideIcon } from "lucide-react";
 
@@ -49,12 +48,8 @@ export function CategoryStatsCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-all"
+    <div
+      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 hover:-translate-y-0.5 hover:shadow-md transition-all"
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
@@ -76,6 +71,6 @@ export function CategoryStatsCard({
           <Icon className="w-6 h-6" />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

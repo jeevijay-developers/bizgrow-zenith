@@ -91,10 +91,10 @@ const CatalogueSection = () => {
                 {/* Products Grid */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {[
-                    { name: "Parle-G Biscuit", price: "₹20", img: "🍪", badge: "Bestseller" },
-                    { name: "Amul Butter", price: "₹55", img: "🧈" },
-                    { name: "Maggi Noodles", price: "₹14", img: "🍜", badge: "Popular" },
-                    { name: "Tata Tea Gold", price: "₹120", img: "🍵" },
+                    { name: "Parle-G Biscuit", price: "₹20", Icon: GiCookie, badge: "Bestseller" },
+                    { name: "Amul Butter", price: "₹55", Icon: GiButter },
+                    { name: "Maggi Noodles", price: "₹14", Icon: GiNoodles, badge: "Popular" },
+                    { name: "Tata Tea Gold", price: "₹120", Icon: GiTeapot },
                   ].map((product) => (
                     <div key={product.name} className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 relative group hover:shadow-lg border border-gray-100 transition-all cursor-pointer">
                       {product.badge && (
@@ -105,7 +105,9 @@ const CatalogueSection = () => {
                       <button className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-white shadow-md flex items-center justify-center group-hover:bg-red-50 transition-colors">
                         <Heart className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-gray-400 group-hover:text-red-500 transition-colors" />
                       </button>
-                      <div className="text-2xl sm:text-4xl mb-1 sm:mb-2 mt-3 sm:mt-4">{product.img}</div>
+                      <div className="text-2xl sm:text-4xl mb-1 sm:mb-2 mt-3 sm:mt-4 flex items-center justify-center">
+                        <product.Icon className="w-8 h-8 sm:w-12 sm:h-12 text-primary" />
+                      </div>
                       <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{product.name}</p>
                       <div className="flex items-center justify-between mt-1.5 sm:mt-2">
                         <span className="text-sm sm:text-base font-bold text-primary">{product.price}</span>

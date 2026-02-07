@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Camera, Upload, Sparkles, CheckCircle2, ArrowRight, 
-  ArrowLeft, X, Wand2, Package, MousePointerClick
+  ArrowLeft, X, Wand2, Package, MousePointerClick, Lightbulb
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,25 +18,25 @@ const tutorialSteps: TutorialStep[] = [
     icon: Camera,
     title: "Snap or Upload",
     description: "Take a photo of your products or upload existing images. You can add multiple products at once!",
-    tip: "💡 Tip: Good lighting and clear backgrounds help AI detect products better."
+    tip: "Tip: Good lighting and clear backgrounds help AI detect products better."
   },
   {
     icon: Wand2,
     title: "AI Does the Magic",
     description: "Our AI automatically detects products, extracts names, prices, and categories. It even enhances your images!",
-    tip: "💡 Tip: Include price tags in photos for automatic price detection."
+    tip: "Tip: Include price tags in photos for automatic price detection."
   },
   {
     icon: MousePointerClick,
     title: "Review & Edit",
     description: "Check the detected products, edit any details if needed, and choose between original or AI-enhanced images.",
-    tip: "💡 Tip: You can add custom categories if the defaults don't fit."
+    tip: "Tip: You can add custom categories if the defaults don't fit."
   },
   {
     icon: Package,
     title: "Add to Catalogue",
     description: "Select the products you want and add them to your store catalogue instantly. That's it!",
-    tip: "💡 Tip: AI also generates beautiful category images automatically."
+    tip: "Tip: AI also generates beautiful category images automatically."
   }
 ];
 
@@ -184,7 +184,10 @@ const AIUploadTutorial = ({ isOpen, onClose, onComplete }: AIUploadTutorialProps
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <p className="text-sm text-muted-foreground">{step.tip}</p>
+                      <p className="text-sm text-muted-foreground flex items-start gap-2">
+                        <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                        {step.tip}
+                      </p>
                     </motion.div>
                   )}
                 </motion.div>

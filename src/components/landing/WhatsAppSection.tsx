@@ -173,7 +173,7 @@ const WhatsAppSection = () => {
               transition={{ duration: 3, repeat: Infinity }}
               className="absolute -right-4 top-1/4 bg-green-500 text-white rounded-xl px-4 py-2 shadow-xl"
             >
-              <p className="text-sm font-bold">New Order! 🔔</p>
+              <p className="text-sm font-bold flex items-center gap-1">New Order! <Bell className="w-3.5 h-3.5" /></p>
             </motion.div>
           </motion.div>
         </div>

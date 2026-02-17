@@ -34,7 +34,7 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </RippleButton>
               </Link>
-              <RippleButton size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 h-12 sm:h-14 w-full sm:w-auto">
+              <RippleButton size="lg" variant="outline" className="border-primary-foreground/30 text-black hover:text-white hover:bg-primary-foreground/10 h-12 sm:h-14 w-full sm:w-auto">
                 Schedule a Demo
               </RippleButton>
             </div>

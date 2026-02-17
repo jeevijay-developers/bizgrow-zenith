@@ -50,7 +50,7 @@ const Footer = () => {
       <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
 
       {/* CTA Section */}
-      <div className="bg-primary relative">
+      {/* <div className="bg-primary relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-[80px]" />
@@ -86,7 +86,7 @@ const Footer = () => {
             </div>
           </motion.div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer */}
       <div className="bg-foreground text-background">

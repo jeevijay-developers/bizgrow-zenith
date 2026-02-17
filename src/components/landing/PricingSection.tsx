@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check, Star, Zap, Building2, Sparkles } from "lucide-react";
 import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { Badge } from "@/components/ui/badge";
 
 const plans = [
   {
@@ -136,12 +137,14 @@ const PricingSection = () => {
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center py-2 text-xs font-bold tracking-wide flex items-center justify-center gap-1">
-                  <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
+                  <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-xs px-3 py-1 flex items-center gap-1.5 shadow-lg">
+                    <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
+                  </Badge>
                 </div>
               )}
 
-              <div className={`p-6 sm:p-8 ${plan.popular ? "pt-12" : ""}`}>
+              <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
                 {/* Plan Icon & Name */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-12 h-12 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>

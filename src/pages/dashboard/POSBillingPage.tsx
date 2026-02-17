@@ -11,7 +11,7 @@ import {
   User,
   Phone,
   MapPin,
-  Percent,
+  IndianRupee,
   Calculator,
   History,
 } from "lucide-react";
@@ -512,7 +512,7 @@ const POSBillingPage = () => {
 
               {/* Discount */}
               <div className="flex items-center gap-2 mb-4">
-                <Percent className="w-4 h-4 text-muted-foreground" />
+                <IndianRupee className="w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Discount (₹)"
                   type="number"

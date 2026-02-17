@@ -42,7 +42,7 @@ const storeCategories = [
   { id: "fruits", label: "Fruits & Veggies", image: fruitsVegetablesImg, desc: "Fresh produce" },
   { id: "electrical", label: "Electrical", image: electricalImg, desc: "Electrical goods" },
   { id: "pharmacy", label: "Pharmacy", image: pharmacyImg, desc: "Health & medicine" },
-  { id: "stationery", label: "Stationery", image: stationeryImg, desc: "Books & supplies" },
+  { id: "stationery", label: "Stationery", image: stationeryImg, desc: "Books & supplies" } ,
   { id: "hardware", label: "Hardware", image: hardwareImg, desc: "Tools & equipment" },
   { id: "other", label: "Other", image: otherImg, desc: "Other retail" },
 ];
@@ -103,6 +103,38 @@ const states = [
   "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
   "Uttarakhand", "West Bengal"
 ];
+
+const stateCities: Record<string, string[]> = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Anantapur", "Kadapa"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang", "Ziro", "Bomdila", "Tezu", "Seppa", "Along", "Daporijo"],
+  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Bongaigaon", "Dhubri", "Karimganj"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Munger"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Rajnandgaon", "Raigarh", "Jagdalpur", "Ambikapur", "Dhamtari"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Central Delhi", "Dwarka", "Rohini", "Janakpuri", "Saket"],
+  "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Bicholim", "Curchorem", "Sanquelim", "Cuncolim", "Pernem"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Nadiad"],
+  "Haryana": ["Faridabad", "Gurgaon", "Rohtak", "Hisar", "Panipat", "Karnal", "Sonipat", "Yamunanagar", "Panchkula", "Ambala"],
+  "Himachal Pradesh": ["Shimla", "Mandi", "Solan", "Dharamshala", "Kullu", "Hamirpur", "Bilaspur", "Chamba", "Una", "Palampur"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh", "Dumka"],
+  "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru", "Belagavi", "Davanagere", "Ballari", "Tumakuru", "Shivamogga", "Kalaburagi"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Alappuzha", "Palakkad", "Kannur", "Kottayam", "Malappuram"],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Kolhapur", "Amravati", "Navi Mumbai"],
+  "Manipur": ["Imphal", "Thoubal", "Bishnupur", "Churachandpur", "Kakching", "Ukhrul", "Senapati", "Tamenglong", "Chandel", "Jiribam"],
+  "Meghalaya": ["Shillong", "Tura", "Jowai", "Nongstoin", "Baghmara", "Williamnagar", "Nongpoh", "Mairang", "Resubelpara", "Ampati"],
+  "Mizoram": ["Aizawl", "Lunglei", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Saiha", "Mamit", "Hnahthial", "Khawzawl"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Phek", "Mon", "Longleng", "Kiphire"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Jharsuguda"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Pathankot", "Hoshiarpur", "Batala", "Moga"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Bharatpur", "Sikar"],
+  "Sikkim": ["Gangtok", "Namchi", "Gyalshing", "Mangan", "Rangpo", "Singtam", "Jorethang", "Ravangla", "Pelling", "Pakyong"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Tiruppur", "Erode", "Vellore", "Thoothukudi"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam", "Karimnagar", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+  "Tripura": ["Agartala", "Udaipur", "Dharmanagar", "Kailasahar", "Belonia", "Khowai", "Ambassa", "Teliamura", "Sabroom", "Sonamura"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Moradabad"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Pithoragarh", "Almora", "Tehri"],
+  "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Bardhaman", "Malda", "Baharampur", "Habra", "Kharagpur"],
+};
 
 const steps = [
   { id: 1, title: "Business", Icon: Store },
@@ -223,6 +255,8 @@ const Join = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
+  const [cityQuery, setCityQuery] = useState("");
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
 
   // Confetti celebration effect
   const triggerConfetti = useCallback(() => {
@@ -294,6 +328,29 @@ const Join = () => {
       });
     }
   };
+
+  const fetchCities = useCallback((stateValue: string, searchValue: string) => {
+    if (!stateValue || searchValue.trim().length < 2) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    const cities = stateCities[stateValue] || [];
+    const searchLower = searchValue.trim().toLowerCase();
+    const filtered = cities.filter((city) =>
+      city.toLowerCase().startsWith(searchLower)
+    );
+
+    setCitySuggestions(filtered);
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchCities(formData.state || "", cityQuery);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [fetchCities, formData.state, cityQuery]);
 
   const validateCurrentStep = () => {
     if (step === 6 && !user) {
@@ -862,7 +919,13 @@ const Join = () => {
                         <select
                           id="state"
                           value={formData.state}
-                          onChange={(e) => updateForm("state", e.target.value)}
+                          onChange={(e) => {
+                            const newState = e.target.value;
+                            updateForm("state", newState);
+                            updateForm("city", "");
+                            setCityQuery("");
+                            setCitySuggestions([]);
+                          }}
                           className={`w-full h-11 pl-10 pr-4 rounded-md border bg-background text-foreground text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${
                             errors.state ? "border-red-500 focus:ring-red-500" : "border-input"
                           }`}
@@ -885,9 +948,32 @@ const Join = () => {
                           id="city"
                           placeholder="Mumbai, Delhi, Bengaluru..."
                           value={formData.city}
-                          onChange={(e) => updateForm("city", e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            updateForm("city", value);
+                            setCityQuery(value);
+                          }}
                           className={`pl-10 h-11 ${errors.city ? "border-red-500" : ""}`}
                         />
+
+                        {formData.state && citySuggestions.length > 0 && (
+                          <div className="absolute left-0 right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto z-20">
+                            {citySuggestions.map((city) => (
+                              <button
+                                key={city}
+                                type="button"
+                                onClick={() => {
+                                  updateForm("city", city);
+                                  setCityQuery(city);
+                                  setCitySuggestions([]);
+                                }}
+                                className="w-full text-left px-3 py-2 text-sm hover:bg-muted"
+                              >
+                                {city}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <ErrorMessage message={errors.city} />
                     </div>
@@ -1009,7 +1095,7 @@ const Join = () => {
                             </div>
                             <p className="text-xs text-muted-foreground mt-0.5">{mode.description}</p>
                           </div>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                             formData.businessMode === mode.id 
                               ? "border-primary bg-primary" 
                               : "border-muted-foreground/30"

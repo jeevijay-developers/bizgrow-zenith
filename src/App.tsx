@@ -50,6 +50,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminStores from "./pages/admin/AdminStores";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import { useSubscription } from "./hooks/useSubscription";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   
   if (!user) {
     return <Navigate to="/auth?mode=login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+const FeatureProtectedRoute = ({ 
+  children, 
+  featureKey 
+}: { 
+  children: React.ReactNode; 
+  featureKey: string;
+}) => {
+  const { hasFeature, isLoading } = useSubscription();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  
+  if (!hasFeature(featureKey)) {
+    return <Navigate to="/dashboard/billing" replace />;
   }
   
   return <>{children}</>;
@@ -140,13 +165,13 @@ const AnimatedRoutes = () => {
             <Route path="pos" element={<POSBillingPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="products" element={<ProductsPage />} />
-            <Route path="customers" element={<CustomersPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="ai-upload" element={<AIUploadPage />} />
-            <Route path="whatsapp" element={<WhatsAppPage />} />
-            <Route path="delivery" element={<DeliveryPage />} />
+            <Route path="customers" element={<FeatureProtectedRoute featureKey="customers"><CustomersPage /></FeatureProtectedRoute>} />
+            <Route path="analytics" element={<FeatureProtectedRoute featureKey="analytics"><AnalyticsPage /></FeatureProtectedRoute>} />
+            <Route path="ai-upload" element={<FeatureProtectedRoute featureKey="ai-upload"><AIUploadPage /></FeatureProtectedRoute>} />
+            <Route path="whatsapp" element={<FeatureProtectedRoute featureKey="whatsapp"><WhatsAppPage /></FeatureProtectedRoute>} />
+            <Route path="delivery" element={<FeatureProtectedRoute featureKey="delivery"><DeliveryPage /></FeatureProtectedRoute>} />
             <Route path="catalogue-link" element={<CatalogueLinkPage />} />
-            <Route path="customize-store" element={<StoreCustomizationPage />} />
+            <Route path="customize-store" element={<FeatureProtectedRoute featureKey="customize-store"><StoreCustomizationPage /></FeatureProtectedRoute>} />
             <Route path="store-settings" element={<StoreSettingsPage />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="notifications" element={<NotificationsPage />} />

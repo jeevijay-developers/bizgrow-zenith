@@ -79,8 +79,7 @@ export function useNotifications(storeId: string | undefined) {
       const { error } = await supabase
         .from("notifications")
         .update({ is_read: true })
-        .eq("store_id", storeId)
-        .eq("is_read", false);
+        .eq("store_id", storeId);
       if (error) throw error;
     },
     onSuccess: () => {

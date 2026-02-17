@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Store, Camera, MapPin, Phone, Mail, Clock, Globe, 
@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
+import { useImageUpload } from "@/hooks/useImageUpload";
 import {
   Select,
   SelectContent,
@@ -50,15 +51,20 @@ const categories = [
 ];
 
 const businessModes = [
-  "walk-in",
-  "delivery",
-  "walk-in + delivery"
+  "shop-only",
+  "shop-delivery"
 ];
 
 const StoreSettingsPage = () => {
   const { user } = useAuth();
   const { store } = useOutletContext<DashboardContext>();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadImage, uploading } = useImageUpload({ 
+    bucket: "store-assets", 
+    folder: user?.id || "",
+    maxSizeMB: 2 
+  });
   
   const [formData, setFormData] = useState({
     name: store?.name || "",
@@ -69,6 +75,46 @@ const StoreSettingsPage = () => {
     address: store?.address || "",
     is_active: store?.is_active ?? true,
   });
+
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Fetch store customization for logo
+  const { data: customization } = useQuery({
+    queryKey: ["store-customization", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return null;
+      const { data, error } = await supabase
+        .from("store_customizations")
+        .select("logo_url")
+        .eq("store_id", store.id)
+        .maybeSingle();
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+    enabled: !!store?.id,
+  });
+
+  // Update formData when store data loads
+  useEffect(() => {
+    if (store) {
+      setFormData({
+        name: store.name || "",
+        category: store.category || "",
+        business_mode: store.business_mode || "",
+        city: store.city || "",
+        state: store.state || "",
+        address: store.address || "",
+        is_active: store.is_active ?? true,
+      });
+    }
+  }, [store]);
+
+  // Update logoUrl when customization data loads
+  useEffect(() => {
+    if (customization?.logo_url) {
+      setLogoUrl(customization.logo_url);
+    }
+  }, [customization]);
 
   const updateStoreMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -88,8 +134,52 @@ const StoreSettingsPage = () => {
     },
   });
 
+  const updateLogoMutation = useMutation({
+    mutationFn: async (logo_url: string) => {
+      if (!store?.id) throw new Error("No store found");
+      
+      // Upsert logo_url in store_customizations
+      const { error } = await supabase
+        .from("store_customizations")
+        .upsert({
+          store_id: store.id,
+          logo_url: logo_url,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "store_id"
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["store-customization"] });
+    },
+  });
+
   const handleSave = () => {
+    // Validate required fields
+    if (!formData.name || !formData.category || !formData.business_mode || !formData.city || !formData.state) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    
     updateStoreMutation.mutate(formData);
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = await uploadImage(file);
+    if (url) {
+      setLogoUrl(url);
+      await updateLogoMutation.mutateAsync(url);
+      toast.success("Logo uploaded successfully!");
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -122,15 +212,30 @@ const StoreSettingsPage = () => {
         <h3 className="font-semibold mb-4">Store Logo</h3>
         <div className="flex items-center gap-6">
           <Avatar className="h-24 w-24">
-            <AvatarImage src="" />
+            <AvatarImage src={logoUrl || ""} />
             <AvatarFallback className="bg-primary/10 text-primary text-2xl">
               {formData.name?.split(" ").map(n => n[0]).join("").slice(0, 2) || "ST"}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-2">
-            <Button variant="outline" className="gap-2">
-              <Upload className="w-4 h-4" />
-              Upload Logo
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+              className="hidden"
+            />
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={triggerFileUpload}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+              ) : (
+                <><Upload className="w-4 h-4" /> Upload Logo</>
+              )}
             </Button>
             <p className="text-xs text-muted-foreground">
               Recommended: 200x200px, Max 2MB (PNG, JPG)
@@ -153,15 +258,16 @@ const StoreSettingsPage = () => {
         <div className="grid gap-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Store Name</Label>
+              <Label>Store Name <span className="text-destructive">*</span></Label>
               <Input 
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Your Store Name"
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>Category <span className="text-destructive">*</span></Label>
               <Select 
                 value={formData.category}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
@@ -181,7 +287,7 @@ const StoreSettingsPage = () => {
           </div>
           
           <div className="space-y-2">
-            <Label>Business Mode</Label>
+            <Label>Business Mode <span className="text-destructive">*</span></Label>
             <Select 
               value={formData.business_mode}
               onValueChange={(value) => setFormData(prev => ({ ...prev, business_mode: value }))}
@@ -192,9 +298,7 @@ const StoreSettingsPage = () => {
               <SelectContent>
                 {businessModes.map(mode => (
                   <SelectItem key={mode} value={mode}>
-                    {mode.split(' ').map(word => 
-                      word.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('-')
-                    ).join(' ')}
+                    {mode === 'shop-only' ? 'Shop Only (Walk-in)' : 'Shop + Delivery'}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -217,19 +321,21 @@ const StoreSettingsPage = () => {
         <div className="grid gap-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>City</Label>
+              <Label>City <span className="text-destructive">*</span></Label>
               <Input 
                 value={formData.city}
                 onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
                 placeholder="Mumbai"
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label>State</Label>
+              <Label>State <span className="text-destructive">*</span></Label>
               <Input 
                 value={formData.state}
                 onChange={(e) => setFormData(prev => ({ ...prev, state: e.target.value }))}
                 placeholder="Maharashtra"
+                required
               />
             </div>
           </div>

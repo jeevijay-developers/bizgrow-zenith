@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ShoppingCart, Search, Filter, Eye, Phone, MessageCircle,
+  ShoppingCart, Search, Phone, MessageCircle,
   Clock, CheckCircle, Truck, Package, XCircle,
   Calendar, Download, ChevronDown, MapPin, User, Loader2,
   Store, Globe, Volume2, VolumeX, Receipt
 } from "lucide-react";
+import { startOfToday, startOfYesterday, endOfYesterday, subDays, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -116,6 +122,8 @@ const OrdersPage = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   // Real-time orders subscription with sound
   useRealtimeOrders({
@@ -184,6 +192,25 @@ const OrdersPage = () => {
     setInvoiceModalOpen(true);
   };
 
+  // Date filtering logic
+  const getDateRange = (filter: string): { start: Date; end: Date } | null => {
+    const now = new Date();
+    switch (filter) {
+      case "today":
+        return { start: startOfToday(), end: now };
+      case "yesterday":
+        return { start: startOfYesterday(), end: endOfYesterday() };
+      case "last7days":
+        return { start: subDays(now, 7), end: now };
+      case "last30days":
+        return { start: subDays(now, 30), end: now };
+      case "thisMonth":
+        return { start: startOfMonth(now), end: endOfMonth(now) };
+      default:
+        return null;
+    }
+  };
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.customer_name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -191,11 +218,98 @@ const OrdersPage = () => {
     const matchesOrderType = orderTypeFilter === "all" || 
       (orderTypeFilter === "online" && (order.order_type === "online" || !order.order_type)) ||
       (orderTypeFilter === "walkin" && order.order_type === "walkin");
-    return matchesSearch && matchesStatusTab && matchesOrderType;
+    
+    // Date filter
+    let matchesDate = true;
+    if (dateFilter !== "all") {
+      const dateRange = getDateRange(dateFilter);
+      if (dateRange) {
+        const orderDate = new Date(order.created_at);
+        matchesDate = isWithinInterval(orderDate, { start: dateRange.start, end: dateRange.end });
+      }
+    }
+    
+    return matchesSearch && matchesStatusTab && matchesOrderType && matchesDate;
   });
 
   const onlineOrders = orders.filter(o => o.order_type === "online" || !o.order_type);
   const walkinOrders = orders.filter(o => o.order_type === "walkin");
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    if (filteredOrders.length === 0) {
+      toast.error("No orders to export");
+      return;
+    }
+
+    const headers = [
+      "Order ID",
+      "Customer Name",
+      "Phone",
+      "Address",
+      "Order Type",
+      "Status",
+      "Payment Method",
+      "Items",
+      "Total Amount (₹)",
+      "Date",
+      "Time"
+    ];
+
+    const csvData = filteredOrders.map(order => [
+      order.id.slice(0, 8).toUpperCase(),
+      order.customer_name,
+      order.customer_phone,
+      order.customer_address || "N/A",
+      order.order_type === "walkin" ? "Walk-in" : "Online",
+      order.status,
+      order.payment_method || "COD",
+      (Array.isArray(order.items) ? order.items : []).map(item => `${item.name} (${item.qty})`).join("; "),
+      order.total_amount,
+      format(new Date(order.created_at), "MMM d, yyyy"),
+      format(new Date(order.created_at), "h:mm a")
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => 
+        row.map(cell => 
+          typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))
+            ? `"${cell.replace(/"/g, '""')}"`
+            : cell
+        ).join(",")
+      )
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `orders_${format(new Date(), "yyyy-MM-dd_HHmm")}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success(`Exported ${filteredOrders.length} orders to CSV`);
+  };
+
+  const getDateFilterLabel = () => {
+    switch (dateFilter) {
+      case "today":
+        return "Today";
+      case "yesterday":
+        return "Yesterday";
+      case "last7days":
+        return "Last 7 Days";
+      case "last30days":
+        return "Last 30 Days";
+      case "thisMonth":
+        return "This Month";
+      default:
+        return "All Time";
+    }
+  };
 
   const stats = [
     { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "text-primary" },
@@ -221,12 +335,86 @@ const OrdersPage = () => {
           <p className="text-muted-foreground">Manage and track customer orders</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Calendar className="w-4 h-4" />
-            Today
-            <ChevronDown className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Calendar className="w-4 h-4" />
+                {getDateFilterLabel()}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-2" align="end">
+              <div className="space-y-1">
+                <Button
+                  variant={dateFilter === "all" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("all");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  All Time
+                </Button>
+                <Button
+                  variant={dateFilter === "today" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("today");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant={dateFilter === "yesterday" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("yesterday");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  Yesterday
+                </Button>
+                <Button
+                  variant={dateFilter === "last7days" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("last7days");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  Last 7 Days
+                </Button>
+                <Button
+                  variant={dateFilter === "last30days" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("last30days");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  Last 30 Days
+                </Button>
+                <Button
+                  variant={dateFilter === "thisMonth" ? "secondary" : "ghost"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setDateFilter("thisMonth");
+                    setDatePopoverOpen(false);
+                  }}
+                >
+                  This Month
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Button variant="outline" size="sm" className="gap-2" onClick={exportToCSV}>
             <Download className="w-4 h-4" />
             Export
           </Button>
@@ -309,9 +497,9 @@ const OrdersPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon">
+            {/* <Button variant="outline" size="icon">
               <Filter className="w-4 h-4" />
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
@@ -400,15 +588,40 @@ const OrdersPage = () => {
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`tel:${order.customer_phone}`, '_blank');
+                          }}
+                          title="Call customer"
+                        >
                           <Phone className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const message = `Hi ${order.customer_name}, your order #${order.id.slice(0, 8).toUpperCase()} worth ₹${order.total_amount} is being processed.`;
+                            window.open(`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                          }}
+                          title="Send WhatsApp message"
+                        >
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={(e) => e.stopPropagation()}>
+                        {/* <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9" 
+                          onClick={(e) => e.stopPropagation()}
+                          title="View details"
+                        >
                           <Eye className="w-4 h-4" />
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </div>

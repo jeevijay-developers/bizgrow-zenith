@@ -3,12 +3,48 @@ import { Link } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 const Navbar = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+
+  // Fetch user's store
+  const { data: store } = useQuery({
+    queryKey: ["user-store", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from("stores")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Fetch store logo
+  const { data: customization } = useQuery({
+    queryKey: ["store-customization", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return null;
+      const { data } = await supabase
+        .from("store_customizations")
+        .select("logo_url")
+        .eq("store_id", store.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!store?.id,
+  });
+
+  const logoUrl = customization?.logo_url || logoDarkBg;
 
   const navLinks = [
     {
@@ -57,7 +93,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
           <Link to="/" className="flex items-center shrink-0">
-            <img src={logoDarkBg} alt="BizGrow 360" className="h-8 sm:h-9 md:h-10 w-auto" />
+            <img src={logoUrl} alt="BizGrow 360" className="h-8 sm:h-9 md:h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -831,8 +831,8 @@ export const categoryConfigs: Record<string, CategoryConfig> = {
 
   other: {
     id: "other",
-    label: "Other Retail",
-    description: "Other retail",
+    label: "General Store",
+    description: "Retail business",
     image: otherImg,
     icon: Store,
     theme: {

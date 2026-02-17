@@ -1,4 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-expect-error - Deno npm: imports work in Edge Functions but VS Code doesn't recognize them
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-expect-error - npm: prefix is Deno-specific, works when deployed to Supabase
+import { GoogleGenAI } from "npm:@google/genai";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +36,74 @@ const ALL_CATEGORIES = [
   "Pharmacy", "Cosmetics", "Jewelry", "Watches", "Bags", "Footwear"
 ];
 
+// Gemini models to try in order (fallback chain)
+const GEMINI_MODELS = [
+  "gemini-3-flash-preview",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro"
+];
+
+// Robust JSON extraction from text
+function extractJsonFromText(text: string): string | null {
+  if (!text) return null;
+  
+  let cleanText = text.trim();
+  
+  // Try to extract JSON from markdown code blocks
+  const codeBlockMatch = cleanText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) {
+    cleanText = codeBlockMatch[1].trim();
+  }
+  
+  // Try to find JSON object pattern in text
+  const jsonMatch = cleanText.match(/\{[\s\S]*?"name"[\s\S]*?"price"[\s\S]*?\}/);
+  if (jsonMatch) {
+    cleanText = jsonMatch[0];
+  }
+  
+  // Remove any leading/trailing non-JSON characters
+  const startIdx = cleanText.indexOf('{');
+  const endIdx = cleanText.lastIndexOf('}');
+  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+    cleanText = cleanText.substring(startIdx, endIdx + 1);
+  }
+  
+  return cleanText;
+}
+
+// Parse price from various formats
+function parsePrice(price: any): number {
+  if (typeof price === 'number') return Math.max(0, Math.round(price));
+  if (typeof price === 'string') {
+    // Remove currency symbols, commas, and extract number
+    const numMatch = price.replace(/[₹$,\s]/g, '').match(/[\d.]+/);
+    if (numMatch) {
+      return Math.max(0, Math.round(parseFloat(numMatch[0])));
+    }
+  }
+  return 99; // Default price
+}
+
+// Find best matching category (case-insensitive, partial match)
+function findCategory(category: string | undefined): string {
+  if (!category) return "Groceries";
+  
+  const normalizedInput = category.toLowerCase().trim();
+  
+  // Exact match (case-insensitive)
+  const exactMatch = ALL_CATEGORIES.find(c => c.toLowerCase() === normalizedInput);
+  if (exactMatch) return exactMatch;
+  
+  // Partial match
+  const partialMatch = ALL_CATEGORIES.find(c => 
+    c.toLowerCase().includes(normalizedInput) || normalizedInput.includes(c.toLowerCase())
+  );
+  if (partialMatch) return partialMatch;
+  
+  // Return as-is if no match (will be handled by the category selection UI)
+  return category;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -41,99 +113,45 @@ serve(async (req) => {
     const { images, enhanceImages = true } = await req.json();
     
     if (!images || !Array.isArray(images) || images.length === 0) {
+      console.error("No images provided in request");
       return new Response(
-        JSON.stringify({ error: "No images provided" }),
+        JSON.stringify({ error: "No images provided", details: "Please upload at least one image" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY not configured");
+      console.error("GEMINI_API_KEY environment variable not configured");
       return new Response(
-        JSON.stringify({ error: "AI service not configured. Please set GEMINI_API_KEY." }),
+        JSON.stringify({ 
+          error: "AI service not configured", 
+          details: "Please set GEMINI_API_KEY in Supabase Edge Function secrets" 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    console.log(`Starting AI detection for ${images.length} image(s)`);
+    
+    // Initialize Google AI client (reads GEMINI_API_KEY from environment)
+    const ai = new GoogleGenAI({});
     const detectedProducts: ProductDetection[] = [];
 
     for (let i = 0; i < images.length; i++) {
       const imageData = images[i];
-      console.log(`Processing image ${i + 1} of ${images.length}`);
+      console.log(`\n=== Processing image ${i + 1} of ${images.length} ===`);
 
-      // Extract base64 data from data URL
-      const base64Match = imageData.match(/^data:image\/(\w+);base64,(.+)$/);
+      // Extract base64 data from data URL - handle more formats
+      const base64Match = imageData.match(/^data:image\/([\w+]+);base64,(.+)$/);
       if (!base64Match) {
-        console.error(`Invalid image format for image ${i + 1}`);
-        continue;
-      }
-      const mimeType = `image/${base64Match[1]}`;
-      const base64Data = base64Match[2];
-
-      // Step 1: Analyze product details using Gemini API directly
-      const analysisResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `You are an AI assistant specialized in analyzing product images for Indian retail stores. 
-Analyze this product image and extract the product details.
-
-Available categories: ${ALL_CATEGORIES.join(", ")}
-
-Choose the most specific category that fits the product. For stationery items, use specific categories like "Pens", "Notebooks", "Books" etc.
-Estimate reasonable prices based on the Indian market in Indian Rupees (₹).
-
-Respond ONLY with a valid JSON object in this exact format (no markdown, no code blocks):
-{
-  "name": "Product name with size/quantity",
-  "price": 99,
-  "category": "Category from the list",
-  "description": "Brief description",
-  "brand": "Brand name if visible",
-  "confidence": 85
-}`
-                },
-                {
-                  inlineData: {
-                    mimeType: mimeType,
-                    data: base64Data
-                  }
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.2,
-            topK: 32,
-            topP: 1,
-            maxOutputTokens: 1024,
-          }
-        }),
-      });
-
-      if (!analysisResponse.ok) {
-        if (analysisResponse.status === 429) {
-          console.error("Rate limited");
-          return new Response(
-            JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
-            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        const errorText = await analysisResponse.text();
-        console.error("Gemini API error:", analysisResponse.status, errorText);
-        // Still add a placeholder product with error info for debugging
+        console.error(`Invalid image format for image ${i + 1}. Expected data:image/xxx;base64,...`);
+        console.error(`Image starts with: ${imageData.substring(0, 50)}...`);
         detectedProducts.push({
-          name: "Analysis Failed",
+          name: "Invalid Image Format",
           price: 0,
           category: "Groceries",
-          description: `Error: ${analysisResponse.status}`,
+          description: "Image format not recognized. Please use JPG, PNG, or HEIC.",
           brand: "",
           confidence: 0,
           originalImage: imageData,
@@ -141,49 +159,124 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no code
         });
         continue;
       }
-
-      const analysisResult = await analysisResponse.json();
-      console.log("Gemini API response received:", JSON.stringify(analysisResult).substring(0, 500));
       
+      const imageFormat = base64Match[1].toLowerCase();
+      // Normalize MIME types
+      let mimeType = `image/${imageFormat}`;
+      if (imageFormat === 'jpg') mimeType = 'image/jpeg';
+      if (imageFormat === 'heic') mimeType = 'image/heic';
+      
+      const base64Data = base64Match[2];
+      console.log(`Image format: ${mimeType}, base64 length: ${base64Data.length}`);
+
+      // Try each Gemini model until one works
+      let responseText: string | null = null;
+      let lastError: string | null = null;
+      
+      for (const modelName of GEMINI_MODELS) {
+        console.log(`Trying model: ${modelName}`);
+        
+        try {
+          const prompt = `You are an expert AI product analyzer for Indian retail stores. Analyze this product image carefully.
+
+TASK: Extract product details from the image.
+
+IMPORTANT INSTRUCTIONS:
+1. Look for ANY visible text on the product (brand name, product name, weight, price, MRP, ingredients list, etc.)
+2. If you see a price tag or MRP printed on the product, use that exact price
+3. If no price is visible, estimate a reasonable price for the Indian market in Rupees
+4. Be specific with the product name - include brand, variant, size/weight if visible
+5. Choose the most appropriate category from this list:
+   ${ALL_CATEGORIES.join(", ")}
+
+RESPOND WITH ONLY A VALID JSON OBJECT (no markdown, no explanation, no code blocks):
+{"name":"Full product name with brand and size","price":99,"category":"Category","description":"Brief description of the product","brand":"Brand name","confidence":85}
+
+EXAMPLE RESPONSES:
+{"name":"Parle-G Gold Biscuits 200g","price":30,"category":"Snacks","description":"Glucose biscuits enriched with vitamins","brand":"Parle","confidence":92}
+{"name":"Amul Butter 500g","price":280,"category":"Dairy","description":"Pasteurized table butter","brand":"Amul","confidence":95}`;
+
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      data: base64Data,
+                      mimeType: mimeType
+                    }
+                  }
+                ]
+              }
+            ]
+          });
+
+          responseText = response.text;
+          console.log(`Model ${modelName} responded successfully`);
+          console.log("Response text:", responseText ? responseText.substring(0, 300) : "EMPTY");
+          break; // Success, exit model loop
+          
+        } catch (error) {
+          lastError = error instanceof Error ? error.message : String(error);
+          console.error(`Model ${modelName} error:`, lastError);
+          
+          // Check for rate limiting
+          if (lastError.includes("429") || lastError.toLowerCase().includes("rate limit")) {
+            return new Response(
+              JSON.stringify({ 
+                error: "Rate limit exceeded", 
+                details: "Too many requests. Please wait a moment and try again." 
+              }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          // Try next model
+        }
+      }
+
+      // Process the result
       let productData = {
         name: "Unknown Product",
         price: 99,
         category: "Groceries",
         description: "",
         brand: "",
-        confidence: 70
+        confidence: 0
       };
 
-      // Parse Gemini response
-      const responseText = analysisResult.candidates?.[0]?.content?.parts?.[0]?.text;
-      console.log("Response text from Gemini:", responseText ? responseText.substring(0, 300) : "EMPTY");
-      
-      if (responseText) {
+      if (!responseText) {
+        console.error(`All models failed for image ${i + 1}. Last error: ${lastError}`);
+        productData.description = `Detection failed: ${lastError || 'Unknown error'}`;
+      } else {
+        // Parse the AI response
         try {
-          // Clean up the response - remove markdown code blocks if present
-          let cleanJson = responseText.trim();
-          if (cleanJson.startsWith("```json")) {
-            cleanJson = cleanJson.replace(/^```json\s*/, "").replace(/\s*```$/, "");
-          } else if (cleanJson.startsWith("```")) {
-            cleanJson = cleanJson.replace(/^```\s*/, "").replace(/\s*```$/, "");
-          }
+          const cleanJson = extractJsonFromText(responseText);
+          console.log("Extracted JSON:", cleanJson ? cleanJson.substring(0, 300) : "NULL");
           
-          const parsed = JSON.parse(cleanJson);
-          productData = {
-            name: parsed.name || "Unknown Product",
-            price: typeof parsed.price === 'number' ? parsed.price : parseInt(parsed.price) || 99,
-            category: ALL_CATEGORIES.includes(parsed.category) ? parsed.category : "Groceries",
-            description: parsed.description || "",
-            brand: parsed.brand || "",
-            confidence: parsed.confidence || 85
-          };
+          if (cleanJson) {
+            const parsed = JSON.parse(cleanJson);
+            productData = {
+              name: parsed.name || "Unknown Product",
+              price: parsePrice(parsed.price),
+              category: findCategory(parsed.category),
+              description: parsed.description || "",
+              brand: parsed.brand || "",
+              confidence: Math.min(100, Math.max(0, parseInt(parsed.confidence) || 70))
+            };
+            console.log("✓ Parsed product:", productData.name, "- ₹" + productData.price);
+          } else {
+            console.error("Could not extract JSON from response");
+            productData.description = "Could not parse AI response";
+          }
         } catch (parseError) {
-          console.error("Failed to parse Gemini response:", parseError, responseText);
+          console.error("JSON parse error:", parseError);
+          console.error("Failed text:", responseText.substring(0, 300));
+          productData.description = "Failed to parse product details";
         }
       }
-
-      // Step 2: Image enhancement is not available with direct Gemini API
-      // Using original image only
 
       detectedProducts.push({
         ...productData,
@@ -192,16 +285,23 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no code
       });
     }
 
-    console.log(`Detected ${detectedProducts.length} products from ${images.length} images`);
+    console.log(`\n=== Detection complete: ${detectedProducts.length} products from ${images.length} images ===`);
+    
+    // Log summary
+    const successful = detectedProducts.filter(p => p.confidence > 0).length;
+    console.log(`Successful detections: ${successful}, Failed: ${detectedProducts.length - successful}`);
 
     return new Response(
       JSON.stringify({ products: detectedProducts }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error in ai-product-detection:", error);
+    console.error("Unhandled error in ai-product-detection:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ 
+        error: "Processing failed", 
+        details: error instanceof Error ? error.message : "Unknown error occurred" 
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

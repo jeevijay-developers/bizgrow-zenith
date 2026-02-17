@@ -114,6 +114,9 @@ const NotificationsPage = () => {
       queryClient.invalidateQueries({ queryKey: ["notifications", store?.id] });
       toast.success("All notifications marked as read");
     },
+    onError: () => {
+      toast.error("Failed to mark all notifications as read");
+    },
   });
 
   // Delete notification mutation

@@ -455,7 +455,7 @@ const ProductsPage = () => {
             accept=".csv"
             onChange={handleCSVImport}
           />
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2" disabled={importing}>
                 {importing ? (
@@ -465,7 +465,7 @@ const ProductsPage = () => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent sideOffset={8}>
               <DropdownMenuItem onClick={() => csvInputRef.current?.click()}>
                 <Upload className="w-4 h-4 mr-2" />
                 Upload CSV
@@ -1046,13 +1046,13 @@ const ProductsPage = () => {
                         <h3 className="font-medium line-clamp-1">{product.name}</h3>
                         <p className="text-sm text-muted-foreground">{product.category || "Uncategorized"}</p>
                       </div>
-                      <DropdownMenu>
+                      <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 shrink-0">
                             <MoreVertical className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" sideOffset={8}>
                           <DropdownMenuItem><Eye className="w-4 h-4 mr-2" /> View</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleEditProduct(product)}>
                             <Edit className="w-4 h-4 mr-2" /> Edit

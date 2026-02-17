@@ -13,6 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;
@@ -103,8 +104,8 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
   const previousUnreadCount = useRef<number>(0);
   const isFirstLoad = useRef(true);
 
-  // Fetch notifications
-  const { data: notifications = [] } = useQuery({
+  // Fetch notifications (only unread for the bell)
+  const { data: allNotifications = [] } = useQuery({
     queryKey: ["notifications", storeId],
     queryFn: async () => {
       if (!storeId) return [];
@@ -112,6 +113,7 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
         .from("notifications")
         .select("*")
         .eq("store_id", storeId)
+        .eq("is_read", false)
         .order("created_at", { ascending: false })
         .limit(10);
       if (error) throw error;
@@ -120,7 +122,8 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
     enabled: !!storeId,
   });
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const notifications = allNotifications;
+  const unreadCount = notifications.length;
 
   // Play sound when new notification arrives
   useEffect(() => {
@@ -171,7 +174,31 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ["notifications", storeId] });
+      const previous = queryClient.getQueryData<Notification[]>([
+        "notifications",
+        storeId,
+      ]);
+      if (previous) {
+        // Remove the notification from the list immediately
+        queryClient.setQueryData<Notification[]>(
+          ["notifications", storeId],
+          previous.filter((notification) => notification.id !== id)
+        );
+      }
+      return { previous };
+    },
+    onError: (error, _id, context) => {
+      toast.error("Failed to mark notification as read");
+      if (context?.previous) {
+        queryClient.setQueryData(
+          ["notifications", storeId],
+          context.previous
+        );
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications", storeId] });
     },
   });
@@ -187,7 +214,34 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
         .eq("is_read", false);
       if (error) throw error;
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["notifications", storeId] });
+      const previous = queryClient.getQueryData<Notification[]>([
+        "notifications",
+        storeId,
+      ]);
+      if (previous) {
+        // Clear all notifications from the list immediately
+        queryClient.setQueryData<Notification[]>(
+          ["notifications", storeId],
+          []
+        );
+      }
+      return { previous };
+    },
     onSuccess: () => {
+      toast.success("All notifications marked as read");
+    },
+    onError: (error, _vars, context) => {
+      toast.error("Failed to mark all notifications as read");
+      if (context?.previous) {
+        queryClient.setQueryData(
+          ["notifications", storeId],
+          context.previous
+        );
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications", storeId] });
     },
   });
@@ -239,24 +293,12 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
                 size="sm"
                 className="text-xs h-7"
                 onClick={() => markAllAsReadMutation.mutate()}
+                disabled={markAllAsReadMutation.isPending}
               >
                 Mark all read
               </Button>
             )}
           </div>
-        </div>
-        <div className="flex items-center justify-between p-4 border-b">
-          <h4 className="font-semibold">Notifications</h4>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-7"
-              onClick={() => markAllAsReadMutation.mutate()}
-            >
-              Mark all read
-            </Button>
-          )}
         </div>
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (
@@ -266,16 +308,14 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
             </div>
           ) : (
             <div className="divide-y">
-              {notifications.slice(0, 5).map((notification) => {
+              {notifications.map((notification) => {
                 const Icon = getNotificationIcon(notification.type);
                 const colorClass = getNotificationColor(notification.type);
 
                 return (
                   <div
                     key={notification.id}
-                    className={`p-3 flex items-start gap-3 hover:bg-muted/50 transition-colors ${
-                      !notification.is_read ? "bg-primary/5" : ""
-                    }`}
+                    className="p-3 flex items-start gap-3 hover:bg-muted/50 transition-colors bg-primary/5"
                   >
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${colorClass}`}
@@ -283,11 +323,7 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-sm font-medium ${
-                          !notification.is_read ? "text-foreground" : "text-muted-foreground"
-                        }`}
-                      >
+                      <p className="text-sm font-medium text-foreground">
                         {notification.title}
                       </p>
                       {notification.message && (
@@ -301,16 +337,15 @@ export function NotificationBell({ storeId }: NotificationBellProps) {
                         })}
                       </p>
                     </div>
-                    {!notification.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 shrink-0"
-                        onClick={() => markAsReadMutation.mutate(notification.id)}
-                      >
-                        <Check className="w-3 h-3" />
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0"
+                      onClick={() => markAsReadMutation.mutate(notification.id)}
+                      disabled={markAsReadMutation.isPending}
+                    >
+                      <Check className="w-3 h-3" />
+                    </Button>
                   </div>
                 );
               })}

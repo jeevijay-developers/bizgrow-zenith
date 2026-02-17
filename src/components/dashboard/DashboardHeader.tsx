@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NotificationBell } from "./NotificationBell";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,6 +22,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardHeaderProps {
   storeId?: string;
@@ -36,6 +39,21 @@ export function DashboardHeader({
   onRequestNotificationPermission,
 }: DashboardHeaderProps) {
   const { user, signOut } = useAuth();
+
+  // Fetch store logo
+  const { data: customization } = useQuery({
+    queryKey: ["store-customization", storeId],
+    queryFn: async () => {
+      if (!storeId) return null;
+      const { data } = await supabase
+        .from("store_customizations")
+        .select("logo_url")
+        .eq("store_id", storeId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!storeId,
+  });
 
   const getInitials = (email: string) => {
     return email.slice(0, 2).toUpperCase();
@@ -101,10 +119,11 @@ export function DashboardHeader({
 
           <NotificationBell storeId={storeId} />
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 px-2">
                 <Avatar className="h-8 w-8">
+                  <AvatarImage src={customization?.logo_url || ""} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     {user?.email ? getInitials(user.email) : "U"}
                   </AvatarFallback>
@@ -116,14 +135,26 @@ export function DashboardHeader({
                 <ChevronDown className="w-4 h-4 text-muted-foreground hidden md:block" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Store Settings</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/dashboard/settings" className="cursor-pointer">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/dashboard/store-settings" className="cursor-pointer">
+                  Store Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/dashboard/billing" className="cursor-pointer">
+                  Billing
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-destructive">
+              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

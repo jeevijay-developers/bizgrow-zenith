@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -173,14 +174,27 @@ const AIUploadPage = () => {
 
       if (error) {
         console.error("AI detection error:", error);
-        toast.error("Failed to analyze images. Please try again.");
+        const errorMessage = error.message || "Failed to analyze images";
+        toast.error(errorMessage);
+        setUploadState("idle");
+        return;
+      }
+
+      // Check for API-level errors
+      if (data?.error) {
+        console.error("AI API error:", data.error, data.details);
+        toast.error(data.details || data.error);
         setUploadState("idle");
         return;
       }
 
       if (data?.products && data.products.length > 0) {
+        // Filter out completely failed detections (confidence = 0 with error descriptions)
+        const validProducts = data.products.filter((p: any) => p.confidence > 0 || p.name !== "Unknown Product");
+        const failedCount = data.products.length - validProducts.length;
+        
         // Map AI results with uploaded images
-        const newDetectedProducts: DetectedProduct[] = data.products.map((product: any, index: number) => ({
+        const newDetectedProducts: DetectedProduct[] = (validProducts.length > 0 ? validProducts : data.products).map((product: any, index: number) => ({
           id: `prod-${Date.now()}-${index}-${Math.random().toString(36).substring(7)}`,
           name: product.name || `Product ${index + 1}`,
           price: product.price || 0,
@@ -204,9 +218,17 @@ const AIUploadPage = () => {
         setUploadState("results");
         
         const enhancedCount = newDetectedProducts.filter(p => p.enhancedImage).length;
-        toast.success(`${newDetectedProducts.length} products detected! ${enhancedCount > 0 ? `${enhancedCount} images enhanced.` : ''}`);
+        const lowConfidenceCount = newDetectedProducts.filter(p => p.confidence < 50).length;
+        
+        if (failedCount > 0) {
+          toast.warning(`${newDetectedProducts.length} products detected, ${failedCount} failed. Review the results.`);
+        } else if (lowConfidenceCount > 0) {
+          toast.success(`${newDetectedProducts.length} products detected! ${lowConfidenceCount} need review.`);
+        } else {
+          toast.success(`${newDetectedProducts.length} products detected! ${enhancedCount > 0 ? `${enhancedCount} images enhanced.` : ''}`);
+        }
       } else {
-        toast.error("No products detected. Try with a clearer image.");
+        toast.error("No products detected. Please try with a clearer image showing the product clearly.");
         setUploadState("idle");
       }
     } catch (err) {

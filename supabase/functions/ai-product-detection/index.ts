@@ -4,6 +4,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-expect-error - npm: prefix is Deno-specific, works when deployed to Supabase
 import { GoogleGenAI } from "npm:@google/genai";
 
+declare const Deno: any;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -104,7 +106,7 @@ function findCategory(category: string | undefined): string {
   return category;
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

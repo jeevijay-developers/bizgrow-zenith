@@ -2,11 +2,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HiSparkles } from "react-icons/hi2";
+import { FcGoogle } from "react-icons/fc";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
   Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock,
-  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star, PartyPopper
+  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star, PartyPopper, Crown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,29 +70,29 @@ const businessModes = [
 
 const plans = [
   { 
+    id: "free", 
+    name: "Free", 
+    price: "₹0", 
+    period: "/forever",
+    features: ["Up to 10 products", "Basic catalogue", "Email support", "Mobile app access"],
+    Icon: Zap,
+  },
+  { 
     id: "starter", 
     name: "Starter", 
-    price: "₹499", 
+    price: "₹999", 
     period: "/month",
-    features: ["Up to 100 products", "Basic catalogue", "WhatsApp orders", "Email support"],
-    Icon: Zap,
+    features: ["Up to 100 products", "Basic catalogue", "WhatsApp orders", "Email support", "Mobile app access"],
+    Icon: Sparkles,
   },
   { 
     id: "pro", 
     name: "Pro", 
-    price: "₹999", 
+    price: "₹1,499", 
     period: "/month",
     features: ["Unlimited products", "AI Photo Upload", "Analytics dashboard", "Priority support", "Custom domain"],
     popular: true,
-    Icon: Sparkles,
-  },
-  { 
-    id: "enterprise", 
-    name: "Enterprise", 
-    price: "Custom",
-    period: "",
-    features: ["Multi-store management", "API access", "Dedicated manager", "Custom integrations"],
-    Icon: Shield,
+    Icon: Crown,
   },
 ];
 
@@ -248,11 +249,12 @@ const FeatureCarousel = () => {
 
 const Join = () => {
   const navigate = useNavigate();
-  const { user, signUp } = useAuth();
+  const { user, signUp, signInWithGoogle } = useAuth();
   const [step, setStep] = useState(1);
   const totalSteps = user ? 5 : 6;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
   const [cityQuery, setCityQuery] = useState("");
@@ -396,6 +398,24 @@ const Join = () => {
     return validateStep(step, formData).success;
   };
 
+  const handleGoogleSignIn = async () => {
+    setErrors({});
+    setIsGoogleLoading(true);
+    
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        toast.error(error.message);
+      }
+      // User will be redirected to dashboard after successful OAuth
+      // The form data will be preserved in localStorage if needed
+    } catch (err) {
+      toast.error("Failed to sign in with Google. Please try again.");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return;
     setIsSubmitting(true);
@@ -418,7 +438,8 @@ const Join = () => {
           const msg = signUpError.message.toLowerCase();
           // If Supabase sent the email but reported an SMTP warning, treat it as a soft success
           if (msg.includes("confirmation email")) {
-            toast.success("Confirmation email sent. Please check your inbox to finish signup.");
+            // Redirect to email verification page
+            navigate(`/email-verification?email=${encodeURIComponent(formData.email || '')}`);
             setIsSubmitting(false);
             return;
           }
@@ -427,6 +448,13 @@ const Join = () => {
             ? "Email already registered" 
             : signUpError.message 
           });
+          setIsSubmitting(false);
+          return;
+        }
+        
+        // After successful signup, redirect to email verification
+        if (!signUpError) {
+          navigate(`/email-verification?email=${encodeURIComponent(formData.email || '')}`);
           setIsSubmitting(false);
           return;
         }
@@ -1214,6 +1242,38 @@ const Join = () => {
                     <p className="text-muted-foreground text-sm">Almost done! Set up your login</p>
                   </div>
 
+                  {/* Google OAuth Button */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGoogleSignIn}
+                      disabled={isGoogleLoading || isSubmitting}
+                      className="w-full h-11 font-semibold border-2"
+                    >
+                      {isGoogleLoading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Connecting to Google...
+                        </>
+                      ) : (
+                        <>
+                          <FcGoogle className="w-5 h-5 mr-2" />
+                          Continue with Google
+                        </>
+                      )}
+                    </Button>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or with email</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="email" className="text-sm font-medium">Email</Label>
@@ -1263,6 +1323,7 @@ const Join = () => {
             {/* Navigation */}
             <div className="flex items-center justify-between pt-6 mt-6 border-t border-border">
               <Button
+                type="button"
                 variant="ghost"
                 onClick={prevStep}
                 disabled={step === 1 || isSubmitting}
@@ -1274,6 +1335,7 @@ const Join = () => {
               
               {step < totalSteps ? (
                 <Button
+                  type="button"
                   onClick={nextStep}
                   disabled={!isStepValid()}
                   className="gap-2 h-10 bg-primary hover:bg-primary/90 px-6"
@@ -1283,6 +1345,7 @@ const Join = () => {
                 </Button>
               ) : (
                 <Button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting || !isStepValid()}
                   className="gap-2 h-10 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6"

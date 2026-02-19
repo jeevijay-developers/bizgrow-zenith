@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Index from "./pages/Index";
 import Join from "./pages/Join";
 import Auth from "./pages/Auth";
+import EmailVerification from "./pages/EmailVerification";
 import NotFound from "./pages/NotFound";
 import StoreCatalogue from "./pages/StoreCatalogue";
 import OrderConfirmation from "./pages/OrderConfirmation";
@@ -98,6 +99,7 @@ const FeatureProtectedRoute = ({
 
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   
   if (loading) {
     return (
@@ -107,7 +109,12 @@ const AuthRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  if (user) {
+  // Allow password reset even if user is logged in (Supabase creates a session from reset token)
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get('mode');
+  const isResetPassword = mode === 'reset-password';
+  
+  if (user && !isResetPassword) {
     return <Navigate to="/dashboard" replace />;
   }
   
@@ -138,6 +145,7 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Index />} />
           <Route path="/join" element={<Join />} />
           <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+          <Route path="/email-verification" element={<EmailVerification />} />
           <Route path="/store/:storeId" element={<StoreCatalogue />} />
           {/* Support slug-based URLs like /s/storename-d3105ef5 */}
           <Route path="/s/:storeId" element={<StoreCatalogue />} />

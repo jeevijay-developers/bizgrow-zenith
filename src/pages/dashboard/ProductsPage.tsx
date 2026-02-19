@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { useCSVImport } from "@/hooks/useCSVImport";
+import { categoryConfigs } from "@/config/categoryConfig";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,7 +52,9 @@ interface DashboardContext {
   } | null;
 }
 
-const categories = ["All", "Groceries", "Dairy", "Snacks", "Beverages", "Personal Care", "Household"];
+// Generate categories from config
+const allCategoryLabels = Object.values(categoryConfigs).map(config => config.label);
+const categories = ["All", ...allCategoryLabels];
 
 interface Product {
   id: string;
@@ -782,7 +785,7 @@ const ProductsPage = () => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             <Input 
               placeholder="Search products..." 
               className="pl-10" 
@@ -790,7 +793,7 @@ const ProductsPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {categories.map(cat => (
               <Button
                 key={cat}

@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, Store } from "lucide-react";
+import { ArrowLeft, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, Store, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
+import { FcGoogle } from "react-icons/fc";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -24,17 +25,33 @@ const signupSchema = z.object({
   path: ["confirmPassword"],
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+const resetPasswordSchema = z.object({
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "login";
   const redirectTo = searchParams.get("redirect") || "/dashboard";
   
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     email: "",
@@ -44,10 +61,13 @@ const Auth = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const isLogin = mode === "login";
+  const isResetPassword = mode === "reset-password";
 
   const validateForm = () => {
     try {
-      if (isLogin) {
+      if (isResetPassword) {
+        resetPasswordSchema.parse(formData);
+      } else if (isLogin) {
         loginSchema.parse(formData);
       } else {
         signupSchema.parse(formData);
@@ -68,8 +88,82 @@ const Auth = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+    
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        setError(error.message);
+      }
+      // Redirect will happen automatically after successful OAuth
+    } catch (err) {
+      setError("Failed to sign in with Google. Please try again.");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      forgotPasswordSchema.parse({ email: forgotPasswordEmail });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        return;
+      }
+    }
+
+    setForgotPasswordLoading(true);
+    setError(null);
+    
+    try {
+      const { error } = await resetPassword(forgotPasswordEmail);
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess("Password reset link sent to your email!");
+        setForgotPasswordOpen(false);
+        setForgotPasswordEmail("");
+      }
+    } catch (err) {
+      setError("Failed to send reset email. Please try again.");
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const { error } = await updatePassword(formData.password);
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess("Password updated successfully! Redirecting...");
+        setTimeout(() => navigate("/dashboard"), 1500);
+      }
+    } catch (err) {
+      setError("Failed to update password. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isResetPassword) {
+      return handleResetPassword(e);
+    }
+    
     setError(null);
     setSuccess(null);
     
@@ -83,6 +177,12 @@ const Auth = () => {
         if (error) {
           if (error.message.includes("Invalid login credentials")) {
             setError("Invalid email or password. Please try again.");
+          } else if (error.message.includes("Email not confirmed")) {
+            setError("Please verify your email address before signing in.");
+            // Redirect to email verification page with option to resend
+            setTimeout(() => {
+              navigate(`/email-verification?email=${encodeURIComponent(formData.email)}`);
+            }, 2000);
           } else {
             setError(error.message);
           }
@@ -98,8 +198,8 @@ const Auth = () => {
             setError(error.message);
           }
         } else {
-          setSuccess("Account created successfully! Redirecting...");
-          setTimeout(() => navigate(redirectTo), 1500);
+          // Redirect to email verification page
+          navigate(`/email-verification?email=${encodeURIComponent(formData.email)}`);
         }
       }
     } catch (err) {
@@ -139,15 +239,21 @@ const Auth = () => {
             {/* Header - Compact on mobile */}
             <div className="text-center mb-5 sm:mb-6">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-purple-light/50 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
-                <Store className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                {isResetPassword ? (
+                  <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                ) : (
+                  <Store className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                )}
               </div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-card-foreground">
-                {isLogin ? "Seller Login" : "Create Account"}
+                {isResetPassword ? "Reset Password" : isLogin ? "Seller Login" : "Create Account"}
               </h1>
               <p className="text-muted-foreground text-sm mt-1.5 sm:mt-2">
-                {isLogin 
-                  ? "Sign in to manage your store" 
-                  : "Join BizGrow 360 and grow your business"
+                {isResetPassword 
+                  ? "Enter your new password below" 
+                  : isLogin 
+                    ? "Sign in to manage your store" 
+                    : "Join BizGrow 360 and grow your business"
                 }
               </p>
             </div>
@@ -176,30 +282,78 @@ const Auth = () => {
 
             {/* Form - Compact spacing on mobile */}
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-primary" />
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className={`h-11 sm:h-12 ${fieldErrors.email ? "border-destructive" : ""}`}
-                  disabled={isLoading}
-                />
-                {fieldErrors.email && (
-                  <p className="text-destructive text-xs sm:text-sm">{fieldErrors.email}</p>
-                )}
-              </div>
+              {!isResetPassword && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="flex items-center gap-2 text-sm">
+                    <Mail className="w-4 h-4 text-primary" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className={`h-11 sm:h-12 ${fieldErrors.email ? "border-destructive" : ""}`}
+                    disabled={isLoading}
+                  />
+                  {fieldErrors.email && (
+                    <p className="text-destructive text-xs sm:text-sm">{fieldErrors.email}</p>
+                  )}
+                </div>
+              )}
 
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="flex items-center gap-2 text-sm">
-                  <Lock className="w-4 h-4 text-primary" />
-                  Password
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="flex items-center gap-2 text-sm">
+                    <Lock className="w-4 h-4 text-primary" />
+                    Password
+                  </Label>
+                  {isLogin && (
+                    <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+                      <DialogTrigger asChild>
+                        <button type="button" className="text-xs text-primary hover:underline">
+                          Forgot password?
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Reset Password</DialogTitle>
+                          <DialogDescription>
+                            Enter your email address and we'll send you a link to reset your password.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 pt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="forgot-email">Email Address</Label>
+                            <Input
+                              id="forgot-email"
+                              type="email"
+                              placeholder="you@example.com"
+                              value={forgotPasswordEmail}
+                              onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                              disabled={forgotPasswordLoading}
+                            />
+                          </div>
+                          <Button
+                            onClick={handleForgotPassword}
+                            disabled={forgotPasswordLoading}
+                            className="w-full"
+                          >
+                            {forgotPasswordLoading ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Sending...
+                              </>
+                            ) : (
+                              "Send Reset Link"
+                            )}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
                 <div className="relative">
                   <Input
                     id="password"
@@ -223,7 +377,7 @@ const Auth = () => {
                 )}
               </div>
 
-              {!isLogin && (
+              {(!isLogin || isResetPassword) && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -253,30 +407,66 @@ const Auth = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {isLogin ? "Signing in..." : "Creating account..."}
+                    {isResetPassword ? "Updating..." : isLogin ? "Signing in..." : "Creating account..."}
                   </>
                 ) : (
-                  isLogin ? "Sign In" : "Create Account"
+                  isResetPassword ? "Update Password" : isLogin ? "Sign In" : "Create Account"
                 )}
               </Button>
             </form>
 
-            {/* Toggle mode */}
-            <div className="mt-5 sm:mt-6 text-center">
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-                {" "}
-                <Link
-                  to={`/auth?mode=${isLogin ? "signup" : "login"}${redirectTo !== "/dashboard" ? `&redirect=${redirectTo}` : ""}`}
-                  className="text-primary font-medium hover:underline"
+            {/* Google OAuth - Only for login and signup, not reset password */}
+            {!isResetPassword && (
+              <>
+                <div className="relative my-5 sm:my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGoogleSignIn}
+                  disabled={isGoogleLoading || isLoading}
+                  className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base border-2"
                 >
-                  {isLogin ? "Sign up" : "Sign in"}
-                </Link>
-              </p>
-            </div>
+                  {isGoogleLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Connecting to Google...
+                    </>
+                  ) : (
+                    <>
+                      <FcGoogle className="w-5 h-5 mr-2" />
+                      {isLogin ? "Sign in with Google" : "Sign up with Google"}
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+
+            {/* Toggle mode */}
+            {!isResetPassword && (
+              <div className="mt-5 sm:mt-6 text-center">
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}
+                  {" "}
+                  <Link
+                    to={`/auth?mode=${isLogin ? "signup" : "login"}${redirectTo !== "/dashboard" ? `&redirect=${redirectTo}` : ""}`}
+                    className="text-primary font-medium hover:underline"
+                  >
+                    {isLogin ? "Sign up" : "Sign in"}
+                  </Link>
+                </p>
+              </div>
+            )}
 
             {/* Join as retailer CTA */}
-            {isLogin && (
+            {isLogin && !isResetPassword && (
               <div className="mt-4 pt-4 border-t border-border">
                 <p className="text-center text-muted-foreground text-xs sm:text-sm mb-3">
                   Want to list your store?

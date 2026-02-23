@@ -91,10 +91,10 @@ const CatalogueSection = () => {
                 {/* Products Grid */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {[
-                    { name: "Parle-G Biscuit", price: "₹20", Icon: GiCookie, badge: "Bestseller" },
-                    { name: "Amul Butter", price: "₹55", Icon: GiButter },
-                    { name: "Maggi Noodles", price: "₹14", Icon: GiNoodles, badge: "Popular" },
-                    { name: "Tata Tea Gold", price: "₹120", Icon: GiTeapot },
+                    { name: "Parle-G Biscuit", price: "₹20", Icon: ShoppingCart, badge: "Bestseller" },
+                    { name: "Amul Butter", price: "₹55", Icon: ShoppingCart },
+                    { name: "Maggi Noodles", price: "₹14", Icon: ShoppingCart, badge: "Popular" },
+                    { name: "Tata Tea Gold", price: "₹120", Icon: ShoppingCart },
                   ].map((product) => (
                     <div key={product.name} className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-3 relative group hover:shadow-lg border border-gray-100 transition-all cursor-pointer">
                       {product.badge && (

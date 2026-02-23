@@ -435,26 +435,10 @@ const Join = () => {
         );
         
         if (signUpError) {
-          const msg = signUpError.message.toLowerCase();
-          // If Supabase sent the email but reported an SMTP warning, treat it as a soft success
-          if (msg.includes("confirmation email")) {
-            // Redirect to email verification page
-            navigate(`/email-verification?email=${encodeURIComponent(formData.email || '')}`);
-            setIsSubmitting(false);
-            return;
-          }
-
           setErrors({ email: signUpError.message.includes("already registered") 
             ? "Email already registered" 
             : signUpError.message 
           });
-          setIsSubmitting(false);
-          return;
-        }
-        
-        // After successful signup, redirect to email verification
-        if (!signUpError) {
-          navigate(`/email-verification?email=${encodeURIComponent(formData.email || '')}`);
           setIsSubmitting(false);
           return;
         }

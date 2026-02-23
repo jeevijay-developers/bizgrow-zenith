@@ -4,7 +4,8 @@ import {
   ShoppingCart, Search, Phone, MessageCircle,
   Clock, CheckCircle, Truck, Package, XCircle,
   Calendar, Download, ChevronDown, MapPin, User, Loader2,
-  Store, Globe, Volume2, VolumeX, Receipt
+  Store, Globe, Volume2, VolumeX, Receipt, Eye, Wallet,
+  IndianRupee
 } from "lucide-react";
 import { startOfToday, startOfYesterday, endOfYesterday, subDays, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatDistanceToNow, format } from "date-fns";
 import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { InvoiceModal } from "@/components/invoice/InvoiceModal";
+import { PaymentDetailsDialog } from "@/components/invoice/PaymentDetailsDialog";
 
 interface DashboardContext {
   store: {
@@ -81,6 +83,10 @@ interface Invoice {
   discount_amount: number | null;
   total_amount: number;
   payment_method: string | null;
+  payment_status: string | null;
+  payment_type: string | null;
+  paid_amount: number | null;
+  remaining_amount: number | null;
   created_at: string | null;
 }
 
@@ -111,6 +117,18 @@ const getOrderTypeConfig = (orderType: string | null) => {
   }
 };
 
+const getPaymentStatusConfig = (status: string | null) => {
+  switch (status) {
+    case "completed":
+      return { color: "bg-green-500/10 text-green-600 border-green-500/20", label: "Completed", icon: CheckCircle };
+    case "partial":
+      return { color: "bg-amber-500/10 text-amber-600 border-amber-500/20", label: "Partial", icon: Clock };
+    case "pending":
+    default:
+      return { color: "bg-gray-500/10 text-gray-600 border-gray-500/20", label: "Pending", icon: IndianRupee };
+  }
+};
+
 const OrdersPage = () => {
   const { store } = useOutletContext<DashboardContext>();
   const queryClient = useQueryClient();
@@ -124,6 +142,9 @@ const OrdersPage = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
+  const [paymentDetailsOpen, setPaymentDetailsOpen] = useState(false);
+  const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<string | null>(null);
 
   // Real-time orders subscription with sound
   useRealtimeOrders({
@@ -152,6 +173,26 @@ const OrdersPage = () => {
     },
     enabled: !!store?.id,
   });
+
+  // Fetch invoices for payment status
+  const { data: invoices = [] } = useQuery({
+    queryKey: ["invoices", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return [];
+      const { data, error } = await supabase
+        .from("invoices")
+        .select("order_id, id, payment_status, payment_type, paid_amount, remaining_amount")
+        .eq("store_id", store.id);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!store?.id,
+  });
+
+  // Create a map of order_id to invoice for quick lookup
+  const invoiceMap = new Map(
+    invoices.map(inv => [inv.order_id, inv])
+  );
 
   // Update order status mutation
   const updateStatusMutation = useMutation({
@@ -219,6 +260,11 @@ const OrdersPage = () => {
       (orderTypeFilter === "online" && (order.order_type === "online" || !order.order_type)) ||
       (orderTypeFilter === "walkin" && order.order_type === "walkin");
     
+    // Payment status filter
+    const invoice = invoiceMap.get(order.id);
+    const matchesPaymentStatus = paymentStatusFilter === "all" ||
+      (invoice?.payment_status === paymentStatusFilter);
+    
     // Date filter
     let matchesDate = true;
     if (dateFilter !== "all") {
@@ -229,7 +275,7 @@ const OrdersPage = () => {
       }
     }
     
-    return matchesSearch && matchesStatusTab && matchesOrderType && matchesDate;
+    return matchesSearch && matchesStatusTab && matchesOrderType && matchesPaymentStatus && matchesDate;
   });
 
   const onlineOrders = orders.filter(o => o.order_type === "online" || !o.order_type);
@@ -473,6 +519,19 @@ const OrdersPage = () => {
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </Button>
+          
+          {/* Payment Status Filter */}
+          <Select value={paymentStatusFilter} onValueChange={setPaymentStatusFilter}>
+            <SelectTrigger className="w-[160px] h-9">
+              <SelectValue placeholder="Payment Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Payments</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="partial">Partial</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Status Tabs & Filters */}
@@ -529,6 +588,8 @@ const OrdersPage = () => {
             {filteredOrders.map((order, index) => {
               const statusConfig = getStatusConfig(order.status);
               const items = Array.isArray(order.items) ? order.items : [];
+              const invoice = invoiceMap.get(order.id);
+              const paymentStatusConfig = invoice ? getPaymentStatusConfig(invoice.payment_status) : null;
               return (
                 <motion.div
                   key={order.id}
@@ -562,6 +623,12 @@ const OrdersPage = () => {
                         <Badge variant="outline" className="text-xs">
                           {order.payment_method || "COD"}
                         </Badge>
+                        {paymentStatusConfig && (
+                          <Badge className={`${paymentStatusConfig.color} text-xs`}>
+                            <paymentStatusConfig.icon className="w-3 h-3 mr-1" />
+                            {paymentStatusConfig.label}
+                          </Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                         <div className="flex items-center gap-1">
@@ -613,6 +680,21 @@ const OrdersPage = () => {
                         >
                           <MessageCircle className="w-4 h-4" />
                         </Button>
+                        {invoice?.payment_status === "partial" && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-9 w-9 text-amber-600 hover:text-amber-700" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedInvoiceForPayment(invoice.id);
+                              setPaymentDetailsOpen(true);
+                            }}
+                            title="View payment details"
+                          >
+                            <Wallet className="w-4 h-4" />
+                          </Button>
+                        )}
                         {/* <Button 
                           variant="ghost" 
                           size="icon" 
@@ -766,6 +848,16 @@ const OrdersPage = () => {
           onOpenChange={setInvoiceModalOpen}
           invoice={selectedInvoice}
           storeName={store.name}
+        />
+      )}
+
+      {/* Payment Details Dialog */}
+      {selectedInvoiceForPayment && store && (
+        <PaymentDetailsDialog
+          invoiceId={selectedInvoiceForPayment}
+          open={paymentDetailsOpen}
+          onOpenChange={setPaymentDetailsOpen}
+          storeId={store.id}
         />
       )}
     </div>

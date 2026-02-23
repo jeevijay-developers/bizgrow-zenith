@@ -35,6 +35,48 @@ export type Database = {
         }
         Relationships: []
       }
+      bill_payments: {
+        Row: {
+          amount: number
+          comment: string | null
+          created_at: string
+          id: string
+          invoice_id: string
+          store_id: string
+        }
+        Insert: {
+          amount: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          invoice_id: string
+          store_id: string
+        }
+        Update: {
+          amount?: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bill_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bill_payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       category_images: {
         Row: {
           category_name: string
@@ -162,8 +204,12 @@ export type Database = {
           invoice_number: string
           items: Json
           order_id: string | null
+          paid_amount: number
+          payment_comment: string | null
           payment_method: string | null
           payment_status: string | null
+          payment_type: string
+          remaining_amount: number
           store_id: string
           subtotal: number
           total_amount: number
@@ -181,8 +227,12 @@ export type Database = {
           invoice_number: string
           items?: Json
           order_id?: string | null
+          paid_amount?: number
+          payment_comment?: string | null
           payment_method?: string | null
           payment_status?: string | null
+          payment_type?: string
+          remaining_amount?: number
           store_id: string
           subtotal?: number
           total_amount?: number
@@ -200,8 +250,12 @@ export type Database = {
           invoice_number?: string
           items?: Json
           order_id?: string | null
+          paid_amount?: number
+          payment_comment?: string | null
           payment_method?: string | null
           payment_status?: string | null
+          payment_type?: string
+          remaining_amount?: number
           store_id?: string
           subtotal?: number
           total_amount?: number

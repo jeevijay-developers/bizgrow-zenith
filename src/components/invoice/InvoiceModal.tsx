@@ -31,6 +31,11 @@ interface InvoiceInput {
   total_amount: number;
   payment_method: string | null;
   created_at: string | null;
+  payment_type?: string | null;
+  payment_status?: string | null;
+  paid_amount?: number | null;
+  remaining_amount?: number | null;
+  payment_comment?: string | null;
 }
 
 interface InvoiceModalProps {
@@ -64,6 +69,11 @@ export function InvoiceModal({ open, onOpenChange, invoice, storeName = "Store",
     total_amount: invoice.total_amount,
     payment_method: invoice.payment_method || "cash",
     created_at: invoice.created_at || new Date().toISOString(),
+    payment_type: invoice.payment_type || undefined,
+    payment_status: invoice.payment_status || undefined,
+    paid_amount: invoice.paid_amount ?? undefined,
+    remaining_amount: invoice.remaining_amount ?? undefined,
+    payment_comment: invoice.payment_comment || undefined,
   };
   const [isPrinting, setIsPrinting] = useState(false);
 

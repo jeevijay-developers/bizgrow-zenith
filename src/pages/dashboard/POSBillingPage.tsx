@@ -14,6 +14,8 @@ import {
   IndianRupee,
   Calculator,
   History,
+  Wallet,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,8 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -89,6 +93,9 @@ const POSBillingPage = () => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentType, setPaymentType] = useState<"full" | "partial">("full");
+  const [paidAmount, setPaidAmount] = useState("");
+  const [paymentComment, setPaymentComment] = useState("");
   const [enableGST, setEnableGST] = useState(false);
   const [gstPercentage, setGstPercentage] = useState("5");
   const [discountAmount, setDiscountAmount] = useState("");
@@ -174,6 +181,9 @@ const POSBillingPage = () => {
     setCustomerAddress("");
     setDiscountAmount("");
     setEnableGST(false);
+    setPaymentType("full");
+    setPaidAmount("");
+    setPaymentComment("");
   };
 
   // Create order mutation
@@ -200,6 +210,9 @@ const POSBillingPage = () => {
           order_type: "walkin",
           gst_percentage: enableGST ? parseFloat(gstPercentage) : 0,
           discount_amount: discount,
+          payment_type: paymentType,
+          paid_amount: paymentType === "partial" ? parseFloat(paidAmount) || 0 : total,
+          payment_comment: paymentType === "partial" ? paymentComment : null,
         },
       });
 
@@ -483,6 +496,82 @@ const POSBillingPage = () => {
                 </Select>
               </div>
 
+              {/* Payment Type */}
+              <div className="space-y-3 mb-4">
+                <Label className="text-sm flex items-center gap-2">
+                  <Wallet className="w-4 h-4" />
+                  Payment Type
+                </Label>
+                <RadioGroup
+                  value={paymentType}
+                  onValueChange={(value) => setPaymentType(value as "full" | "partial")}
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="full" id="full" />
+                    <Label htmlFor="full" className="font-normal cursor-pointer">
+                      Full Payment
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="partial" id="partial" />
+                    <Label htmlFor="partial" className="font-normal cursor-pointer">
+                      Partial Payment
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Partial Payment Fields */}
+              {paymentType === "partial" && (
+                <div className="space-y-3 mb-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                  <div className="space-y-2">
+                    <Label className="text-sm">Paid Amount</Label>
+                    <Input
+                      placeholder="Enter amount paid"
+                      type="number"
+                      value={paidAmount}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const numValue = parseFloat(value) || 0;
+                        if (numValue <= total) {
+                          setPaidAmount(value);
+                        } else {
+                          toast.error("Paid amount cannot exceed total");
+                        }
+                      }}
+                      className="h-9"
+                      min="0"
+                      max={total}
+                      step="0.01"
+                    />
+                  </div>
+                  
+                  {paidAmount && parseFloat(paidAmount) > 0 && (
+                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-900 rounded border border-amber-300 dark:border-amber-700">
+                      <AlertCircle className="w-4 h-4 text-amber-600" />
+                      <div className="flex-1">
+                        <p className="text-xs text-muted-foreground">Remaining Amount</p>
+                        <p className="text-sm font-semibold text-amber-600">
+                          ₹{(total - (parseFloat(paidAmount) || 0)).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-2">
+                    <Label className="text-sm">Comment / Note</Label>
+                    <Textarea
+                      placeholder="e.g., Customer will pay remaining by next week"
+                      value={paymentComment}
+                      onChange={(e) => setPaymentComment(e.target.value)}
+                      className="resize-none"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* GST Toggle */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -555,7 +644,17 @@ const POSBillingPage = () => {
               <Button
                 className="w-full mt-4 gap-2"
                 size="lg"
-                onClick={() => createOrderMutation.mutate()}
+                onClick={() => {
+                  if (paymentType === "partial" && (!paidAmount || parseFloat(paidAmount) <= 0)) {
+                    toast.error("Please enter a valid paid amount for partial payment");
+                    return;
+                  }
+                  if (paymentType === "partial" && parseFloat(paidAmount) >= total) {
+                    toast.error("For full payment, please select 'Full Payment' option");
+                    return;
+                  }
+                  createOrderMutation.mutate();
+                }}
                 disabled={createOrderMutation.isPending}
               >
                 {createOrderMutation.isPending ? (

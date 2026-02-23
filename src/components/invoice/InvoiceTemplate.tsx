@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Store, Phone, MapPin, Receipt } from "lucide-react";
+import { Store, Phone, MapPin, Receipt, CheckCircle2, Clock, MessageSquare } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
@@ -26,6 +26,11 @@ export interface InvoiceData {
   total_amount: number;
   payment_method: string;
   created_at: string;
+  payment_type?: string;
+  payment_status?: string;
+  paid_amount?: number;
+  remaining_amount?: number;
+  payment_comment?: string;
 }
 
 interface InvoiceTemplateProps {
@@ -140,6 +145,58 @@ export function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
           {invoice.payment_method}
         </Badge>
       </div>
+
+      {/* Payment Status */}
+      {(invoice.payment_type || invoice.payment_status) && (
+        <div className="mt-3 bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-gray-700">Payment Status</span>
+            <Badge
+              variant="outline"
+              className={
+                invoice.payment_status === "completed"
+                  ? "bg-green-500/10 text-green-600 border-green-500/20"
+                  : invoice.payment_status === "partial"
+                  ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                  : "bg-gray-500/10 text-gray-600 border-gray-500/20"
+              }
+            >
+              {invoice.payment_status === "completed" && <CheckCircle2 className="w-3 h-3 mr-1" />}
+              {invoice.payment_status === "partial" && <Clock className="w-3 h-3 mr-1" />}
+              {invoice.payment_status === "completed"
+                ? "Completed"
+                : invoice.payment_status === "partial"
+                ? "Partial Payment"
+                : "Pending"}
+            </Badge>
+          </div>
+          
+          {invoice.payment_type === "partial" && (
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Paid Amount</span>
+                <span className="font-semibold text-green-600">
+                  ₹{(invoice.paid_amount || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Remaining</span>
+                <span className="font-semibold text-red-600">
+                  ₹{(invoice.remaining_amount || 0).toFixed(2)}
+                </span>
+              </div>
+              {invoice.payment_comment && (
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <div className="flex items-start gap-1 text-xs text-gray-600">
+                    <MessageSquare className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                    <span>{invoice.payment_comment}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-center">

@@ -25,6 +25,9 @@ interface CreateOrderRequest {
   order_type?: "online" | "walkin";
   gst_percentage?: number;
   discount_amount?: number;
+  payment_type?: "full" | "partial";
+  paid_amount?: number;
+  payment_comment?: string;
 }
 
 serve(async (req) => {
@@ -49,7 +52,10 @@ serve(async (req) => {
       delivery_mode,
       order_type = "online",
       gst_percentage = 0,
-      discount_amount = 0
+      discount_amount = 0,
+      payment_type = "full",
+      paid_amount,
+      payment_comment
     } = body;
 
     // Validate required fields
@@ -148,6 +154,26 @@ serve(async (req) => {
     // Generate invoice
     const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
     
+    // Calculate payment amounts based on payment type
+    let invoicePaidAmount = 0;
+    let invoiceRemainingAmount = 0;
+    let invoicePaymentStatus = "pending";
+    
+    if (payment_type === "partial") {
+      invoicePaidAmount = paid_amount || 0;
+      invoiceRemainingAmount = total_amount - invoicePaidAmount;
+      invoicePaymentStatus = "partial";
+    } else if (payment_type === "full") {
+      invoicePaidAmount = total_amount;
+      invoiceRemainingAmount = 0;
+      invoicePaymentStatus = order_type === "walkin" ? "completed" : "pending";
+    } else {
+      // Default to full payment for backward compatibility
+      invoicePaidAmount = order_type === "walkin" ? total_amount : 0;
+      invoiceRemainingAmount = order_type === "walkin" ? 0 : total_amount;
+      invoicePaymentStatus = order_type === "walkin" ? "completed" : "pending";
+    }
+    
     const { data: invoice, error: invoiceError } = await supabase
       .from("invoices")
       .insert({
@@ -164,7 +190,11 @@ serve(async (req) => {
         discount_amount,
         total_amount,
         payment_method: payment_method || "cash",
-        payment_status: order_type === "walkin" ? "paid" : "pending"
+        payment_status: invoicePaymentStatus,
+        payment_type,
+        paid_amount: invoicePaidAmount,
+        remaining_amount: invoiceRemainingAmount,
+        payment_comment: payment_comment || null
       })
       .select()
       .single();
@@ -174,6 +204,24 @@ serve(async (req) => {
       // Don't fail the order if invoice creation fails
     } else {
       console.log(`Invoice ${invoiceNumber} created for order ${order.id}`);
+      
+      // Create initial payment record for partial payments
+      if (payment_type === "partial" && invoicePaidAmount > 0) {
+        const { error: paymentError } = await supabase
+          .from("bill_payments")
+          .insert({
+            invoice_id: invoice.id,
+            store_id,
+            amount: invoicePaidAmount,
+            comment: payment_comment || "Initial payment"
+          });
+        
+        if (paymentError) {
+          console.error("Error creating initial payment record:", paymentError);
+        } else {
+          console.log(`Initial payment record created for invoice ${invoiceNumber}`);
+        }
+      }
     }
 
     // Handle customer record
@@ -236,7 +284,11 @@ serve(async (req) => {
         invoice: invoice ? {
           id: invoice.id,
           invoice_number: invoice.invoice_number,
-          total_amount: invoice.total_amount
+          total_amount: invoice.total_amount,
+          payment_type: invoice.payment_type,
+          paid_amount: invoice.paid_amount,
+          remaining_amount: invoice.remaining_amount,
+          payment_status: invoice.payment_status
         } : null
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

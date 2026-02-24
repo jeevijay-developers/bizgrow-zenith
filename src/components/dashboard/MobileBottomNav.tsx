@@ -10,6 +10,7 @@ import {
   Plus,
   ImagePlus,
   BarChart3,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -44,6 +45,7 @@ const moreMenuItems = [
   { title: "AI Upload", url: "/dashboard/ai-upload", icon: ImagePlus },
   { title: "Catalogue Link", url: "/dashboard/catalogue-link", icon: Link2 },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  { title: "Vendors", url: "/dashboard/vendors", icon: Building2 },
 ];
 
 export function MobileBottomNav() {

@@ -20,6 +20,7 @@ import {
   Zap,
   Lock,
   Crown,
+  Building2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -63,6 +64,7 @@ const mainNavItems: NavItem[] = [
   { title: "Products", url: "/dashboard/products", icon: Package, featureKey: "products" },
   { title: "Customers", url: "/dashboard/customers", icon: Users, featureKey: "customers" },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3, featureKey: "analytics", isHighlighted: true, badgeText: "HOT" },
+  { title: "Vendors", url: "/dashboard/vendors", icon: Building2, featureKey: "vendors" },
 ];
 
 const toolsNavItems: NavItem[] = [

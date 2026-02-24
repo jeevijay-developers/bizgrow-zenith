@@ -39,6 +39,11 @@ export const FEATURES: Record<string, FeatureConfig> = {
     minPlan: "starter",
     description: "Analytics dashboard and insights",
   },
+  VENDORS: {
+    key: "vendors",
+    minPlan: "free",
+    description: "Track purchases from vendors and distributors",
+  },
 
   // Tools features
   CATALOGUE_LINK: {

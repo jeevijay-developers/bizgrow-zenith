@@ -687,6 +687,174 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_payments: {
+        Row: {
+          amount: number
+          comment: string | null
+          created_at: string
+          id: string
+          payment_method: string
+          purchase_id: string
+          store_id: string
+        }
+        Insert: {
+          amount: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string
+          purchase_id: string
+          store_id: string
+        }
+        Update: {
+          amount?: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string
+          purchase_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_payments_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_purchases: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          paid_amount: number
+          payment_status: string
+          product_id: string | null
+          product_name: string
+          purchase_date: string
+          quantity: number
+          remaining_amount: number
+          store_id: string
+          total_amount: number
+          unit_price: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          payment_status?: string
+          product_id?: string | null
+          product_name: string
+          purchase_date?: string
+          quantity?: number
+          remaining_amount?: number
+          store_id: string
+          total_amount?: number
+          unit_price?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          payment_status?: string
+          product_id?: string | null
+          product_name?: string
+          purchase_date?: string
+          quantity?: number
+          remaining_amount?: number
+          store_id?: string
+          total_amount?: number
+          unit_price?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_purchases_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_purchases_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_purchases_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wishlists: {
         Row: {
           created_at: string

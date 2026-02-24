@@ -28,6 +28,7 @@ import BillingPage from "./pages/dashboard/BillingPage";
 import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import CatalogueLinkPage from "./pages/dashboard/CatalogueLinkPage";
+import VendorsPage from "./pages/dashboard/VendorsPage";
 
 // Feature Pages
 import DigitalCataloguePage from "./pages/features/DigitalCataloguePage";
@@ -179,6 +180,7 @@ const AnimatedRoutes = () => {
             <Route path="whatsapp" element={<FeatureProtectedRoute featureKey="whatsapp"><WhatsAppPage /></FeatureProtectedRoute>} />
             <Route path="delivery" element={<FeatureProtectedRoute featureKey="delivery"><DeliveryPage /></FeatureProtectedRoute>} />
             <Route path="catalogue-link" element={<CatalogueLinkPage />} />
+            <Route path="vendors" element={<VendorsPage />} />
             <Route path="customize-store" element={<FeatureProtectedRoute featureKey="customize-store"><StoreCustomizationPage /></FeatureProtectedRoute>} />
             <Route path="store-settings" element={<StoreSettingsPage />} />
             <Route path="billing" element={<BillingPage />} />

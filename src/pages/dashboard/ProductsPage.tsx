@@ -78,6 +78,8 @@ const ProductsPage = () => {
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [viewProductOpen, setViewProductOpen] = useState(false);
+  const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [bulkImageUploadOpen, setBulkImageUploadOpen] = useState(false);
   const [flyerProduct, setFlyerProduct] = useState<Product | null>(null);
@@ -350,6 +352,11 @@ const ProductsPage = () => {
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setEditProductOpen(true);
+  };
+
+  const handleViewProduct = (product: Product) => {
+    setViewingProduct(product);
+    setViewProductOpen(true);
   };
 
   // Bulk selection handlers
@@ -755,6 +762,114 @@ const ProductsPage = () => {
               )}
             </DialogContent>
           </Dialog>
+
+          {/* View Product Dialog */}
+          <Dialog open={viewProductOpen} onOpenChange={setViewProductOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Product Details</DialogTitle>
+              </DialogHeader>
+              {viewingProduct && (
+                <div className="space-y-6 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-6">
+                    {/* Product Image */}
+                    <div className="w-full sm:w-48 h-48 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                      {viewingProduct.image_url ? (
+                        <img 
+                          src={viewingProduct.image_url} 
+                          alt={viewingProduct.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="w-16 h-16 text-muted-foreground/50" />
+                      )}
+                    </div>
+                    
+                    {/* Product Info */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <h3 className="text-2xl font-bold mb-1">{viewingProduct.name}</h3>
+                        <Badge className={`${getStatusConfig(viewingProduct).color} text-xs`}>
+                          {getStatusConfig(viewingProduct).status.replace("-", " ")}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Price</p>
+                          <p className="text-2xl font-bold">₹{viewingProduct.price}</p>
+                        </div>
+                        {viewingProduct.compare_price && viewingProduct.compare_price > viewingProduct.price && (
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Compare Price</p>
+                            <p className="text-xl font-semibold text-muted-foreground line-through">₹{viewingProduct.compare_price}</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Category</p>
+                          <p className="font-medium">{viewingProduct.category || "Uncategorized"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Stock Quantity</p>
+                          <p className="font-medium">{viewingProduct.stock_quantity ?? 0} units</p>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Availability</p>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${viewingProduct.is_available ? 'bg-green-500' : 'bg-gray-500'}`} />
+                          <p className="font-medium">{viewingProduct.is_available ? 'Available for sale' : 'Not available'}</p>
+                        </div>
+                      </div>
+                      
+                      {viewingProduct.description && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Description</p>
+                          <p className="text-sm">{viewingProduct.description}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 pt-4 border-t">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => {
+                        setViewProductOpen(false);
+                        handleEditProduct(viewingProduct);
+                      }}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Product
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => {
+                        setViewProductOpen(false);
+                        setFlyerProduct(viewingProduct);
+                        setShowFlyerModal(true);
+                      }}
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Create Flyer
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setViewProductOpen(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -1056,7 +1171,7 @@ const ProductsPage = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" sideOffset={8}>
-                          <DropdownMenuItem><Eye className="w-4 h-4 mr-2" /> View</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleViewProduct(product)}><Eye className="w-4 h-4 mr-2" /> View</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleEditProduct(product)}>
                             <Edit className="w-4 h-4 mr-2" /> Edit
                           </DropdownMenuItem>
@@ -1193,7 +1308,12 @@ const ProductsPage = () => {
                       </td>
                       <td className="p-4">
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleViewProduct(product)}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button 

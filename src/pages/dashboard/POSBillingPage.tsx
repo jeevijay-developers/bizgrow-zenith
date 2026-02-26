@@ -9,13 +9,16 @@ import {
   Receipt,
   Loader2,
   User,
-  Phone,
-  MapPin,
   IndianRupee,
-  Calculator,
   History,
   Wallet,
   AlertCircle,
+  PackagePlus,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Tag,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +42,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { InvoiceModal } from "@/components/invoice/InvoiceModal";
+import { PaymentDetailsDialog } from "@/components/invoice/PaymentDetailsDialog";
 
 interface DashboardContext {
   store: {
@@ -60,6 +64,24 @@ interface Product {
 
 interface CartItem extends Product {
   quantity: number;
+  isCustom?: boolean; // true for ad-hoc items not in the catalogue
+}
+
+interface CustomItemForm {
+  name: string;
+  price: string;
+  quantity: string;
+}
+
+interface PartialInvoice {
+  id: string;
+  invoice_number: string;
+  customer_name: string;
+  total_amount: number;
+  paid_amount: number;
+  remaining_amount: number;
+  payment_comment: string | null;
+  created_at: string;
 }
 
 interface InvoiceData {
@@ -71,7 +93,7 @@ interface InvoiceData {
   customer_name: string;
   customer_phone: string;
   customer_address: string;
-  items: Array<{ name: string; quantity: number; price: number }>;
+  items: Array<{ name: string; quantity: number; price: number; is_custom?: boolean }>;
   subtotal: number;
   gst_percentage: number;
   gst_amount: number;
@@ -102,6 +124,15 @@ const POSBillingPage = () => {
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [showInvoice, setShowInvoice] = useState(false);
 
+  // Custom item state
+  const [showCustomItemForm, setShowCustomItemForm] = useState(false);
+  const [customItemForm, setCustomItemForm] = useState<CustomItemForm>({ name: "", price: "", quantity: "1" });
+
+  // Partial bills section
+  const [showPartialBills, setShowPartialBills] = useState(true);
+  const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<string | null>(null);
+  const [paymentDetailsOpen, setPaymentDetailsOpen] = useState(false);
+
   // Fetch products
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ["products", store?.id],
@@ -119,7 +150,23 @@ const POSBillingPage = () => {
     enabled: !!store?.id,
   });
 
-  // Filter products by search
+  // Fetch recent partial payment invoices
+  const { data: partialInvoices = [] } = useQuery({
+    queryKey: ["partial-invoices", store?.id],
+    queryFn: async () => {
+      if (!store?.id) return [];
+      const { data, error } = await supabase
+        .from("invoices")
+        .select("id, invoice_number, customer_name, total_amount, paid_amount, remaining_amount, payment_comment, created_at")
+        .eq("store_id", store.id)
+        .eq("payment_status", "partial")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data as PartialInvoice[];
+    },
+    enabled: !!store?.id,
+  });
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return products;
     return products.filter(
@@ -184,6 +231,35 @@ const POSBillingPage = () => {
     setPaymentType("full");
     setPaidAmount("");
     setPaymentComment("");
+    setShowCustomItemForm(false);
+    setCustomItemForm({ name: "", price: "", quantity: "1" });
+  };
+
+  // Add ad-hoc custom item to cart (not in catalogue)
+  const addCustomItem = () => {
+    const name = customItemForm.name.trim();
+    const price = parseFloat(customItemForm.price);
+    const quantity = parseInt(customItemForm.quantity) || 1;
+
+    if (!name) { toast.error("Please enter an item name"); return; }
+    if (!price || price <= 0) { toast.error("Please enter a valid price"); return; }
+
+    const customItem: CartItem = {
+      id: `custom-${Date.now()}`,
+      name,
+      price,
+      image_url: null,
+      category: null,
+      stock_quantity: null,
+      is_available: true,
+      quantity,
+      isCustom: true,
+    };
+
+    setCart(prev => [...prev, customItem]);
+    setCustomItemForm({ name: "", price: "", quantity: "1" });
+    setShowCustomItemForm(false);
+    toast.success(`"${name}" added to cart`);
   };
 
   // Create order mutation
@@ -192,10 +268,12 @@ const POSBillingPage = () => {
       if (!store?.id) throw new Error("Store not found");
 
       const orderItems = cart.map((item) => ({
-        id: item.id,
+        // Custom items have a generated id like "custom-..." — don't send to edge fn
+        id: item.isCustom ? undefined : item.id,
         name: item.name,
         price: item.price,
         quantity: item.quantity,
+        is_custom: item.isCustom || false,
       }));
 
       const { data, error } = await supabase.functions.invoke("create-order", {
@@ -222,6 +300,7 @@ const POSBillingPage = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["orders", store?.id] });
       queryClient.invalidateQueries({ queryKey: ["products", store?.id] });
+      queryClient.invalidateQueries({ queryKey: ["partial-invoices", store?.id] });
 
       // Prepare invoice data
       const invoice: InvoiceData = {
@@ -237,6 +316,7 @@ const POSBillingPage = () => {
           name: item.name,
           quantity: item.quantity,
           price: item.price,
+          is_custom: item.isCustom || false,
         })),
         subtotal,
         gst_percentage: enableGST ? parseFloat(gstPercentage) : 0,
@@ -291,16 +371,162 @@ const POSBillingPage = () => {
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search products by name or category..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Recent Partial Bills */}
+        {partialInvoices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <button
+              className="w-full flex items-center justify-between px-4 py-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
+              onClick={() => setShowPartialBills(v => !v)}
+            >
+              <span className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                Pending Partial Payments ({partialInvoices.length})
+              </span>
+              {showPartialBills ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            <AnimatePresence>
+              {showPartialBills && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {partialInvoices.map(inv => (
+                      <div
+                        key={inv.id}
+                        className="flex items-center justify-between gap-3 p-3 bg-card border border-amber-200/60 dark:border-amber-800/40 rounded-lg"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-mono text-muted-foreground">{inv.invoice_number}</span>
+                          </div>
+                          <p className="font-medium text-sm truncate">{inv.customer_name}</p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-xs text-green-600 font-medium">Paid ₹{inv.paid_amount.toFixed(0)}</span>
+                            <span className="text-xs text-red-600 font-medium">Due ₹{inv.remaining_amount.toFixed(0)}</span>
+                          </div>
+                          {inv.payment_comment && (
+                            <p className="text-xs text-muted-foreground truncate mt-0.5 italic">"{inv.payment_comment}"</p>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="shrink-0 gap-1 h-8 border-amber-300 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:border-amber-700 dark:hover:bg-amber-950/50"
+                          onClick={() => {
+                            setSelectedInvoiceForPayment(inv.id);
+                            setPaymentDetailsOpen(true);
+                          }}
+                        >
+                          <Wallet className="w-3 h-3" />
+                          Pay
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* Search + Custom Item */}
+        <div className="flex gap-2 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products by name or category..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button
+            variant="outline"
+            className="gap-2 shrink-0"
+            onClick={() => setShowCustomItemForm((v) => !v)}
+          >
+            <PackagePlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Custom Item</span>
+          </Button>
         </div>
+
+        {/* Custom Item Form */}
+        <AnimatePresence>
+          {showCustomItemForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4 overflow-hidden"
+            >
+              <div className="p-4 border-2 border-dashed border-primary/40 bg-primary/5 rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold flex items-center gap-2 text-primary">
+                    <Tag className="w-4 h-4" />
+                    Add Custom / Unlisted Item
+                  </h3>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowCustomItemForm(false)}>
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Add a one-time item to this bill. It won't be added to your product catalogue.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Item Name *</label>
+                    <Input
+                      placeholder="e.g. Gift Wrapping"
+                      value={customItemForm.name}
+                      onChange={(e) => setCustomItemForm(f => ({ ...f, name: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && addCustomItem()}
+                      className="h-9"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (₹) *</label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      step="0.01"
+                      value={customItemForm.price}
+                      onChange={(e) => setCustomItemForm(f => ({ ...f, price: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && addCustomItem()}
+                      className="h-9"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Qty</label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="1"
+                        min="1"
+                        value={customItemForm.quantity}
+                        onChange={(e) => setCustomItemForm(f => ({ ...f, quantity: e.target.value }))}
+                        onKeyDown={(e) => e.key === "Enter" && addCustomItem()}
+                        className="h-9"
+                      />
+                      <Button size="sm" className="h-9 gap-1 shrink-0" onClick={addCustomItem}>
+                        <Plus className="w-3.5 h-3.5" />
+                        Add
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Products Grid */}
         <ScrollArea className="flex-1">
@@ -412,9 +638,16 @@ const POSBillingPage = () => {
                     className="flex items-center gap-3 bg-muted/50 rounded-lg p-2"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1">
-                        {item.name}
-                      </p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-medium text-sm line-clamp-1">
+                          {item.name}
+                        </p>
+                        {item.isCustom && (
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-primary/40 text-primary shrink-0">
+                            Custom
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         ₹{item.price} × {item.quantity} = ₹
                         {item.price * item.quantity}
@@ -675,6 +908,22 @@ const POSBillingPage = () => {
           open={showInvoice}
           onOpenChange={setShowInvoice}
           invoice={invoiceData}
+        />
+      )}
+
+      {/* Payment Details Dialog (for partial bill follow-up payments) */}
+      {selectedInvoiceForPayment && store && (
+        <PaymentDetailsDialog
+          invoiceId={selectedInvoiceForPayment}
+          open={paymentDetailsOpen}
+          onOpenChange={(open) => {
+            setPaymentDetailsOpen(open);
+            if (!open) {
+              // Refresh partial invoices list after recording a payment
+              queryClient.invalidateQueries({ queryKey: ["partial-invoices", store.id] });
+            }
+          }}
+          storeId={store.id}
         />
       )}
     </div>

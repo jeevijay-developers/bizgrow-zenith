@@ -7,10 +7,11 @@ const corsHeaders = {
 };
 
 interface OrderItem {
-  id: string;
+  id?: string;         // undefined / null for custom (ad-hoc) items
   name: string;
   price: number;
   quantity: number;
+  is_custom?: boolean; // true for items not in the products catalogue
 }
 
 interface CreateOrderRequest {
@@ -116,8 +117,14 @@ serve(async (req: { method: string; json: () => CreateOrderRequest | PromiseLike
 
     console.log(`Order ${order.id} created for store ${store_id} (type: ${order_type})`);
 
-    // Auto-deduct inventory for each item
+    // Auto-deduct inventory for each item (skip custom / ad-hoc items)
     for (const item of items) {
+      // Custom items have no product ID — skip stock deduction
+      if (!item.id || item.is_custom) {
+        console.log(`Skipping stock deduction for custom item: ${item.name}`);
+        continue;
+      }
+
       const { data: product, error: productError } = await supabase
         .from("products")
         .select("id, stock_quantity, name")
@@ -183,7 +190,7 @@ serve(async (req: { method: string; json: () => CreateOrderRequest | PromiseLike
         customer_name,
         customer_phone,
         customer_address: customer_address || null,
-        items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+        items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price, is_custom: item.is_custom || false })),
         subtotal,
         gst_percentage,
         gst_amount,

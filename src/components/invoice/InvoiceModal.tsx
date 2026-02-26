@@ -15,6 +15,7 @@ interface InvoiceItem {
   qty?: number;
   quantity?: number;
   price: number;
+  is_custom?: boolean;
 }
 
 interface InvoiceInput {
@@ -61,6 +62,7 @@ export function InvoiceModal({ open, onOpenChange, invoice, storeName = "Store",
       name: item.name,
       quantity: item.qty || item.quantity || 1,
       price: item.price,
+      is_custom: item.is_custom || false,
     })),
     subtotal: invoice.subtotal,
     gst_percentage: invoice.gst_percentage || 0,

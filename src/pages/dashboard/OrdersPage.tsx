@@ -682,6 +682,7 @@ const OrdersPage = () => {
                           <User className="w-4 h-4" />
                           {order.customer_name}
                         </div>
+                        
                         <div className="flex items-center gap-1">
                           <Package className="w-4 h-4" />
                           {items.length} items

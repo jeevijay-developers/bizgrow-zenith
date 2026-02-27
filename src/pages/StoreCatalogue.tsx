@@ -309,15 +309,15 @@ const StoreCatalogue = () => {
           customer_phone: customerDetails.phone,
           customer_address: deliveryMode === "delivery" ? customerDetails.address : null,
           items: cart.map((item) => ({
-            product_id: item.id,
+            id: item.id,
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            image_url: item.image_url,
           })),
-          total_amount: cartTotal,
           notes: customerDetails.notes || null,
           payment_method: "COD",
+          delivery_mode: deliveryMode,
+          order_type: "online",
         },
       });
 

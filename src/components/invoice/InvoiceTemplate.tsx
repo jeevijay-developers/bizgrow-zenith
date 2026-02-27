@@ -107,7 +107,7 @@ export function InvoiceTemplate({ invoice }: InvoiceTemplateProps) {
             <div className="col-span-6 font-medium">
               {item.name}
               {item.is_custom && (
-                <span className="ml-1.5 text-[10px] font-normal text-gray-400 border border-gray-300 rounded px-1 py-0.5 align-middle">
+                <span className="ml-1.5 text-[10px] font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5 align-middle uppercase">
                   custom
                 </span>
               )}

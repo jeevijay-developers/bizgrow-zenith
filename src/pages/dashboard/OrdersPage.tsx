@@ -357,11 +357,17 @@ const OrdersPage = () => {
     }
   };
 
+  // Calculate total pending dues from partial invoices
+  const pendingDuesTotal = invoices
+    .filter(inv => inv.payment_status === "partial")
+    .reduce((sum, inv) => sum + (inv.remaining_amount || 0), 0);
+  const partialPaymentCount = invoices.filter(inv => inv.payment_status === "partial").length;
+
   const stats = [
-    { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "text-primary" },
-    { label: "Online", value: onlineOrders.length, icon: Globe, color: "text-indigo-600" },
-    { label: "Walk-in", value: walkinOrders.length, icon: Store, color: "text-emerald-600" },
-    { label: "Pending", value: orders.filter(o => o.status === "pending").length, icon: Clock, color: "text-yellow-600" },
+    { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "text-primary", onClick: undefined },
+    { label: "Online", value: onlineOrders.length, icon: Globe, color: "text-indigo-600", onClick: undefined },
+    { label: "Walk-in", value: walkinOrders.length, icon: Store, color: "text-emerald-600", onClick: undefined },
+    { label: "Pending", value: orders.filter(o => o.status === "pending").length, icon: Clock, color: "text-yellow-600", onClick: undefined },
   ];
 
   if (isLoading) {
@@ -468,7 +474,7 @@ const OrdersPage = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 sm:grid-cols-3 gap-4">
         {stats.map((stat, idx) => (
           <motion.div
             key={stat.label}
@@ -488,6 +494,29 @@ const OrdersPage = () => {
             </div>
           </motion.div>
         ))}
+        {/* Pending Dues Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 4 * 0.05 }}
+          className={`bg-card rounded-xl border p-4 cursor-pointer transition-colors ${
+            paymentStatusFilter === "partial"
+              ? "border-amber-500 bg-amber-500/5"
+              : "border-border hover:border-amber-500/30"
+          }`}
+          onClick={() => setPaymentStatusFilter(paymentStatusFilter === "partial" ? "all" : "partial")}
+          title="Click to filter partial payment orders"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
+              <Wallet className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-amber-600">₹{pendingDuesTotal.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Pending Dues ({partialPaymentCount})</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Order Type Filter & Tabs */}
@@ -575,8 +604,22 @@ const OrdersPage = () => {
             <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No orders found</h3>
             <p className="text-muted-foreground">
-              {searchQuery ? "Try adjusting your search" : "Orders will appear here when customers place them"}
+              {paymentStatusFilter === "partial"
+                ? "No partial payment orders yet. Go to POS Billing and select \"Partial Payment\" when generating a bill."
+                : searchQuery
+                ? "Try adjusting your search"
+                : "Orders will appear here when customers place them"}
             </p>
+            {paymentStatusFilter === "partial" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 gap-2"
+                onClick={() => setPaymentStatusFilter("all")}
+              >
+                View all orders
+              </Button>
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -623,10 +666,14 @@ const OrdersPage = () => {
                         <Badge variant="outline" className="text-xs">
                           {order.payment_method || "COD"}
                         </Badge>
-                        {paymentStatusConfig && (
+                        {paymentStatusConfig ? (
                           <Badge className={`${paymentStatusConfig.color} text-xs`}>
                             <paymentStatusConfig.icon className="w-3 h-3 mr-1" />
                             {paymentStatusConfig.label}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                            No Invoice
                           </Badge>
                         )}
                       </div>
@@ -644,6 +691,20 @@ const OrdersPage = () => {
                           {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                         </div>
                       </div>
+                      {/* Inline payment breakdown for partial payments */}
+                      {invoice?.payment_status === "partial" && (
+                        <div className="flex items-center gap-3 mt-1.5 text-xs">
+                          <span className="flex items-center gap-1 text-green-600 font-medium">
+                            <CheckCircle className="w-3 h-3" />
+                            Paid: ₹{(invoice.paid_amount || 0).toLocaleString()}
+                          </span>
+                          <span className="text-muted-foreground">•</span>
+                          <span className="flex items-center gap-1 text-red-600 font-medium">
+                            <Clock className="w-3 h-3" />
+                            Due: ₹{(invoice.remaining_amount || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Price & Actions */}
@@ -680,17 +741,21 @@ const OrdersPage = () => {
                         >
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        {invoice?.payment_status === "partial" && (
+                        {(invoice?.payment_status === "partial" || invoice?.payment_status === "pending") && (
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-9 w-9 text-amber-600 hover:text-amber-700" 
+                            className={`h-9 w-9 ${
+                              invoice.payment_status === "partial"
+                                ? "text-amber-600 hover:text-amber-700"
+                                : "text-gray-500 hover:text-gray-700"
+                            }`}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedInvoiceForPayment(invoice.id);
                               setPaymentDetailsOpen(true);
                             }}
-                            title="View payment details"
+                            title={invoice.payment_status === "partial" ? "View payment details" : "Record payment"}
                           >
                             <Wallet className="w-4 h-4" />
                           </Button>
@@ -772,6 +837,62 @@ const OrdersPage = () => {
                   <span className="text-xl font-bold">₹{selectedOrder.total_amount}</span>
                 </div>
               </div>
+
+              <Separator />
+
+              {/* Payment Information */}
+              {(() => {
+                const orderInvoice = selectedOrder ? invoiceMap.get(selectedOrder.id) : null;
+                if (!orderInvoice) return null;
+                const pConfig = getPaymentStatusConfig(orderInvoice.payment_status);
+                return (
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-sm text-muted-foreground">Payment Information</h4>
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Payment Status</span>
+                        <Badge className={`${pConfig.color} text-xs`}>
+                          <pConfig.icon className="w-3 h-3 mr-1" />
+                          {pConfig.label}
+                        </Badge>
+                      </div>
+                      {orderInvoice.payment_type === "partial" && (
+                        <>
+                          <Separator />
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Total</p>
+                              <p className="font-semibold">₹{selectedOrder!.total_amount.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Paid</p>
+                              <p className="font-semibold text-green-600">₹{(orderInvoice.paid_amount || 0).toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Remaining</p>
+                              <p className="font-semibold text-red-600">₹{(orderInvoice.remaining_amount || 0).toLocaleString()}</p>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {(orderInvoice.payment_status === "partial" || orderInvoice.payment_status === "pending") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-2 mt-1 text-amber-600 border-amber-500/30 hover:bg-amber-50"
+                          onClick={() => {
+                            setSelectedInvoiceForPayment(orderInvoice.id);
+                            setPaymentDetailsOpen(true);
+                          }}
+                        >
+                          <Wallet className="w-4 h-4" />
+                          {orderInvoice.payment_status === "partial" ? "Record Payment" : "View Payment Details"}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               <Separator />
 

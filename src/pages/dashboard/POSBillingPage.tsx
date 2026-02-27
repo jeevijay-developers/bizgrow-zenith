@@ -101,6 +101,11 @@ interface InvoiceData {
   total_amount: number;
   payment_method: string;
   created_at: string;
+  payment_type?: string;
+  payment_status?: string;
+  paid_amount?: number;
+  remaining_amount?: number;
+  payment_comment?: string;
 }
 
 const POSBillingPage = () => {
@@ -325,6 +330,11 @@ const POSBillingPage = () => {
         total_amount: total,
         payment_method: paymentMethod,
         created_at: new Date().toISOString(),
+        payment_type: data.invoice?.payment_type || undefined,
+        payment_status: data.invoice?.payment_status || undefined,
+        paid_amount: data.invoice?.paid_amount ?? undefined,
+        remaining_amount: data.invoice?.remaining_amount ?? undefined,
+        payment_comment: data.invoice?.payment_comment || undefined,
       };
 
       setInvoiceData(invoice);

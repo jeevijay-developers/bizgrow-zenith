@@ -38,7 +38,10 @@ const generateStoreSlug = (name: string | undefined | null): string => {
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')
     .replace(/\s+/g, '-')
-    .slice(0, 20);
+    .replace(/-+/g, '-')       // collapse consecutive hyphens
+    .replace(/^-|-$/g, '')     // strip leading/trailing hyphens
+    .slice(0, 20)
+    .replace(/-$/g, '');       // strip trailing hyphen after slice
 };
 
 const CatalogueLinkPage = () => {
@@ -67,7 +70,9 @@ const CatalogueLinkPage = () => {
   const baseUrl = window.location.origin;
   const storeSlug = store ? generateStoreSlug(store.name) : '';
   // Create a friendly URL with store slug + full UUID for reliable lookup
-  const storeLink = store ? `${baseUrl}/s/${storeSlug}-${store.id}` : "";
+  const storeLink = store
+    ? `${baseUrl}/s/${storeSlug ? `${storeSlug}-` : ''}${store.id}`
+    : "";
   
   // Preview link uses the full store ID for internal preview
   const previewLink = store ? `${baseUrl}/store/${store.id}` : "";

@@ -62,15 +62,15 @@ const OrderConfirmation = () => {
         </div>
 
         {/* Actions */}
-        <div className="space-y-3 pt-4">
+        <div className="flex gap-3 pt-4">
           <Button
-            className="w-full gap-2"
+            className="flex-1 gap-2"
             onClick={() => window.history.back()}
           >
             <ArrowLeft className="w-4 h-4" />
             Continue Shopping
           </Button>
-          <Link to="/">
+          <Link to="/" className="flex-1">
             <Button variant="outline" className="w-full gap-2">
               <Home className="w-4 h-4" />
               Go to Home

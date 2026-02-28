@@ -107,13 +107,13 @@ const StoreCatalogue = () => {
   const [sortOrder, setSortOrder] = useState("relevance");
   const [priceFilter, setPriceFilter] = useState<string | null>(null);
   
-  // Extract store ID from slug
+  // Extract store ID from slug – handles /s/storename-UUID and bare UUID formats
   const extractStoreId = (raw: string | undefined): string | undefined => {
     if (!raw) return undefined;
-    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
     const match = raw.match(uuidRegex);
     if (match) return match[0];
-    if (raw.length === 36 && raw.includes('-')) return raw;
+    // fallback: treat the whole param as an ID
     return raw;
   };
   
@@ -131,6 +131,26 @@ const StoreCatalogue = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Load cached customer details from localStorage
+  useEffect(() => {
+    if (!storeId) return;
+    try {
+      const saved = localStorage.getItem(`customer_details_${storeId}`);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<CustomerDetails>;
+        setCustomerDetails(prev => ({
+          ...prev,
+          name: parsed.name || "",
+          phone: parsed.phone || "",
+          address: parsed.address || "",
+          notes: "",
+        }));
+      }
+    } catch {
+      // ignore
+    }
+  }, [storeId]);
 
   // Scroll tracking
   useEffect(() => {
@@ -299,6 +319,17 @@ const StoreCatalogue = () => {
       return;
     }
 
+    // Persist name, phone, address to localStorage for next visit
+    try {
+      localStorage.setItem(`customer_details_${storeId}`, JSON.stringify({
+        name: customerDetails.name,
+        phone: customerDetails.phone,
+        address: customerDetails.address,
+      }));
+    } catch {
+      // ignore storage errors
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -307,7 +338,7 @@ const StoreCatalogue = () => {
           store_id: storeId,
           customer_name: customerDetails.name,
           customer_phone: customerDetails.phone,
-          customer_address: deliveryMode === "delivery" ? customerDetails.address : null,
+          customer_address: customerDetails.address || null,
           items: cart.map((item) => ({
             id: item.id,
             name: item.name,
@@ -658,24 +689,17 @@ const StoreCatalogue = () => {
                   </div>
                 )}
 
-                <AnimatePresence>
-                  {deliveryMode === "delivery" && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="space-y-1.5 overflow-hidden"
-                    >
-                      <Label className="text-sm font-medium">Delivery Address *</Label>
-                      <Textarea
-                        value={customerDetails.address}
-                        onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
-                        placeholder="Enter your complete delivery address"
-                        className="min-h-[80px]"
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium">
+                    Address{deliveryMode === "delivery" ? " *" : " (Optional)"}
+                  </Label>
+                  <Textarea
+                    value={customerDetails.address}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
+                    placeholder={deliveryMode === "delivery" ? "Enter your complete delivery address" : "House / flat / area (optional)"}
+                    className="min-h-[80px]"
+                  />
+                </div>
 
                 <div className="space-y-1.5">
                   <Label className="text-sm font-medium text-muted-foreground">Special Instructions (Optional)</Label>

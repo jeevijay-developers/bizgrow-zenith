@@ -196,7 +196,7 @@ const ProductContent = ({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto pb-4">
+      <div className="flex-1 overflow-y-auto pb-20">
         {/* Image */}
         <div className="relative bg-muted aspect-square">
           {product.image_url ? (
@@ -350,8 +350,8 @@ const ProductContent = ({
         </div>
       </div>
 
-      {/* Bottom Bar - sticks to bottom of flex column */}
-      <div className="bg-background border-t border-border px-3 py-2 flex items-center justify-between flex-shrink-0">
+      {/* Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-3 py-2 flex items-center justify-between z-20">
         <div>
           <p className="text-sm font-bold text-foreground">₹{product.price}</p>
           <p className="text-[9px] text-muted-foreground">Incl. all taxes</p>

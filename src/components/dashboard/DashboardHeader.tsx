@@ -144,44 +144,20 @@ export function DashboardHeader({
                 <ChevronDown className="w-4 h-4 text-muted-foreground hidden md:block" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56" sideOffset={8} style={{ scrollbarGutter: "stable" }}>
+            <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  navigate("/dashboard/settings");
-                }}
-              >
-                Profile
+              <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="cursor-pointer">
+                  Profile
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  navigate("/dashboard/store-settings");
-                }}
-              >
-                Store Settings
+              <DropdownMenuItem onClick={() => navigate("/dashboard/store-settings")} className="cursor-pointer">
+                  Store Settings
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  navigate("/dashboard/billing");
-                }}
-              >
-                Billing
+              <DropdownMenuItem onClick={() => navigate("/dashboard/billing")} className="cursor-pointer">
+                  Billing
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault();
-                  signOut();
-                }}
-                className="text-destructive cursor-pointer"
-              >
+              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

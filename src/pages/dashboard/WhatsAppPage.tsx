@@ -68,26 +68,6 @@ const WhatsAppPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  const handleSendMessage = () => {
-    if (!selectedChat) return;
-    const trimmed = message.trim();
-    if (!trimmed) return;
-    const cleanPhone = selectedChat.phone.replace(/\D/g, "");
-    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(trimmed)}`;
-    window.open(waUrl, "_blank");
-    setMessage("");
-  };
-
-  const handleQuickReply = (reply: string) => {
-    if (!selectedChat) return;
-    const cleanPhone = selectedChat.phone.replace(/\D/g, "");
-    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(reply)}`;
-    window.open(waUrl, "_blank");
-  };
-
-  const handleCall = (phone: string) => {
-    window.open(`tel:${phone}`, "_self");
-  };
   const filteredChats = mockChats.filter(chat => 
     chat.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     chat.phone.includes(searchQuery)
@@ -238,7 +218,7 @@ const WhatsAppPage = () => {
                     {selectedChat.status === 'online' ? 'Online' : 'Offline'}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => handleCall(selectedChat.phone)}>
+                <Button variant="ghost" size="icon">
                   <Phone className="w-5 h-5" />
                 </Button>
                 <DropdownMenu>
@@ -294,7 +274,7 @@ const WhatsAppPage = () => {
                       variant="outline"
                       size="sm"
                       className="whitespace-nowrap text-xs"
-                      onClick={() => handleQuickReply(reply)}
+                      onClick={() => setMessage(reply)}
                     >
                       {reply}
                     </Button>
@@ -317,24 +297,13 @@ const WhatsAppPage = () => {
                     </Button>
                   </div>
                   <Textarea
-                    placeholder="Type a message... (Ctrl+Enter to send)"
+                    placeholder="Type a message..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
                     className="min-h-[44px] max-h-32 resize-none"
                     rows={1}
                   />
-                  <Button
-                    size="icon"
-                    className="h-10 w-10 shrink-0"
-                    onClick={handleSendMessage}
-                    disabled={!message.trim()}
-                  >
+                  <Button size="icon" className="h-10 w-10 shrink-0">
                     {message ? <Send className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                   </Button>
                 </div>

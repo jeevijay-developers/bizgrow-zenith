@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
@@ -8,20 +8,6 @@ import { RippleButton } from "@/components/ui/ripple-button";
 
 const Footer = () => {
   const [showDemoModal, setShowDemoModal] = useState(false);
-  const navigate = useNavigate();
-
-  const handleHashLink = (href: string) => {
-    if (href.startsWith("/#")) {
-      const sectionId = href.replace("/#", "");
-      if (window.location.pathname === "/") {
-        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
-      } else {
-        navigate("/", { state: { scrollTo: sectionId } });
-      }
-    } else {
-      navigate(href);
-    }
-  };
 
   const footerLinks = {
     Product: [
@@ -155,12 +141,12 @@ const Footer = () => {
                 <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
-                      <button
-                        onClick={() => handleHashLink(link.href)}
-                        className="text-background/60 hover:text-accent transition-colors text-sm text-left"
+                      <Link
+                        to={link.href}
+                        className="text-background/60 hover:text-accent transition-colors text-sm"
                       >
                         {link.label}
-                      </button>
+                      </Link>
                     </li>
                   ))}
                 </ul>

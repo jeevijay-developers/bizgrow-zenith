@@ -65,7 +65,7 @@ const HeroSection = () => {
 
             {/* Main Headline */}
             <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6 font-display"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display"
             >
               Apni Dukaan Ko
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">

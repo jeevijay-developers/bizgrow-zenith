@@ -81,7 +81,7 @@ const Navbar = () => {
     { label: "Pricing", href: "/#pricing" },
     {
       label: "Resources",
-      href: "/#resources",
+      href: "#",
       dropdown: [
         { label: "Help Center", href: "/contact", icon: HelpCircle, desc: "FAQs & guides" },
         { label: "WhatsApp Orders", href: "/features/whatsapp-orders", icon: MessageSquare, desc: "Order management" },

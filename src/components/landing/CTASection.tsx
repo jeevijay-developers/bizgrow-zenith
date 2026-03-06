@@ -41,7 +41,7 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
               <RippleButton 
                 size="lg" 
                 variant="outline" 
-                className="border-accent text-accent hover:bg-accent hover:text-accent-foreground h-12 sm:h-14 w-full sm:w-auto font-semibold"
+                className="border-primary-foreground/30 text-white hover:text-white hover:bg-primary-foreground/10 h-12 sm:h-14 w-full sm:w-auto"
                 onClick={() => setShowDemoModal(true)}
               >
                 Schedule a Demo

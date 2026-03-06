@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Fetch user's store
   const { data: store } = useQuery({
@@ -69,16 +71,21 @@ const Navbar = () => {
         { label: "Cosmetics", href: "/solutions/cosmetics", icon: Sparkles, desc: "Beauty products" },
         { label: "Mobile Shops", href: "/solutions/mobile", icon: Smartphone, desc: "Phones & accessories" },
         { label: "Fruits & Vegetables", href: "/solutions/fruits-vegetables", icon: Leaf, desc: "Fresh produce" },
+        { label: "Electrical Supplies", href: "/solutions/electrical", icon: Zap, desc: "Wires & equipment" },
+        { label: "Pharmacy", href: "/solutions/pharmacy", icon: Pill, desc: "Health & medicine" },
+        { label: "Stationery", href: "/solutions/stationery", icon: PenTool, desc: "Books & supplies" },
+        { label: "Hardware", href: "/solutions/hardware", icon: Wrench, desc: "Tools & equipment" },
+        { label: "Other Retail", href: "/solutions/other-retail", icon: Store, desc: "Specialty stores" },
       ],
     },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Pricing", href: "/#pricing" },
     {
       label: "Resources",
-      href: "#",
+      href: "/#resources",
       dropdown: [
-        { label: "Help Center", href: "#", icon: HelpCircle, desc: "FAQs & guides" },
-        { label: "Blog", href: "#", icon: BookOpen, desc: "Tips & updates" },
-        { label: "Contact Us", href: "#", icon: Phone, desc: "Get support" },
+        { label: "Help Center", href: "/contact", icon: HelpCircle, desc: "FAQs & guides" },
+        { label: "WhatsApp Orders", href: "/features/whatsapp-orders", icon: MessageSquare, desc: "Order management" },
+        { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get support" },
       ],
     },
   ];
@@ -107,6 +114,17 @@ const Navbar = () => {
               >
                 <a
                   href={link.href}
+                  onClick={(e) => {
+                    if (link.href.startsWith("/#")) {
+                      e.preventDefault();
+                      const sectionId = link.href.replace("/#", "");
+                      if (location.pathname === "/") {
+                        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+                      } else {
+                        navigate("/" , { state: { scrollTo: sectionId } });
+                      }
+                    }
+                  }}
                   className="flex items-center gap-1 text-white/80 hover:text-white transition-colors font-medium px-4 py-2 rounded-lg hover:bg-white/5"
                 >
                   {link.label}

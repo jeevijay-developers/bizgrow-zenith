@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +39,13 @@ export function DashboardHeader({
   onRequestNotificationPermission,
 }: DashboardHeaderProps) {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Only show search on pages where search is relevant
+  const showSearch = ["/dashboard/products", "/dashboard/orders", "/dashboard/customers"].some(
+    path => location.pathname.startsWith(path)
+  );
 
   // Fetch store logo
   const { data: customization } = useQuery({
@@ -80,13 +87,15 @@ export function DashboardHeader({
             <Menu className="w-5 h-5" />
           </SidebarTrigger>
           
-          <div className="hidden md:flex relative max-w-md flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search products, orders..."
-              className="pl-10 bg-muted/50 border-0 focus-visible:ring-1"
-            />
-          </div>
+          {showSearch && (
+            <div className="hidden md:flex relative max-w-md flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products, orders..."
+                className="pl-10 bg-muted/50 border-0 focus-visible:ring-1"
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -119,7 +128,7 @@ export function DashboardHeader({
 
           <NotificationBell storeId={storeId} />
 
-          <DropdownMenu modal={false}>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 px-2">
                 <Avatar className="h-8 w-8">
@@ -135,26 +144,44 @@ export function DashboardHeader({
                 <ChevronDown className="w-4 h-4 text-muted-foreground hidden md:block" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
+            <DropdownMenuContent align="end" className="w-56" sideOffset={8} style={{ scrollbarGutter: "stable" }}>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/dashboard/settings" className="cursor-pointer">
-                  Profile
-                </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate("/dashboard/settings");
+                }}
+              >
+                Profile
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/dashboard/store-settings" className="cursor-pointer">
-                  Store Settings
-                </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate("/dashboard/store-settings");
+                }}
+              >
+                Store Settings
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/dashboard/billing" className="cursor-pointer">
-                  Billing
-                </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate("/dashboard/billing");
+                }}
+              >
+                Billing
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  signOut();
+                }}
+                className="text-destructive cursor-pointer"
+              >
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

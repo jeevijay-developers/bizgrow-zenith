@@ -463,16 +463,36 @@ const Join = () => {
                 }
               );
               
-              // Timeout after 10 seconds
+              // Timeout after 8 seconds — likely email confirmation required
               setTimeout(() => {
                 subscription.unsubscribe();
                 resolve(null);
-              }, 10000);
+              }, 8000);
             });
           });
         };
         
         userId = await waitForSession();
+
+        // If no session after timeout, email confirmation is likely required
+        if (!userId) {
+          // Save form data so store can be created after email verification
+          localStorage.setItem("bizgrow_pending_store", JSON.stringify({
+            storeName: formData.storeName,
+            ownerName: formData.ownerName,
+            mobile: formData.mobile,
+            whatsapp: formData.sameAsWhatsapp ? formData.mobile : formData.whatsapp,
+            state: formData.state,
+            city: formData.city,
+            category: formData.category,
+            businessMode: formData.businessMode,
+            plan: formData.plan,
+          }));
+          setIsSubmitting(false);
+          toast.info("Please verify your email to complete registration");
+          navigate(`/email-verification?email=${encodeURIComponent(formData.email!)}&redirect=/dashboard`, { replace: true });
+          return;
+        }
       }
       
       if (!userId) {
@@ -965,8 +985,23 @@ const Join = () => {
                             updateForm("city", value);
                             setCityQuery(value);
                           }}
-                          className={`pl-10 h-11 ${errors.city ? "border-red-500" : ""}`}
+                          className={`pl-10 pr-10 h-11 ${
+                            errors.city
+                              ? "border-red-500"
+                              : formData.city && formData.state && (stateCities[formData.state] || []).some(
+                                  (c) => c.toLowerCase() === formData.city!.toLowerCase()
+                                )
+                              ? "border-green-500 focus-visible:ring-green-500"
+                              : ""
+                          }`}
                         />
+
+                        {/* Valid city checkmark */}
+                        {formData.city && formData.state && (stateCities[formData.state] || []).some(
+                          (c) => c.toLowerCase() === formData.city!.toLowerCase()
+                        ) && (
+                          <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                        )}
 
                         {formData.state && citySuggestions.length > 0 && (
                           <div className="absolute left-0 right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto z-20">
@@ -988,6 +1023,14 @@ const Join = () => {
                         )}
                       </div>
                       <ErrorMessage message={errors.city} />
+                      {formData.state && formData.city && formData.city.length >= 2 && !(stateCities[formData.state] || []).some(
+                        (c) => c.toLowerCase() === formData.city!.toLowerCase()
+                      ) && !errors.city && citySuggestions.length === 0 && (
+                        <p className="text-xs text-amber-600 flex items-center gap-1 mt-1">
+                          <AlertCircle className="w-3 h-3" />
+                          City not found in list. Please select from suggestions or check spelling.
+                        </p>
+                      )}
                     </div>
                   </div>
 

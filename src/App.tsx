@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import Join from "./pages/Join";
 import Auth from "./pages/Auth";
@@ -45,6 +46,12 @@ import ElectronicsStorePage from "./pages/solutions/ElectronicsStorePage";
 import CosmeticsStorePage from "./pages/solutions/CosmeticsStorePage";
 import MobileStorePage from "./pages/solutions/MobileStorePage";
 import FruitsVegetablesStorePage from "./pages/solutions/FruitsVegetablesStorePage";
+import ElectricalStorePage from "./pages/solutions/ElectricalStorePage";
+import PharmacyStorePage from "./pages/solutions/PharmacyStorePage";
+import StationeryStorePage from "./pages/solutions/StationeryStorePage";
+import HardwareStorePage from "./pages/solutions/HardwareStorePage";
+import OtherRetailStorePage from "./pages/solutions/OtherRetailStorePage";
+import ContactUs from "./pages/ContactUs";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -55,6 +62,15 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import { useSubscription } from "./hooks/useSubscription";
 
 const queryClient = new QueryClient();
+
+// Scroll to top on route change (fixes Issue #1)
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -167,6 +183,12 @@ const AnimatedRoutes = () => {
           <Route path="/solutions/cosmetics" element={<CosmeticsStorePage />} />
           <Route path="/solutions/mobile" element={<MobileStorePage />} />
           <Route path="/solutions/fruits-vegetables" element={<FruitsVegetablesStorePage />} />
+          <Route path="/solutions/electrical" element={<ElectricalStorePage />} />
+          <Route path="/solutions/pharmacy" element={<PharmacyStorePage />} />
+          <Route path="/solutions/stationery" element={<StationeryStorePage />} />
+          <Route path="/solutions/hardware" element={<HardwareStorePage />} />
+          <Route path="/solutions/other-retail" element={<OtherRetailStorePage />} />
+          <Route path="/contact" element={<ContactUs />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
@@ -210,6 +232,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <AnimatedRoutes />
         </BrowserRouter>
       </AuthProvider>

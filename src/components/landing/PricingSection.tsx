@@ -8,60 +8,86 @@ import { Badge } from "@/components/ui/badge";
 
 const plans = [
   {
-    name: "Starter",
+    name: "Free",
     icon: Zap,
-    description: "Perfect to get started",
+    description: "Try BizGrow 360 for free",
     price: "₹0",
     period: "forever",
+    annualPrice: "₹0",
     features: [
-      "Up to 50 products",
-      "Digital catalogue",
-      "WhatsApp orders",
+      "Up to 10 products",
+      "Public store catalogue",
+      "WhatsApp order button",
       "Basic analytics",
-      "1 staff account",
+      "Mobile app access",
       "Email support",
     ],
     cta: "Start Free",
     popular: false,
+    href: "/join",
   },
   {
-    name: "Professional",
+    name: "Starter",
     icon: Star,
-    description: "For growing businesses",
-    price: "₹499",
+    description: "For growing small shops",
+    price: "₹999",
     period: "/month",
+    annualPrice: "₹799",
+    features: [
+      "Up to 100 products",
+      "Custom store URL",
+      "WhatsApp orders & chat",
+      "CSV product import",
+      "Order management",
+      "Customer database",
+      "Priority email support",
+    ],
+    cta: "Start 14-Day Free Trial",
+    popular: false,
+    href: "/join",
+  },
+  {
+    name: "Pro",
+    icon: Star,
+    description: "Best for scaling businesses",
+    price: "₹1,499",
+    period: "/month",
+    annualPrice: "₹1,199",
     features: [
       "Unlimited products",
-      "AI product upload",
-      "AI flyer creation",
-      "10+ Regional languages",
-      "Priority WhatsApp support",
-      "Advanced analytics",
-      "5 staff accounts",
-      "Custom domain",
-      "GST invoicing",
+      "AI Photo Upload & scanning",
+      "Advanced analytics dashboard",
+      "GST invoicing & billing",
+      "Delivery management",
+      "Store customization & branding",
+      "Digital flyers & promotions",
+      "Multi-language support",
+      "Priority support (24/7)",
     ],
     cta: "Start 14-Day Free Trial",
     popular: true,
+    href: "/join",
   },
   {
     name: "Enterprise",
     icon: Building2,
-    description: "For large retailers",
+    description: "For chains & large retailers",
     price: "Custom",
     period: "",
+    annualPrice: "Custom",
     features: [
-      "Everything in Professional",
+      "Everything in Pro",
       "Multi-store management",
       "Unlimited staff accounts",
-      "API access",
       "Dedicated account manager",
-      "Custom integrations",
-      "SLA guarantee",
-      "On-premise option",
+      "API access & integrations",
+      "Custom onboarding",
+      "SLA with uptime guarantee",
+      "Custom branding & white-label",
     ],
     cta: "Contact Sales",
     popular: false,
+    href: "/contact",
   },
 ];
 
@@ -121,7 +147,7 @@ const PricingSection = () => {
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -161,20 +187,20 @@ const PricingSection = () => {
                 {/* Price */}
                 <div className="mb-6">
                   <span className="text-4xl sm:text-5xl font-bold">
-                    {plan.price === "₹499" && isAnnual ? "₹399" : plan.price}
+                    {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual ? plan.annualPrice : plan.price}
                   </span>
                   <span className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
                     {plan.period}
                   </span>
-                  {plan.price === "₹499" && isAnnual && (
+                  {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual && (
                     <span className={`block text-sm mt-1 ${plan.popular ? "text-white/60" : "text-muted-foreground"}`}>
-                      <s>₹499</s> billed annually
+                      <s>{plan.price}</s> billed annually
                     </span>
                   )}
                 </div>
 
                 {/* CTA Button */}
-                <Link to="/join" className="block mb-6">
+                <Link to={plan.href} className="block mb-6">
                   <RippleButton
                     className={`w-full h-12 font-bold text-base ${
                       plan.popular

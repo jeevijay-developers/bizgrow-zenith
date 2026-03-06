@@ -401,6 +401,37 @@ const StoreCatalogue = () => {
         whatsappNumber={customization?.whatsapp_number}
       />
 
+      {/* Announcement Bar - from Store Customization */}
+      {customization?.announcement_active && customization.announcement_text && (
+        <div className="bg-accent text-accent-foreground text-center text-xs sm:text-sm py-2 px-4 font-medium">
+          📢 {customization.announcement_text}
+        </div>
+      )}
+
+      {/* Store Banner - from Store Customization */}
+      {customization?.show_banner && (customization.banner_image_url || customization.banner_text) && !searchQuery && (
+        <div className="relative w-full overflow-hidden">
+          {customization.banner_image_url ? (
+            <img
+              src={customization.banner_image_url}
+              alt={customization.banner_text || "Store Banner"}
+              className="w-full object-cover max-h-48 sm:max-h-64"
+            />
+          ) : (
+            <div className="bg-gradient-to-r from-primary to-primary/80 py-8 px-6 text-center">
+              {customization.banner_text && (
+                <h2 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-1">
+                  {customization.banner_text}
+                </h2>
+              )}
+              {customization.banner_subtitle && (
+                <p className="text-sm text-primary-foreground/80">{customization.banner_subtitle}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Desktop Container - Max Width for proper alignment */}
       <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-6">
         {/* Icon Category Tabs (Mobile) */}

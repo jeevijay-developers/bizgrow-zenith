@@ -1,12 +1,16 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { ArrowRight, Phone, Mail } from "lucide-react";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/hooks/useScrollAnimation";
+import ScheduleDemoModal from "./ScheduleDemoModal";
 
 const CTASection = forwardRef<HTMLElement>((_, ref) => {
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
   return (
     <section ref={ref} className="py-16 md:py-20 lg:py-28 bg-secondary/30">
+      <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
       <div className="container mx-auto px-4">
         <AnimatedSection className="relative max-w-4xl mx-auto">
           {/* Background Decoration */}
@@ -34,7 +38,12 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </RippleButton>
               </Link>
-              <RippleButton size="lg" variant="outline" className="border-primary-foreground/30 text-black hover:text-white hover:bg-primary-foreground/10 h-12 sm:h-14 w-full sm:w-auto">
+              <RippleButton 
+                size="lg" 
+                variant="outline" 
+                className="border-accent text-accent hover:bg-accent hover:text-accent-foreground h-12 sm:h-14 w-full sm:w-auto font-semibold"
+                onClick={() => setShowDemoModal(true)}
+              >
                 Schedule a Demo
               </RippleButton>
             </div>

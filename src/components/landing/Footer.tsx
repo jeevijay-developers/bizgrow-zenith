@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import logoDarkBg from "@/assets/logo-dark-bg.png";
@@ -8,31 +8,47 @@ import { RippleButton } from "@/components/ui/ripple-button";
 
 const Footer = () => {
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleHashLink = (href: string) => {
+    if (href.startsWith("/#")) {
+      const sectionId = href.replace("/#", "");
+      if (window.location.pathname === "/") {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        navigate("/", { state: { scrollTo: sectionId } });
+      }
+    } else {
+      navigate(href);
+    }
+  };
 
   const footerLinks = {
     Product: [
-      { label: "Features", href: "#features" },
-      { label: "Pricing", href: "#pricing" },
-      { label: "Integrations", href: "#" },
-      { label: "Updates", href: "#" },
+      { label: "Features", href: "/#features" },
+      { label: "Pricing", href: "/#pricing" },
+      { label: "Digital Catalogue", href: "/features/digital-catalogue" },
+      { label: "AI Upload", href: "/features/ai-upload" },
     ],
     Solutions: [
       { label: "Kirana Stores", href: "/solutions/kirana" },
       { label: "Bakeries", href: "/solutions/bakery" },
       { label: "Clothing", href: "/solutions/clothing" },
       { label: "Electronics", href: "/solutions/electronics" },
+      { label: "Pharmacy", href: "/solutions/pharmacy" },
+      { label: "Hardware", href: "/solutions/hardware" },
     ],
     Resources: [
-      { label: "Blog", href: "#" },
-      { label: "Help Center", href: "#" },
-      { label: "Tutorials", href: "#" },
-      { label: "API Docs", href: "#" },
+      { label: "Help Center", href: "/contact" },
+      { label: "WhatsApp Orders", href: "/features/whatsapp-orders" },
+      { label: "Analytics", href: "/features/analytics" },
+      { label: "Contact Us", href: "/contact" },
     ],
     Company: [
-      { label: "About Us", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
-      { label: "Press", href: "#" },
+      { label: "About Us", href: "/contact" },
+      { label: "Contact", href: "/contact" },
+      { label: "Pricing", href: "/#pricing" },
+      { label: "Start Free Trial", href: "/join" },
     ],
   };
 
@@ -139,12 +155,12 @@ const Footer = () => {
                 <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
-                      <Link
-                        to={link.href}
-                        className="text-background/60 hover:text-accent transition-colors text-sm"
+                      <button
+                        onClick={() => handleHashLink(link.href)}
+                        className="text-background/60 hover:text-accent transition-colors text-sm text-left"
                       >
                         {link.label}
-                      </Link>
+                      </button>
                     </li>
                   ))}
                 </ul>

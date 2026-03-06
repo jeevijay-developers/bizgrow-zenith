@@ -16,8 +16,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 
@@ -196,7 +196,7 @@ const ProductContent = ({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className="flex-1 overflow-y-auto pb-4">
         {/* Image */}
         <div className="relative bg-muted aspect-square">
           {product.image_url ? (
@@ -350,8 +350,8 @@ const ProductContent = ({
         </div>
       </div>
 
-      {/* Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-3 py-2 flex items-center justify-between z-20">
+      {/* Bottom Bar - sticks to bottom of flex column */}
+      <div className="bg-background border-t border-border px-3 py-2 flex items-center justify-between flex-shrink-0">
         <div>
           <p className="text-sm font-bold text-foreground">₹{product.price}</p>
           <p className="text-[9px] text-muted-foreground">Incl. all taxes</p>
@@ -401,6 +401,7 @@ const BlinkitProductModal = (props: BlinkitProductModalProps) => {
     return (
       <Sheet open={props.open} onOpenChange={props.onOpenChange}>
         <SheetContent side="bottom" className="h-[90vh] p-0 rounded-t-2xl">
+          <SheetTitle className="sr-only">{props.product?.name || "Product Details"}</SheetTitle>
           <ProductContent {...props} onClose={handleClose} />
         </SheetContent>
       </Sheet>
@@ -409,7 +410,8 @@ const BlinkitProductModal = (props: BlinkitProductModalProps) => {
 
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-      <DialogContent className="max-w-sm h-[85vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-md h-[85vh] p-0 overflow-hidden">
+        <DialogTitle className="sr-only">{props.product?.name || "Product Details"}</DialogTitle>
         <ProductContent {...props} onClose={handleClose} />
       </DialogContent>
     </Dialog>

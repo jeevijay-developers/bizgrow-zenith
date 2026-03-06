@@ -12,6 +12,7 @@ import { DashboardStatsSkeleton } from "@/components/ui/skeleton-loaders";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryConfig } from "@/config/categoryConfig";
+import { useState, useEffect } from "react";
 
 interface DashboardContext {
   store: {
@@ -27,6 +28,13 @@ interface DashboardContext {
 const DashboardHome = () => {
   const { user, loading: authLoading } = useAuth();
   const context = useOutletContext<DashboardContext>();
+  // Grace period to allow newly-created store to be reflected in DB
+  const [gracePeriodOver, setGracePeriodOver] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setGracePeriodOver(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
   
   // Fetch store data
   const { data: store, isLoading: storeLoading } = useQuery({
@@ -104,8 +112,8 @@ const DashboardHome = () => {
 
   const isLoading = authLoading || storeLoading;
 
-  // If no store, redirect to join
-  if (!isLoading && !store) {
+  // If no store found and grace period is over, redirect to join
+  if (!isLoading && !store && gracePeriodOver) {
     return <Navigate to="/join" replace />;
   }
 

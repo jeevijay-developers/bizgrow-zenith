@@ -61,9 +61,18 @@ export function useImageUpload({ bucket, folder = "", maxSizeMB = 5 }: UseImageU
       setProgress(100);
       
       return publicUrl;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error("Failed to upload image");
+      const message = error?.message || "";
+      if (message.includes("Bucket not found") || message.includes("bucket")) {
+        toast.error("Image storage is not configured. Please contact support.");
+      } else if (message.includes("new row violates") || message.includes("policy")) {
+        toast.error("Permission denied. Please log in again and retry.");
+      } else if (message.includes("Payload too large") || message.includes("413")) {
+        toast.error(`Image is too large. Maximum size is ${maxSizeMB}MB.`);
+      } else {
+        toast.error("Failed to upload image. Please try again.");
+      }
       return null;
     } finally {
       setUploading(false);

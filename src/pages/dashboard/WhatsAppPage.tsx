@@ -68,6 +68,26 @@ const WhatsAppPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
+  const handleSendMessage = () => {
+    if (!selectedChat) return;
+    const trimmed = message.trim();
+    if (!trimmed) return;
+    const cleanPhone = selectedChat.phone.replace(/\D/g, "");
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(trimmed)}`;
+    window.open(waUrl, "_blank");
+    setMessage("");
+  };
+
+  const handleQuickReply = (reply: string) => {
+    if (!selectedChat) return;
+    const cleanPhone = selectedChat.phone.replace(/\D/g, "");
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(reply)}`;
+    window.open(waUrl, "_blank");
+  };
+
+  const handleCall = (phone: string) => {
+    window.open(`tel:${phone}`, "_self");
+  };
   const filteredChats = mockChats.filter(chat => 
     chat.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     chat.phone.includes(searchQuery)
@@ -82,6 +102,21 @@ const WhatsAppPage = () => {
 
   return (
     <div className="h-[calc(100vh-120px)] max-w-7xl mx-auto">
+      {/* Coming Soon Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-4 p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 flex items-center gap-3"
+      >
+        <div className="p-2 rounded-lg bg-yellow-500/20">
+          <Zap className="w-5 h-5 text-yellow-600" />
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-foreground text-sm">WhatsApp Integration — Coming Soon</p>
+          <p className="text-xs text-muted-foreground">Real-time WhatsApp messaging is under development. Below is a preview of the upcoming feature.</p>
+        </div>
+      </motion.div>
+
       {/* Header Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {stats.map((stat, idx) => (
@@ -203,7 +238,7 @@ const WhatsAppPage = () => {
                     {selectedChat.status === 'online' ? 'Online' : 'Offline'}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => handleCall(selectedChat.phone)}>
                   <Phone className="w-5 h-5" />
                 </Button>
                 <DropdownMenu>
@@ -259,7 +294,7 @@ const WhatsAppPage = () => {
                       variant="outline"
                       size="sm"
                       className="whitespace-nowrap text-xs"
-                      onClick={() => setMessage(reply)}
+                      onClick={() => handleQuickReply(reply)}
                     >
                       {reply}
                     </Button>
@@ -282,13 +317,24 @@ const WhatsAppPage = () => {
                     </Button>
                   </div>
                   <Textarea
-                    placeholder="Type a message..."
+                    placeholder="Type a message... (Ctrl+Enter to send)"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     className="min-h-[44px] max-h-32 resize-none"
                     rows={1}
                   />
-                  <Button size="icon" className="h-10 w-10 shrink-0">
+                  <Button
+                    size="icon"
+                    className="h-10 w-10 shrink-0"
+                    onClick={handleSendMessage}
+                    disabled={!message.trim()}
+                  >
                     {message ? <Send className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                   </Button>
                 </div>

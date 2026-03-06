@@ -156,6 +156,14 @@
   }
 }
 
+/* Fix: Prevent Radix UI scroll lock from causing layout shift */
+/* Radix adds padding-right to body when opening modals/dropdowns to compensate
+   for scrollbar width. Since we hide scrollbars globally, this causes a layout shift. */
+body[data-scroll-locked] {
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+}
+
 @layer utilities {
   .gradient-primary {
     background: linear-gradient(135deg, hsl(284, 100%, 15%) 0%, hsl(284, 100%, 10%) 100%);

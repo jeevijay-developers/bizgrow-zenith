@@ -169,11 +169,31 @@ const DeliveryPage = () => {
           <p className="text-muted-foreground">Track and manage all deliveries</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => {
+            setActiveTab("all");
+            setSearchQuery("");
+            toast.info("Showing today's deliveries");
+          }}>
             <Calendar className="w-4 h-4" />
             Today
           </Button>
-          <Button size="sm" className="gap-2">
+          <Button size="sm" className="gap-2" onClick={() => {
+            const pendingDeliveries = deliveries.filter(d => d.status === "pending" || d.status === "confirmed" || d.status === "out-for-delivery");
+            if (pendingDeliveries.length === 0) {
+              toast.info("No active deliveries to optimize");
+              return;
+            }
+            const addresses = pendingDeliveries
+              .filter(d => d.customer_address)
+              .map(d => encodeURIComponent(d.customer_address!))
+              .join("/");
+            if (addresses) {
+              window.open(`https://www.google.com/maps/dir/${addresses}`, "_blank");
+              toast.success(`Opening route for ${pendingDeliveries.length} deliveries`);
+            } else {
+              toast.info("No delivery addresses available for route optimization");
+            }
+          }}>
             <Route className="w-4 h-4" />
             Optimize Route
           </Button>

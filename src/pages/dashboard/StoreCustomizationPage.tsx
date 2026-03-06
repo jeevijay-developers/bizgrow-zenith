@@ -259,6 +259,7 @@ const StoreCustomizationPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["store-customization"] });
+      queryClient.invalidateQueries({ queryKey: ["public-store-customization"] });
       toast.success("Store customization saved!");
     },
     onError: (error) => {

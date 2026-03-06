@@ -24,11 +24,11 @@ const storeTypes = [
   { image: cosmeticsImg, title: "Cosmetics", description: "Beauty & skincare", products: "300+", color: "bg-rose-50", href: "/solutions/cosmetics" },
   { image: electronicsImg, title: "Electronics", description: "Gadgets & phones", products: "500+", color: "bg-slate-50", href: "/solutions/electronics" },
   { image: fruitsVegetablesImg, title: "Fruits & Vegetables", description: "Fresh produce daily", products: "150+", color: "bg-green-50", href: "/solutions/fruits-vegetables" },
-  { image: electricalImg, title: "Electrical Supplies", description: "Wires & equipment", products: "400+", color: "bg-yellow-50", href: "#" },
-  { image: pharmacyImg, title: "Pharmacy", description: "Health & medicine", products: "600+", color: "bg-teal-50", href: "#" },
-  { image: stationeryImg, title: "Stationery", description: "Books & office supplies", products: "350+", color: "bg-indigo-50", href: "#" },
-  { image: hardwareImg, title: "Hardware", description: "Tools & equipment", products: "450+", color: "bg-gray-50", href: "#" },
-  { image: otherImg, title: "Other Retail", description: "Specialty stores", products: "Unlimited", color: "bg-purple-50", href: "#" },
+  { image: electricalImg, title: "Electrical Supplies", description: "Wires & equipment", products: "400+", color: "bg-yellow-50", href: "/solutions/electrical" },
+  { image: pharmacyImg, title: "Pharmacy", description: "Health & medicine", products: "600+", color: "bg-teal-50", href: "/solutions/pharmacy" },
+  { image: stationeryImg, title: "Stationery", description: "Books & office supplies", products: "350+", color: "bg-indigo-50", href: "/solutions/stationery" },
+  { image: hardwareImg, title: "Hardware", description: "Tools & equipment", products: "450+", color: "bg-gray-50", href: "/solutions/hardware" },
+  { image: otherImg, title: "Other Retail", description: "Specialty stores", products: "Unlimited", color: "bg-purple-50", href: "/solutions/other-retail" },
 ];
 
 const containerVariants = {

@@ -72,7 +72,33 @@ const EmailVerification = () => {
       // If user just confirmed their email
       if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
         setStatus('success');
-        setMessage("Email verified successfully! Redirecting...");
+        setMessage("Email verified successfully! Setting up your store...");
+        
+        // Complete pending store creation if form data was saved
+        const pendingStore = localStorage.getItem("bizgrow_pending_store");
+        if (pendingStore && session.user.id) {
+          try {
+            const storeData = JSON.parse(pendingStore);
+            const { error: storeError } = await supabase
+              .from('stores')
+              .insert({
+                user_id: session.user.id,
+                name: storeData.storeName,
+                category: storeData.category,
+                business_mode: storeData.businessMode,
+                state: storeData.state,
+                city: storeData.city,
+                subscription_status: 'trial',
+              });
+            
+            if (storeError) {
+              console.error("Store creation error:", storeError);
+            }
+            localStorage.removeItem("bizgrow_pending_store");
+          } catch (err) {
+            console.error("Failed to create store from pending data:", err);
+          }
+        }
         
         // Redirect after a brief moment
         setTimeout(() => {

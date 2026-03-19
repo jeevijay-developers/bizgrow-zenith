@@ -256,6 +256,7 @@ const Join = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [awaitingNavToDashboard, setAwaitingNavToDashboard] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
   const [cityQuery, setCityQuery] = useState("");
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
@@ -308,6 +309,18 @@ const Join = () => {
     email: "",
     password: "",
   });
+
+  // After a new signup + store creation, navigate to dashboard only once
+  // the user is confirmed in auth context (avoids ProtectedRoute redirecting to login)
+  useEffect(() => {
+    if (awaitingNavToDashboard && user) {
+      setAwaitingNavToDashboard(false);
+      setIsSubmitting(false);
+      setShowSuccess(true);
+      triggerConfetti();
+      setTimeout(() => navigate("/dashboard", { replace: true }), 3500);
+    }
+  }, [user, awaitingNavToDashboard, navigate, triggerConfetti]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -443,32 +456,39 @@ const Join = () => {
           return;
         }
         
-        // Wait for auth state to update properly
+        // Wait for auth state to update properly.
+        // IMPORTANT: set up the listener BEFORE calling getSession to avoid
+        // missing the SIGNED_IN event that fires immediately after signUp.
         const waitForSession = (): Promise<string | null> => {
           return new Promise((resolve) => {
-            // First check if session is already available
+            let resolved = false;
+
+            const doResolve = (id: string | null, sub?: { unsubscribe: () => void }) => {
+              if (!resolved) {
+                resolved = true;
+                sub?.unsubscribe();
+                resolve(id);
+              }
+            };
+
+            // Subscribe first so we don't miss the SIGNED_IN event
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(
+              (_event, session) => {
+                if (session?.user?.id) {
+                  doResolve(session.user.id, subscription);
+                }
+              }
+            );
+
+            // Also check existing session in case it was set before we subscribed
             supabase.auth.getSession().then(({ data }) => {
               if (data.session?.user?.id) {
-                resolve(data.session.user.id);
-                return;
+                doResolve(data.session.user.id, subscription);
               }
-              
-              // If not, listen for auth state change
-              const { data: { subscription } } = supabase.auth.onAuthStateChange(
-                (event, session) => {
-                  if (session?.user?.id) {
-                    subscription.unsubscribe();
-                    resolve(session.user.id);
-                  }
-                }
-              );
-              
-              // Timeout after 8 seconds — likely email confirmation required
-              setTimeout(() => {
-                subscription.unsubscribe();
-                resolve(null);
-              }, 8000);
             });
+
+            // Timeout after 8 seconds — likely email confirmation required
+            setTimeout(() => doResolve(null, subscription), 8000);
           });
         };
         
@@ -522,16 +542,18 @@ const Join = () => {
         setIsSubmitting(false);
         return;
       }
-      
-      // Show success celebration
-      setIsSubmitting(false);
-      setShowSuccess(true);
-      triggerConfetti();
-      
-      // Navigate to dashboard after celebration
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 3500);
+
+      if (!user) {
+        // New signup: defer success/navigation until user is confirmed in auth context.
+        // The useEffect watching `user` will trigger the success screen and navigate.
+        setAwaitingNavToDashboard(true);
+      } else {
+        // Already logged in: user is confirmed, navigate immediately after celebration.
+        setIsSubmitting(false);
+        setShowSuccess(true);
+        triggerConfetti();
+        setTimeout(() => navigate("/dashboard", { replace: true }), 3500);
+      }
       
     } catch (error) {
       console.error("Onboarding error:", error);

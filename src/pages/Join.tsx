@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, ArrowRight, Check, Store, MapPin, Building2, Truck, CreditCard,
   Phone, User, MessageCircle, Sparkles, Shield, Clock, Zap, AlertCircle, Loader2, Mail, Lock,
-  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star, PartyPopper, Crown
+  ChevronRight, BadgeCheck, Rocket, Camera, BarChart3, Globe, Bell, Star, PartyPopper, Crown, Eye, EyeOff
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -260,6 +260,7 @@ const Join = () => {
   const [subscriptionPlans, setSubscriptionPlans] = useState<any[]>([]);
   const [cityQuery, setCityQuery] = useState("");
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Confetti celebration effect
   const triggerConfetti = useCallback(() => {
@@ -321,6 +322,20 @@ const Join = () => {
       setTimeout(() => navigate("/dashboard", { replace: true }), 3500);
     }
   }, [user, awaitingNavToDashboard, navigate, triggerConfetti]);
+
+  // If a logged-in user already has a store, redirect them straight to the dashboard
+  // so they never have to re-fill the Join form after a signup detour
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("stores")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.id) navigate("/dashboard", { replace: true });
+      });
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -1323,12 +1338,20 @@ const Join = () => {
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
                           id="password"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           placeholder="Min 6 characters"
                           value={formData.password}
                           onChange={(e) => updateForm("password", e.target.value)}
-                          className={`pl-10 h-11 ${errors.password ? "border-red-500" : ""}`}
+                          className={`pl-10 pr-10 h-11 ${errors.password ? "border-red-500" : ""}`}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
                       </div>
                       <ErrorMessage message={errors.password} />
                     </div>
@@ -1348,16 +1371,20 @@ const Join = () => {
 
             {/* Navigation */}
             <div className="flex items-center justify-between pt-6 mt-6 border-t border-border">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={prevStep}
-                disabled={step === 1 || isSubmitting}
-                className="gap-2 h-10"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </Button>
+              {step > 1 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={prevStep}
+                  disabled={isSubmitting}
+                  className="gap-2 h-10"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </Button>
+              ) : (
+                <div />
+              )}
               
               {step < totalSteps ? (
                 <Button

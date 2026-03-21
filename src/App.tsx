@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Join from "./pages/Join";
@@ -138,27 +137,9 @@ const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Page transition wrapper
-const pageTransitionVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-};
-
 const AnimatedRoutes = () => {
-  const location = useLocation();
-  
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={pageTransitionVariants}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-      >
-        <Routes location={location}>
+        <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/join" element={<Join />} />
           <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
@@ -220,8 +201,6 @@ const AnimatedRoutes = () => {
           
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </motion.div>
-    </AnimatePresence>
   );
 };
 

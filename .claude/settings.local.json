@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find d:BizGrow360bizgrow-zenith -name .env* -type f)",
+      "Bash(npx supabase:*)"
+    ]
+  }
+}

@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     const redirectUrl = `${window.location.origin}/email-verification`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -57,6 +57,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: metadata,
       },
     });
+
+    // Supabase can return a "fake" user with no identities when the email
+    // already exists (to prevent user enumeration). Treat this as a real error
+    // so the UI does not incorrectly say "verification email sent".
+    if (!error && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      return { error: new Error("Email already registered. Please sign in.") };
+    }
     
     return { error: error as Error | null };
   };

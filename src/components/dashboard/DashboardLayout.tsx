@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
@@ -11,8 +11,10 @@ import { useRealtimeOrders } from "@/hooks/useRealtimeOrders";
 import { useDesktopNotifications } from "@/hooks/useDesktopNotifications";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function DashboardLayout() {
+  const location = useLocation();
   const { user } = useAuth();
   const { 
     permission, 
@@ -87,8 +89,18 @@ export function DashboardLayout() {
             notificationPermission={permission}
             onRequestNotificationPermission={requestPermission}
           />
-          <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 lg:pb-6">
-            <Outlet context={{ store }} />
+          <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide p-4 md:p-6 pb-20 lg:pb-6">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+              >
+                <Outlet context={{ store }} />
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
         {/* Mobile Bottom Navigation */}

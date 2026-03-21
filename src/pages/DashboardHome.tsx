@@ -1,4 +1,4 @@
-import { useOutletContext, Navigate } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { WelcomeBanner } from "@/components/dashboard/WelcomeBanner";
 import { CategoryStatsCard } from "@/components/dashboard/CategoryStatsCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -10,7 +10,7 @@ import { CategoryTips } from "@/components/dashboard/CategoryTips";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardStatsSkeleton } from "@/components/ui/skeleton-loaders";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategoryConfig } from "@/config/categoryConfig";
 import { useState, useEffect } from "react";
 
@@ -27,16 +27,19 @@ interface DashboardContext {
 
 const DashboardHome = () => {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const context = useOutletContext<DashboardContext>();
-  // Grace period to allow newly-created store to be reflected in DB
+  // Grace period to allow a newly-created store to be visible in DB
   const [gracePeriodOver, setGracePeriodOver] = useState(false);
+  const [creatingPendingStore, setCreatingPendingStore] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setGracePeriodOver(true), 4000);
+    const timer = setTimeout(() => setGracePeriodOver(true), 5000);
     return () => clearTimeout(timer);
   }, []);
-  
-  // Fetch store data
+
+  // Fetch store data, auto-refetch while we're waiting for it to appear
   const { data: store, isLoading: storeLoading } = useQuery({
     queryKey: ["user-store", user?.id],
     queryFn: async () => {
@@ -49,6 +52,8 @@ const DashboardHome = () => {
       return data;
     },
     enabled: !!user?.id,
+    // Poll every 2 s until a store is found (stops automatically once data is truthy)
+    refetchInterval: (query) => (!query.state.data ? 2000 : false),
   });
 
   // Get category config for terminology
@@ -110,12 +115,65 @@ const DashboardHome = () => {
     enabled: !!store?.id,
   });
 
-  const isLoading = authLoading || storeLoading;
+  const isLoading = authLoading || storeLoading || creatingPendingStore;
 
-  // If no store found and grace period is over, redirect to join
-  if (!isLoading && !store && gracePeriodOver) {
-    return <Navigate to="/join" replace />;
-  }
+  // When no store is found after the grace period, try to recover from
+  // pending store data saved by the Join page (e.g. after email verification detour).
+  // Only redirect to /join when there is genuinely nothing to recover.
+  useEffect(() => {
+    if (!gracePeriodOver || isLoading || store || !user?.id) return;
+
+    const pendingRaw = localStorage.getItem("bizgrow_pending_store");
+    if (!pendingRaw) {
+      navigate("/join", { replace: true });
+      return;
+    }
+
+    setCreatingPendingStore(true);
+    const createFromPending = async () => {
+      try {
+        // Check if store already exists (e.g. created during email verification)
+        const { data: existing } = await supabase
+          .from("stores")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (existing) {
+          localStorage.removeItem("bizgrow_pending_store");
+          queryClient.invalidateQueries({ queryKey: ["user-store", user.id] });
+          return;
+        }
+
+        const storeData = JSON.parse(pendingRaw);
+        const { error } = await supabase.from("stores").insert({
+          user_id: user.id,
+          name: storeData.storeName,
+          category: storeData.category,
+          business_mode: storeData.businessMode,
+          state: storeData.state,
+          city: storeData.city,
+          subscription_status: "trial",
+        });
+
+        if (error) {
+          // Keep localStorage so the user can retry; send them back to /join
+          navigate("/join", { replace: true });
+        } else {
+          // Only remove after a confirmed successful insert
+          localStorage.removeItem("bizgrow_pending_store");
+          queryClient.invalidateQueries({ queryKey: ["user-store", user.id] });
+        }
+      } catch {
+        navigate("/join", { replace: true });
+      } finally {
+        setCreatingPendingStore(false);
+      }
+    };
+
+    createFromPending();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gracePeriodOver, store, user?.id]);
 
   if (isLoading) {
     return (

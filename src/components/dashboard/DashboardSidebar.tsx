@@ -38,6 +38,17 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { getCategoryConfig } from "@/config/categoryConfig";
@@ -176,7 +187,7 @@ export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
                 const isLocked = 'isLocked' in item && item.isLocked;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild={!isLocked} tooltip={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
                       {isLocked ? (
                         <button
                           onClick={() => handleLockedFeatureClick(item)}
@@ -237,7 +248,7 @@ export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
                 const isLocked = 'isLocked' in item && item.isLocked;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild={!isLocked} tooltip={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
                       {isLocked ? (
                         <button
                           onClick={() => handleLockedFeatureClick(item)}
@@ -295,7 +306,7 @@ export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
                 const isLocked = 'isLocked' in item && item.isLocked;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild={!isLocked} tooltip={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.title}>
                       {isLocked ? (
                         <button
                           onClick={() => handleLockedFeatureClick(item)}
@@ -329,15 +340,35 @@ export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="p-4 bg-primary">
-        <Button
-          variant="ghost"
-          size={collapsed ? "icon" : "default"}
-          onClick={signOut}
-          className="w-full justify-start text-white/80 hover:bg-white/15 hover:text-red-300"
-        >
-          <LogOut className="w-5 h-5 shrink-0" />
-          {!collapsed && <span className="ml-3">Logout</span>}
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size={collapsed ? "icon" : "default"}
+              className="w-full justify-start text-white/80 hover:bg-white/15 hover:text-red-300"
+            >
+              <LogOut className="w-5 h-5 shrink-0" />
+              {!collapsed && <span className="ml-3">Logout</span>}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Log out of your account?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You will need to sign in again to access your dashboard.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={signOut}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Logout
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarFooter>
     </Sidebar>
   );

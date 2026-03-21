@@ -27,5 +27,8 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Must be true so Supabase parses session tokens / OTP codes from the URL
+    // on any page load (implicit flow uses hash fragments, PKCE uses ?code=).
+    detectSessionInUrl: true,
   }
 });

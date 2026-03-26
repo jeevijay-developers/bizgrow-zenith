@@ -146,7 +146,7 @@ const EmailVerification = () => {
     );
 
     return () => subscription.unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [searchParams, navigate]);
 
   const handleResendEmail = async () => {

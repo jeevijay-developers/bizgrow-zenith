@@ -29,7 +29,7 @@ export function DashboardLayout() {
       if (!user?.id) return null;
       const { data } = await supabase
         .from("stores")
-        .select("*")
+        .select("*, subscription_plans(*)")
         .eq("user_id", user.id)
         .maybeSingle();
       return data;

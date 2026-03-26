@@ -16,7 +16,7 @@ export function LowStockAlert() {
       if (!user?.id) return null;
       const { data } = await supabase
         .from("stores")
-        .select("id")
+        .select("*, subscription_plans(*)")
         .eq("user_id", user.id)
         .maybeSingle();
       return data;

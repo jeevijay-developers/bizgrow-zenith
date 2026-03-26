@@ -96,7 +96,7 @@ const settingsNavItems: NavItem[] = [
 export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
   const { state } = useSidebar();
   const { signOut } = useAuth();
-  const { hasFeature, currentPlan } = useSubscription();
+  const { hasFeature, currentPlan, isLoading: planLoading } = useSubscription();
   const collapsed = state === "collapsed";
   const categoryConfig = getCategoryConfig(storeCategory);
   const CategoryIcon = categoryConfig.icon;
@@ -149,31 +149,35 @@ export function DashboardSidebar({ storeCategory }: DashboardSidebarProps) {
               <span className="text-xs font-medium text-white/90 truncate">{categoryConfig.label}</span>
             </motion.div>
             
-            {/* Subscription Plan Badge */}
-            <Link to="/dashboard/billing" className="block mt-2">
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border transition-colors ${
-                  currentPlan === "free" 
-                    ? "bg-slate-500/20 border-slate-400/30 hover:bg-slate-500/30" 
-                    : currentPlan === "starter"
-                    ? "bg-blue-500/20 border-blue-400/30 hover:bg-blue-500/30"
-                    : "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/30 hover:from-amber-500/30 hover:to-orange-500/30"
-                }`}
-              >
-                {currentPlan === "pro" ? (
-                  <Crown className="w-3.5 h-3.5 text-amber-400" />
-                ) : (
-                  <Zap className="w-3.5 h-3.5 text-white/70" />
-                )}
-                <span className="text-xs font-medium text-white/90 capitalize">{currentPlan} Plan</span>
-                {currentPlan !== "pro" && (
-                  <span className="ml-auto text-[10px] text-white/60">Upgrade</span>
-                )}
-              </motion.div>
-            </Link>
+            {/* Subscription Plan Badge — skeleton while loading to prevent "free" flash */}
+            {planLoading ? (
+              <div className="mt-2 h-8 rounded-lg bg-white/10 animate-pulse" />
+            ) : (
+              <Link to="/dashboard/billing" className="block mt-2">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border transition-colors ${
+                    currentPlan === "free"
+                      ? "bg-slate-500/20 border-slate-400/30 hover:bg-slate-500/30"
+                      : currentPlan === "starter"
+                      ? "bg-blue-500/20 border-blue-400/30 hover:bg-blue-500/30"
+                      : "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/30 hover:from-amber-500/30 hover:to-orange-500/30"
+                  }`}
+                >
+                  {currentPlan === "pro" ? (
+                    <Crown className="w-3.5 h-3.5 text-amber-400" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5 text-white/70" />
+                  )}
+                  <span className="text-xs font-medium text-white/90 capitalize">{currentPlan} Plan</span>
+                  {currentPlan !== "pro" && (
+                    <span className="ml-auto text-[10px] text-white/60">Upgrade</span>
+                  )}
+                </motion.div>
+              </Link>
+            )}
           </>
         )}
       </SidebarHeader>

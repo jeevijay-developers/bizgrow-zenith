@@ -30,12 +30,14 @@ const DashboardHome = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const context = useOutletContext<DashboardContext>();
-  // Grace period to allow a newly-created store to be visible in DB
+  // Grace period to allow a newly-created store to be visible in DB.
+  // 8 s gives the polling query (every 2 s) at least 3 chances to find
+  // a store that was just inserted (e.g. right before email-verification redirect).
   const [gracePeriodOver, setGracePeriodOver] = useState(false);
   const [creatingPendingStore, setCreatingPendingStore] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setGracePeriodOver(true), 5000);
+    const timer = setTimeout(() => setGracePeriodOver(true), 8000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -46,7 +48,7 @@ const DashboardHome = () => {
       if (!user?.id) return null;
       const { data } = await supabase
         .from("stores")
-        .select("*")
+        .select("*, subscription_plans(*)")
         .eq("user_id", user.id)
         .maybeSingle();
       return data;
@@ -124,15 +126,12 @@ const DashboardHome = () => {
     if (!gracePeriodOver || isLoading || store || !user?.id) return;
 
     const pendingRaw = localStorage.getItem("bizgrow_pending_store");
-    if (!pendingRaw) {
-      navigate("/join", { replace: true });
-      return;
-    }
 
     setCreatingPendingStore(true);
     const createFromPending = async () => {
       try {
-        // Check if store already exists (e.g. created during email verification)
+        // Always do a fresh DB check first — the store may have been created
+        // by EmailVerification.tsx right before navigation (cache not yet updated).
         const { data: existing } = await supabase
           .from("stores")
           .select("id")
@@ -140,12 +139,30 @@ const DashboardHome = () => {
           .maybeSingle();
 
         if (existing) {
-          localStorage.removeItem("bizgrow_pending_store");
+          if (pendingRaw) localStorage.removeItem("bizgrow_pending_store");
           queryClient.invalidateQueries({ queryKey: ["user-store", user.id] });
           return;
         }
 
+        // No store in DB and no pending data → send to onboarding
+        if (!pendingRaw) {
+          navigate("/join", { replace: true });
+          return;
+        }
+
         const storeData = JSON.parse(pendingRaw);
+
+        // Resolve plan name → plan ID so the store has the correct subscription
+        let subscriptionPlanId: string | null = null;
+        if (storeData.plan) {
+          const { data: planData } = await supabase
+            .from("subscription_plans")
+            .select("id")
+            .eq("name", storeData.plan)
+            .maybeSingle();
+          subscriptionPlanId = planData?.id ?? null;
+        }
+
         const { error } = await supabase.from("stores").insert({
           user_id: user.id,
           name: storeData.storeName,
@@ -153,6 +170,7 @@ const DashboardHome = () => {
           business_mode: storeData.businessMode,
           state: storeData.state,
           city: storeData.city,
+          subscription_plan_id: subscriptionPlanId,
           subscription_status: "trial",
         });
 

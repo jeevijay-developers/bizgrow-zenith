@@ -26,6 +26,18 @@ async function createPendingStore(userId: string) {
     }
 
     const storeData = JSON.parse(pendingRaw);
+
+    // Resolve plan name → plan ID so the store has the correct subscription
+    let subscriptionPlanId: string | null = null;
+    if (storeData.plan) {
+      const { data: planData } = await supabase
+        .from("subscription_plans")
+        .select("id")
+        .eq("name", storeData.plan)
+        .maybeSingle();
+      subscriptionPlanId = planData?.id ?? null;
+    }
+
     const { error } = await supabase.from("stores").insert({
       user_id: userId,
       name: storeData.storeName,
@@ -33,6 +45,7 @@ async function createPendingStore(userId: string) {
       business_mode: storeData.businessMode,
       state: storeData.state,
       city: storeData.city,
+      subscription_plan_id: subscriptionPlanId,
       subscription_status: "trial",
     });
 

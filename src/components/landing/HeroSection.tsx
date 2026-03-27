@@ -101,7 +101,7 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
             >
               <Link to="/join">
-                <RippleButton size="lg" variant="glow-accent" className="font-bold group h-14 px-8 text-lg w-full sm:w-auto">
+                <RippleButton size="lg" variant="glow-accent" className="font-bold group h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg w-full sm:w-auto">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </RippleButton>
@@ -109,11 +109,11 @@ const HeroSection = () => {
               <RippleButton 
                 size="lg" 
                 variant="outline" 
-                className="h-14 px-8 text-lg group border-border/50 bg-background/50 backdrop-blur-sm"
+                className="h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg group border-border/50 bg-background/50 backdrop-blur-sm"
                 onClick={() => setShowDemoModal(true)}
               >
                 <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
-                Watch Demo
+                Schedule a demo
               </RippleButton>
             </div>
 
@@ -234,7 +234,7 @@ const HeroSection = () => {
 
       {/* Scroll indicator */}
       <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <div
           className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 animate-bounce"

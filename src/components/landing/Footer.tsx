@@ -12,7 +12,7 @@ const Footer = () => {
   const footerLinks = {
     Product: [
       { label: "Features", href: "/#features" },
-      { label: "Pricing", href: "/#pricing" },
+      { label: "Pricing", href: "/pricing" },
       { label: "Digital Catalogue", href: "/features/digital-catalogue" },
       { label: "AI Upload", href: "/features/ai-upload" },
     ],
@@ -28,12 +28,10 @@ const Footer = () => {
       { label: "Help Center", href: "/contact" },
       { label: "WhatsApp Orders", href: "/features/whatsapp-orders" },
       { label: "Analytics", href: "/features/analytics" },
-      { label: "Contact Us", href: "/contact" },
     ],
     Company: [
       { label: "About Us", href: "/contact" },
       { label: "Contact", href: "/contact" },
-      { label: "Pricing", href: "/#pricing" },
       { label: "Start Free Trial", href: "/join" },
     ],
   };

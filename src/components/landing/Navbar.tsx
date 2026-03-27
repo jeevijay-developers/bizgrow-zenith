@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -187,6 +187,10 @@ const Navbar = () => {
               side="right"
               className="w-[min(92vw,380px)] p-0 bg-primary text-primary-foreground border-l border-border"
             >
+              <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                Browse features, solutions, resources, and quick actions from the mobile menu.
+              </SheetDescription>
               <div className="flex h-full flex-col p-4 pt-14 overflow-y-auto overscroll-contain">
                 {/* Navigation Links */}
                 <div className="flex flex-col gap-1">
@@ -246,7 +250,7 @@ const Navbar = () => {
                   <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
                     <Button
                       variant="outline"
-                      className="border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
+                      className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
                     >
                       Seller Login
                     </Button>

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Star, Quote, TrendingUp, Users, ShoppingBag, IndianRupee } from "lucide-react";
+import { useState } from "react";
 
 const testimonials = [
   {
@@ -48,6 +49,14 @@ const stats = [
 ];
 
 const SocialProofSection = () => {
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  const handleCarouselScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollLeft, clientWidth } = event.currentTarget;
+    const currentIndex = Math.round(scrollLeft / clientWidth);
+    setActiveTestimonial(Math.max(0, Math.min(testimonials.length - 1, currentIndex)));
+  };
+
   return (
     <section className="py-20 md:py-28 bg-background relative overflow-hidden">
       {/* Background decoration */}
@@ -95,8 +104,67 @@ const SocialProofSection = () => {
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        {/* Mobile Testimonials Carousel */}
+        <div className="md:hidden">
+          <div
+            className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-4 px-4 pb-2"
+            onScroll={handleCarouselScroll}
+          >
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="snap-center min-w-full bg-card border border-border rounded-2xl p-6 relative"
+              >
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
+
+                <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
+                  <TrendingUp className="w-3 h-3" />
+                  {testimonial.highlight}
+                </div>
+
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-accent text-accent" />
+                  ))}
+                </div>
+
+                <p className="text-foreground leading-relaxed mb-6">
+                  "{testimonial.text}"
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
+                    {testimonial.image}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {testimonial.role} • {testimonial.location}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="flex justify-center gap-2 mt-4">
+            {testimonials.map((testimonial, index) => (
+              <span
+                key={testimonial.name}
+                className={`h-1.5 rounded-full transition-all ${
+                  index === activeTestimonial ? "w-6 bg-primary" : "w-2 bg-border"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Testimonials Grid */}
+        <div className="hidden md:grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.name}

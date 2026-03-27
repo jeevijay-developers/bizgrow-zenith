@@ -14,6 +14,12 @@ import Footer from "@/components/landing/Footer";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+const MobileSectionDivider = () => (
+  <div className="md:hidden px-4" aria-hidden="true">
+    <div className="h-px w-full bg-gradient-to-r from-transparent via-border/80 to-transparent" />
+  </div>
+);
+
 const Index = () => {
   const location = useLocation();
 
@@ -35,16 +41,27 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <MobileSectionDivider />
       <TransformationSection />
+      <MobileSectionDivider />
       <AIScanningSection />
+      <MobileSectionDivider />
       <WhatsAppSection />
+      <MobileSectionDivider />
       <FlyerSection />
+      <MobileSectionDivider />
       <RegionalLanguageSection />
+      <MobileSectionDivider />
       <RevenueGrowthSection />
+      <MobileSectionDivider />
       <StoreTypesSection />
+      <MobileSectionDivider />
       <SocialProofSection />
+      <MobileSectionDivider />
       <PricingSection />
+      <MobileSectionDivider />
       <CTASection />
+      <MobileSectionDivider />
       <Footer />
     </div>
   );

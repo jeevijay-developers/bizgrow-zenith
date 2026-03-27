@@ -51,6 +51,7 @@ import StationeryStorePage from "./pages/solutions/StationeryStorePage";
 import HardwareStorePage from "./pages/solutions/HardwareStorePage";
 import OtherRetailStorePage from "./pages/solutions/OtherRetailStorePage";
 import ContactUs from "./pages/ContactUs";
+import Pricing from "./pages/Pricing";
 
 // Admin Pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -170,6 +171,7 @@ const AnimatedRoutes = () => {
           <Route path="/solutions/hardware" element={<HardwareStorePage />} />
           <Route path="/solutions/other-retail" element={<OtherRetailStorePage />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/pricing" element={<Pricing />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

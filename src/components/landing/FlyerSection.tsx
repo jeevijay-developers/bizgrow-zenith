@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Image as ImageIcon, Palette, Share2, ArrowRight, Sparkles, Check, Instagram, Facebook, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 const flyerTypes = [
   { name: "Diwali Sale", color: "from-orange-500 to-red-500" },
@@ -92,10 +93,7 @@ const FlyerSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
-              <ImageIcon className="w-4 h-4 text-ledger-ink/60" />
-              Auto Flyer Creation
-            </div>
+            <EyebrowTag icon={ImageIcon} className="mb-6">Auto Flyer Creation</EyebrowTag>
 
             <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
               Marketing Posters

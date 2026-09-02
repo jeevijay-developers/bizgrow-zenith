@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { CarouselDots } from "@/components/ui/carousel-dots";
+import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 // AI-generated category images
 import kiranaImg from "@/assets/categories-ai/kirana.png";
@@ -57,10 +58,7 @@ const StoreTypesSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
-            <ShoppingBag className="w-4 h-4 text-ledger-ink/60" strokeWidth={1.75} />
-            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Made for Every Store</span>
-          </div>
+          <EyebrowTag icon={ShoppingBag} className="mb-6">Made for Every Store</EyebrowTag>
           <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-medium text-ledger-ink mb-6">
             Built for Your
             <span className="block mt-2">Type of Business</span>

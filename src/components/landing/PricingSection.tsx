@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check, Star, Zap, Building2, Sparkles } from "lucide-react";
 import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { CarouselDots } from "@/components/ui/carousel-dots";
@@ -100,10 +101,7 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-white border border-ledger-rule rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-ledger-ink/60" strokeWidth={1.75} />
-            <span className="text-sm font-grotesk font-semibold text-ledger-ink/75">Simple Pricing</span>
-          </div>
+          <EyebrowTag icon={Sparkles} className="bg-white mb-6">Simple Pricing</EyebrowTag>
           <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
             Plans That Scale
             <span className="block mt-2">With Your Success</span>

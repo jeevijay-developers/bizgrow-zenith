@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Star, Quote, TrendingUp, Users, ShoppingBag, IndianRupee } from "lucide-react";
 import { useState } from "react";
+import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 const testimonials = [
   {
@@ -85,10 +86,7 @@ const SocialProofSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
-            <TrendingUp className="w-4 h-4 text-ledger-sage" strokeWidth={1.75} />
-            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Success Stories</span>
-          </div>
+          <EyebrowTag icon={TrendingUp} tone="positive" className="mb-6">Success Stories</EyebrowTag>
           <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-medium text-ledger-ink mb-6">
             Real Results from
             <span className="block mt-2">Real Retailers</span>

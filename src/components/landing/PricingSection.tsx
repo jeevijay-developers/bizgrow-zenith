@@ -5,6 +5,8 @@ import { Check, Star, Zap, Building2, Sparkles } from "lucide-react";
 import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { Badge } from "@/components/ui/badge";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
+import { CarouselDots } from "@/components/ui/carousel-dots";
 
 const plans = [
   {
@@ -86,15 +88,10 @@ const plans = [
 
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(true);
+  const [api, setApi] = useState<CarouselApi>();
 
   return (
-    <section className="py-20 md:py-28 bg-secondary/30 relative overflow-hidden" id="pricing">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-[5%] w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-[5%] w-80 h-80 bg-accent/10 rounded-full blur-[120px]" />
-      </div>
-
+    <section className="py-20 md:py-28 bg-ledger-paper relative overflow-hidden" id="pricing">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <motion.div
@@ -103,44 +100,58 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-accent-foreground" />
-            <span className="text-sm font-semibold text-accent-foreground">Simple Pricing</span>
+          <div className="inline-flex items-center gap-2 bg-white border border-ledger-rule rounded-full px-4 py-2 mb-6">
+            <Sparkles className="w-4 h-4 text-ledger-ink/60" strokeWidth={1.75} />
+            <span className="text-sm font-grotesk font-semibold text-ledger-ink/75">Simple Pricing</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+          <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
             Plans That Scale
-            <span className="text-primary block mt-2">With Your Success</span>
+            <span className="block mt-2">With Your Success</span>
           </h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="font-grotesk text-lg text-ledger-ink/65 mb-8">
             Start free, upgrade when you need. No hidden fees, cancel anytime.
           </p>
 
           {/* Billing Toggle */}
-          <div className="inline-flex items-center gap-3 bg-card border border-border rounded-full p-1.5">
+          <div className="inline-flex items-center gap-3 bg-white border border-ledger-rule rounded-full p-1.5">
             <button
               onClick={() => setIsAnnual(false)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                !isAnnual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              className={`px-5 py-2.5 rounded-full text-sm font-grotesk font-medium transition-all ${
+                !isAnnual ? "bg-ledger-ink text-ledger-paper shadow-ledger-sm" : "text-ledger-ink/55 hover:text-ledger-ink"
               }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setIsAnnual(true)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
-                isAnnual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              className={`px-5 py-2.5 rounded-full text-sm font-grotesk font-medium transition-all flex items-center gap-2 ${
+                isAnnual ? "bg-ledger-ink text-ledger-paper shadow-ledger-sm" : "text-ledger-ink/55 hover:text-ledger-ink"
               }`}
             >
               Annual
-              <span className="text-xs bg-accent text-accent-foreground px-2 py-0.5 rounded-full font-bold">
+              <span className="text-xs bg-ledger-sage text-ledger-paper px-2 py-0.5 rounded-full font-grotesk font-semibold">
                 20% OFF
               </span>
             </button>
           </div>
         </motion.div>
 
-        {/* Pricing Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 max-w-7xl mx-auto">
+        {/* Pricing Cards - Mobile Carousel */}
+        <div className="sm:hidden">
+          <Carousel opts={{ align: "start" }} setApi={setApi}>
+            <CarouselContent>
+              {plans.map((plan) => (
+                <CarouselItem key={plan.name} className="basis-[88%]">
+                  <PricingCard plan={plan} isAnnual={isAnnual} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+          <CarouselDots api={api} />
+        </div>
+
+        {/* Pricing Cards - Grid (tablet & up) */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -148,75 +159,8 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`relative rounded-2xl ${
-                plan.popular 
-                  ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground scale-[1.02] lg:scale-105 shadow-2xl shadow-primary/25 z-10" 
-                  : "bg-card border border-border"
-              } overflow-hidden`}
             >
-              {/* Popular Badge */}
-              {plan.popular && (
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
-                  <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-xs px-3 py-1 flex items-center gap-1.5 shadow-lg">
-                    <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
-                  </Badge>
-                </div>
-              )}
-
-              <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
-                {/* Plan Icon & Name */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>
-                    <plan.icon className={`w-6 h-6 ${plan.popular ? "text-white" : "text-primary"}`} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
-                    <p className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
-                      {plan.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-6">
-                  <span className="text-4xl sm:text-5xl font-bold">
-                    {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual ? plan.annualPrice : plan.price}
-                  </span>
-                  <span className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
-                    {plan.period}
-                  </span>
-                  {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual && (
-                    <span className={`block text-sm mt-1 ${plan.popular ? "text-white/60" : "text-muted-foreground"}`}>
-                      <s>{plan.price}</s> billed annually
-                    </span>
-                  )}
-                </div>
-
-                {/* CTA Button */}
-                <Link to={plan.href} className="block mb-6">
-                  <RippleButton
-                    className={`w-full h-12 font-bold text-base ${
-                      plan.popular
-                        ? "bg-white text-primary hover:bg-white/90"
-                        : "bg-primary text-primary-foreground hover:bg-primary/90"
-                    }`}
-                  >
-                    {plan.cta}
-                  </RippleButton>
-                </Link>
-
-                {/* Features List */}
-                <ul className="space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-primary"}`} />
-                      <span className={`text-sm ${plan.popular ? "text-white/90" : "text-foreground"}`}>
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <PricingCard plan={plan} isAnnual={isAnnual} />
             </motion.div>
           ))}
         </div>
@@ -226,22 +170,22 @@ const PricingSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-6 mt-12 text-sm text-muted-foreground"
+          className="flex flex-wrap justify-center gap-6 mt-12 text-sm font-grotesk text-ledger-ink/60"
         >
           <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-primary" />
+            <Check className="w-4 h-4 text-ledger-sage" />
             No credit card required
           </div>
           <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-primary" />
+            <Check className="w-4 h-4 text-ledger-sage" />
             Cancel anytime
           </div>
           <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-primary" />
+            <Check className="w-4 h-4 text-ledger-sage" />
             24/7 support
           </div>
           <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-primary" />
+            <Check className="w-4 h-4 text-ledger-sage" />
             Data export available
           </div>
         </motion.div>
@@ -249,5 +193,79 @@ const PricingSection = () => {
     </section>
   );
 };
+
+const PricingCard = ({ plan, isAnnual }: { plan: (typeof plans)[number]; isAnnual: boolean }) => (
+  <div
+    className={`relative rounded-xl ${
+      plan.popular
+        ? "bg-ledger-ink text-ledger-paper scale-[1.02] lg:scale-105 shadow-ledger z-10"
+        : "bg-white text-ledger-ink border border-ledger-rule shadow-ledger-sm"
+    } overflow-hidden`}
+  >
+    {/* Popular Badge */}
+    {plan.popular && (
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
+        <Badge className="bg-ledger-marigold text-ledger-ink hover:bg-ledger-marigold font-grotesk font-semibold text-xs px-3 py-1 flex items-center gap-1.5 border-transparent">
+          <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
+        </Badge>
+      </div>
+    )}
+
+    <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
+      {/* Plan Icon & Name */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${plan.popular ? "border-ledger-paper/20" : "border-ledger-rule"}`}>
+          <plan.icon className={`w-6 h-6 ${plan.popular ? "text-ledger-paper/70" : "text-ledger-ink/70"}`} strokeWidth={1.75} />
+        </div>
+        <div>
+          <h3 className={`font-ledger text-xl font-semibold ${plan.popular ? "text-ledger-paper" : "text-ledger-ink"}`}>{plan.name}</h3>
+          <p className={`text-sm font-grotesk ${plan.popular ? "text-ledger-paper/70" : "text-ledger-ink/55"}`}>
+            {plan.description}
+          </p>
+        </div>
+      </div>
+
+      {/* Price */}
+      <div className="mb-6">
+        <span className="font-ledger text-4xl sm:text-5xl font-semibold">
+          {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual ? plan.annualPrice : plan.price}
+        </span>
+        <span className={`text-sm font-grotesk ${plan.popular ? "text-ledger-paper/70" : "text-ledger-ink/55"}`}>
+          {plan.period}
+        </span>
+        {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual && (
+          <span className={`block text-sm font-grotesk mt-1 ${plan.popular ? "text-ledger-paper/60" : "text-ledger-ink/50"}`}>
+            <s>{plan.price}</s> billed annually
+          </span>
+        )}
+      </div>
+
+      {/* CTA Button */}
+      <Link to={plan.href} className="block mb-6">
+        <RippleButton
+          className={`w-full h-12 font-grotesk font-semibold text-base rounded-md ${
+            plan.popular
+              ? "bg-ledger-paper text-ledger-ink hover:bg-ledger-marigold hover:text-ledger-ink"
+              : "bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink"
+          }`}
+        >
+          {plan.cta}
+        </RippleButton>
+      </Link>
+
+      {/* Features List */}
+      <ul className="space-y-3">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-3">
+            <Check className="w-5 h-5 shrink-0 mt-0.5 text-ledger-sage" />
+            <span className={`text-sm font-grotesk ${plan.popular ? "text-ledger-paper/90" : "text-ledger-ink/80"}`}>
+              {feature}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
 
 export default PricingSection;

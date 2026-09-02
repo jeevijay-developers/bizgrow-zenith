@@ -16,6 +16,10 @@ export default {
       fontFamily: {
         sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
         display: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        // "The ledger, made modern" — homepage-only type system (see LandingSection.tsx family)
+        ledger: ['"Fraunces"', 'ui-serif', 'Georgia', 'serif'],
+        grotesk: ['"Public Sans"', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
+        devanagari: ['"Noto Serif Devanagari"', '"Fraunces"', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -73,6 +77,16 @@ export default {
             dark: "hsl(var(--yellow-dark))",
             light: "hsl(var(--yellow-light))",
           },
+        },
+        // "The ledger, made modern" — homepage-only palette, deliberately
+        // separate from the app-wide purple/yellow theme above.
+        ledger: {
+          ink: "#14202E",
+          paper: "#F7F2E7",
+          marigold: "#C8862B",
+          "marigold-dark": "#A66E22",
+          sage: "#3C6E52",
+          rule: "#DCD3BE",
         },
       },
       borderRadius: {
@@ -135,6 +149,10 @@ export default {
         "glow-primary": "0 0 20px 0 hsl(var(--primary) / 0.4)",
         "glow-accent": "0 0 20px 0 hsl(var(--accent) / 0.5)",
         "glow-sm": "0 0 10px 0 hsl(var(--primary) / 0.3)",
+        // Single consistent depth value for the ledger design system —
+        // one warm shadow used everywhere instead of a different pastel per card.
+        ledger: "0 10px 30px -10px rgba(20, 32, 46, 0.18), 0 2px 8px -2px rgba(20, 32, 46, 0.10)",
+        "ledger-sm": "0 4px 14px -6px rgba(20, 32, 46, 0.14)",
       },
     },
   },

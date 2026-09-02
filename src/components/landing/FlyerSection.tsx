@@ -21,13 +21,7 @@ const flyerFeatures = [
 
 const FlyerSection = () => {
   return (
-    <section className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 right-[10%] w-72 h-72 bg-pink-500/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/3 left-[5%] w-64 h-64 bg-amber-500/10 rounded-full blur-[100px]" />
-      </div>
-
+    <section className="py-20 md:py-28 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left - Flyer Preview */}
@@ -41,29 +35,28 @@ const FlyerSection = () => {
             <motion.div
               animate={{ rotate: [-2, 2, -2] }}
               transition={{ duration: 6, repeat: Infinity }}
-              className="relative z-20 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-2xl p-6 shadow-2xl max-w-sm mx-auto"
+              className="relative z-20 bg-ledger-ink rounded-2xl p-6 shadow-ledger max-w-sm mx-auto"
             >
-              <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-10 rounded-2xl" />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-ledger-paper text-ledger-ink text-xs font-grotesk font-semibold px-3 py-1 rounded-full">
                     🪔 DIWALI SALE
                   </span>
-                  <span className="text-white/80 text-xs">Sharma Store</span>
+                  <span className="text-ledger-paper/70 text-xs font-grotesk">Sharma Store</span>
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-2">FLAT 30% OFF</h3>
-                <p className="text-white/90 text-sm mb-4">On All Products</p>
+                <h3 className="font-ledger text-3xl font-semibold text-ledger-paper mb-2">FLAT 30% OFF</h3>
+                <p className="text-ledger-paper/90 text-sm font-grotesk mb-4">On All Products</p>
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-white/20 backdrop-blur-sm rounded-lg p-2 text-center">
-                      <div className="w-full h-12 bg-white/30 rounded mb-1" />
-                      <p className="text-white text-xs">₹{99 * i}</p>
+                    <div key={i} className="bg-ledger-paper/15 backdrop-blur-sm rounded-lg p-2 text-center">
+                      <div className="w-full h-12 bg-ledger-paper/20 rounded mb-1" />
+                      <p className="text-ledger-paper text-xs font-grotesk">₹{99 * i}</p>
                     </div>
                   ))}
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-white text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> Valid till 15 Nov</p>
-                  <p className="text-white text-xs flex items-center gap-1"><Phone className="w-3 h-3" /> 98765 43210</p>
+                  <p className="text-ledger-paper text-xs font-grotesk flex items-center gap-1"><MapPin className="w-3 h-3" /> Valid till 15 Nov</p>
+                  <p className="text-ledger-paper text-xs font-grotesk flex items-center gap-1"><Phone className="w-3 h-3" /> 98765 43210</p>
                 </div>
               </div>
             </motion.div>
@@ -72,23 +65,23 @@ const FlyerSection = () => {
             <motion.div
               animate={{ rotate: [5, 8, 5] }}
               transition={{ duration: 5, repeat: Infinity }}
-              className="absolute top-4 right-4 z-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-4 w-48 h-48 shadow-xl opacity-60"
+              className="absolute top-4 right-4 z-10 bg-ledger-paper border border-ledger-rule rounded-2xl p-4 w-48 h-48 shadow-ledger-sm"
             />
             <motion.div
               animate={{ rotate: [-8, -5, -8] }}
               transition={{ duration: 5, repeat: Infinity }}
-              className="absolute top-8 left-4 z-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-4 w-40 h-40 shadow-xl opacity-40"
+              className="absolute top-8 left-4 z-0 bg-ledger-paper border border-ledger-rule rounded-2xl p-4 w-40 h-40 shadow-ledger-sm opacity-70"
             />
 
             {/* AI Badge */}
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="absolute -right-4 bottom-1/4 z-30 bg-background border border-border rounded-xl p-3 shadow-xl"
+              className="absolute -right-4 bottom-1/4 z-30 bg-ledger-paper border border-ledger-rule rounded-xl p-3 shadow-ledger"
             >
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <span className="text-sm font-bold text-foreground">AI Generated</span>
+                <Sparkles className="w-5 h-5 text-ledger-ink/70" />
+                <span className="text-sm font-grotesk font-semibold text-ledger-ink">AI Generated</span>
               </div>
             </motion.div>
           </motion.div>
@@ -99,18 +92,18 @@ const FlyerSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 bg-pink-500/10 border border-pink-500/20 rounded-full px-4 py-2 mb-6">
-              <ImageIcon className="w-4 h-4 text-pink-500" />
-              <span className="text-sm font-semibold text-pink-600">Auto Flyer Creation</span>
+            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
+              <ImageIcon className="w-4 h-4 text-ledger-ink/60" />
+              Auto Flyer Creation
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
               Marketing Posters
-              <span className="text-pink-500 block mt-2">In One Click</span>
+              <span className="block mt-2">In One Click</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Select your products, pick a festival template, and let AI create stunning promotional 
+            <p className="font-grotesk text-lg text-ledger-ink/65 mb-8 leading-relaxed">
+              Select your products, pick a festival template, and let AI create stunning promotional
               flyers with your branding. Share directly to WhatsApp, Instagram, and Facebook.
             </p>
 
@@ -119,7 +112,7 @@ const FlyerSection = () => {
               {flyerTypes.map((type) => (
                 <span
                   key={type.name}
-                  className={`bg-gradient-to-r ${type.color} text-white text-xs font-bold px-3 py-1.5 rounded-full`}
+                  className="border border-ledger-rule text-ledger-ink text-xs font-grotesk font-semibold px-3 py-1.5 rounded-full"
                 >
                   {type.name}
                 </span>
@@ -130,30 +123,30 @@ const FlyerSection = () => {
             <div className="grid grid-cols-2 gap-3 mb-8">
               {flyerFeatures.map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-pink-500 shrink-0" />
-                  <span className="text-sm text-foreground">{feature}</span>
+                  <Check className="w-4 h-4 text-ledger-sage shrink-0" />
+                  <span className="text-sm font-grotesk text-ledger-ink">{feature}</span>
                 </div>
               ))}
             </div>
 
             {/* Share Icons */}
             <div className="flex items-center gap-4 mb-8">
-              <span className="text-sm text-muted-foreground">Share to:</span>
+              <span className="text-sm font-grotesk text-ledger-ink/60">Share to:</span>
               <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                  <Share2 className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-full border border-ledger-rule flex items-center justify-center">
+                  <Share2 className="w-5 h-5 text-ledger-ink/70" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <Instagram className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-full border border-ledger-rule flex items-center justify-center">
+                  <Instagram className="w-5 h-5 text-ledger-ink/70" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                  <Facebook className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-full border border-ledger-rule flex items-center justify-center">
+                  <Facebook className="w-5 h-5 text-ledger-ink/70" />
                 </div>
               </div>
             </div>
 
             <Link to="/join">
-              <RippleButton size="lg" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white font-bold h-12 px-6 group">
+              <RippleButton size="lg" className="bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink font-grotesk font-semibold h-12 px-6 group">
                 <Palette className="w-4 h-4 mr-2" />
                 Create Free Flyers
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

@@ -22,13 +22,7 @@ const detectionFeatures = [
 
 const AIScanningSection = () => {
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-b from-background to-muted/30 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute top-1/3 right-[5%] w-80 h-80 bg-primary/10 rounded-full blur-[120px]" />
-      </div>
-
+    <section className="py-20 md:py-28 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left - Image */}
@@ -39,18 +33,18 @@ const AIScanningSection = () => {
             className="relative order-2 lg:order-1"
           >
             {/* Main Image */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
-              <img 
-                src={aiScanningDemo} 
+            <div className="relative rounded-2xl overflow-hidden shadow-ledger border border-ledger-rule">
+              <img
+                src={aiScanningDemo}
                 alt="AI Product Scanning Demo"
                 className="w-full aspect-video object-cover"
               />
-              
+
               {/* Scanning Animation Overlay */}
               <motion.div
                 animate={{ opacity: [0.3, 0.6, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"
+                className="absolute inset-0 bg-gradient-to-t from-ledger-ink/20 to-transparent pointer-events-none"
               />
             </div>
 
@@ -60,19 +54,19 @@ const AIScanningSection = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="absolute -right-4 top-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-xl p-4 shadow-xl"
+              className="absolute -right-4 top-1/4 bg-ledger-paper/95 backdrop-blur-xl border border-ledger-rule rounded-xl p-4 shadow-ledger"
             >
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <Check className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-lg border border-ledger-rule flex items-center justify-center">
+                    <Check className="w-5 h-5 text-ledger-sage" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground text-sm">Tata Salt 1kg</p>
-                    <p className="text-xs text-muted-foreground">₹28 • Grocery</p>
+                    <p className="font-grotesk font-semibold text-ledger-ink text-sm">Tata Salt 1kg</p>
+                    <p className="text-xs font-grotesk text-ledger-ink/55">₹28 • Grocery</p>
                   </div>
                 </div>
               </motion.div>
@@ -83,19 +77,19 @@ const AIScanningSection = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
-              className="absolute -left-4 bottom-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-xl p-4 shadow-xl"
+              className="absolute -left-4 bottom-1/4 bg-ledger-paper/95 backdrop-blur-xl border border-ledger-rule rounded-xl p-4 shadow-ledger"
             >
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 rounded-lg border border-ledger-rule flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-ledger-ink/70" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground text-sm">AI Detecting...</p>
-                    <p className="text-xs text-muted-foreground">5 products found</p>
+                    <p className="font-grotesk font-semibold text-ledger-ink text-sm">AI Detecting...</p>
+                    <p className="text-xs font-grotesk text-ledger-ink/55">5 products found</p>
                   </div>
                 </div>
               </motion.div>
@@ -109,20 +103,20 @@ const AIScanningSection = () => {
             viewport={{ once: true }}
             className="order-1 lg:order-2"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">AI Product Detection</span>
+            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
+              <Sparkles className="w-4 h-4 text-ledger-ink/60" />
+              AI Product Detection
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
               Snap, Scan,
-              <span className="text-primary block mt-2">Sell in Seconds</span>
+              <span className="block mt-2">Sell in Seconds</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Simply point your phone camera at products. Our AI instantly recognizes items, 
-              suggests prices from market data, and auto-categorizes everything. 
-              <strong className="text-foreground"> No manual typing needed.</strong>
+            <p className="font-grotesk text-lg text-ledger-ink/65 mb-8 leading-relaxed">
+              Simply point your phone camera at products. Our AI instantly recognizes items,
+              suggests prices from market data, and auto-categorizes everything.
+              <strong className="text-ledger-ink"> No manual typing needed.</strong>
             </p>
 
             {/* Process Steps */}
@@ -136,11 +130,11 @@ const AIScanningSection = () => {
                   transition={{ delay: 0.1 * index }}
                   className="text-center"
                 >
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
-                    <step.icon className="w-5 h-5 text-primary" />
+                  <div className="w-12 h-12 mx-auto mb-2 rounded-full border border-ledger-rule flex items-center justify-center">
+                    <step.icon className="w-5 h-5 text-ledger-ink/70" />
                   </div>
-                  <p className="text-sm font-bold text-foreground">{step.title}</p>
-                  <p className="text-xs text-muted-foreground">{step.description}</p>
+                  <p className="text-sm font-grotesk font-semibold text-ledger-ink">{step.title}</p>
+                  <p className="text-xs font-grotesk text-ledger-ink/55">{step.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -149,14 +143,14 @@ const AIScanningSection = () => {
             <div className="grid grid-cols-2 gap-3 mb-8">
               {detectionFeatures.map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500 shrink-0" />
-                  <span className="text-sm text-foreground">{feature}</span>
+                  <Check className="w-4 h-4 text-ledger-sage shrink-0" />
+                  <span className="text-sm font-grotesk text-ledger-ink">{feature}</span>
                 </div>
               ))}
             </div>
 
             <Link to="/join">
-              <RippleButton size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 font-bold h-12 px-6 group">
+              <RippleButton size="lg" className="bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink font-grotesk font-semibold h-12 px-6 group">
                 Try AI Upload Free
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </RippleButton>

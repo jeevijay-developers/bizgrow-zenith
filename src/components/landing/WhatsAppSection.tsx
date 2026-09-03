@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { MessageSquare, Send, CheckCheck, Bell, ArrowRight, Phone, ShoppingCart, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
-import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 const chatMessages = [
   { type: "customer", message: "Bhaiya, 2kg Aata aur 1L Oil dena", time: "10:30 AM" },
@@ -45,7 +44,10 @@ const WhatsAppSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <EyebrowTag icon={MessageSquare} className="mb-6">WhatsApp Orders</EyebrowTag>
+            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
+              <MessageSquare className="w-4 h-4 text-ledger-ink/60" />
+              WhatsApp Orders
+            </div>
 
             <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
               Orders via WhatsApp

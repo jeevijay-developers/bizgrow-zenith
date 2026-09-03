@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { z } from "zod";
+import logoDarkBg from "@/assets/logo-dark-bg.png";
 import { FcGoogle } from "react-icons/fc";
-import { H3, Caption } from "@/components/ui/typography";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -210,18 +210,21 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-[100svh] bg-ledger-ink relative overflow-hidden flex flex-col">
+    <div className="min-h-[100svh] bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)] relative overflow-hidden flex flex-col">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-5 sm:top-20 sm:left-10 w-48 sm:w-72 h-48 sm:h-72 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-5 sm:bottom-20 sm:right-10 w-64 sm:w-96 h-64 sm:h-96 bg-purple-light/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Header - Fixed height for mobile */}
       <header className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 md:py-6 relative z-10">
         <div className="max-w-md mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-ledger-paper/75 hover:text-ledger-marigold transition-colors group">
+          <Link to="/" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors group">
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span className="hidden sm:inline text-sm">Back to Home</span>
           </Link>
-          <span className="flex items-baseline gap-1.5">
-            <span className="font-ledger text-xl font-semibold tracking-tight text-ledger-paper">Bizgrow</span>
-            <span className="inline-flex items-center justify-center h-5 px-1.5 rounded-full border border-ledger-marigold/70 text-ledger-marigold text-[10px] font-grotesk font-semibold tracking-wide">360°</span>
-          </span>
+          <img src={logoDarkBg} alt="BizGrow 360" className="h-7 sm:h-8 md:h-10" />
         </div>
       </header>
 
@@ -232,27 +235,27 @@ const Auth = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          <div className="bg-ledger-paper rounded-2xl md:rounded-3xl shadow-ledger border border-ledger-rule p-5 sm:p-6 md:p-8">
+          <div className="bg-card/95 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl border border-border/50 p-5 sm:p-6 md:p-8">
             {/* Header - Compact on mobile */}
             <div className="text-center mb-5 sm:mb-6">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl border border-ledger-rule bg-transparent flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-purple-light/50 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
                 {isResetPassword ? (
-                  <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-ledger-ink/70" />
+                  <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 ) : (
-                  <Store className="w-7 h-7 sm:w-8 sm:h-8 text-ledger-ink/70" />
+                  <Store className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                 )}
               </div>
-              <H3>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-card-foreground">
                 {isResetPassword ? "Reset Password" : isLogin ? "Seller Login" : "Create Account"}
-              </H3>
-              <Caption className="mt-1.5 sm:mt-2">
-                {isResetPassword
-                  ? "Enter your new password below"
-                  : isLogin
-                    ? "Sign in to manage your store"
+              </h1>
+              <p className="text-muted-foreground text-sm mt-1.5 sm:mt-2">
+                {isResetPassword 
+                  ? "Enter your new password below" 
+                  : isLogin 
+                    ? "Sign in to manage your store" 
                     : "Join BizGrow 360 and grow your business"
                 }
-              </Caption>
+              </p>
             </div>
 
             {/* Error/Success Messages */}
@@ -271,7 +274,7 @@ const Auth = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-3 rounded-lg bg-ledger-sage/10 border border-ledger-sage/30 text-ledger-sage"
+                className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600"
               >
                 <p className="text-sm">{success}</p>
               </motion.div>
@@ -282,7 +285,7 @@ const Auth = () => {
               {!isResetPassword && (
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-ledger-ink/60" />
+                    <Mail className="w-4 h-4 text-primary" />
                     Email Address
                   </Label>
                   <Input
@@ -303,13 +306,13 @@ const Auth = () => {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="flex items-center gap-2 text-sm">
-                    <Lock className="w-4 h-4 text-ledger-ink/60" />
+                    <Lock className="w-4 h-4 text-primary" />
                     Password
                   </Label>
                   {isLogin && (
                     <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
                       <DialogTrigger asChild>
-                        <button type="button" className="text-xs font-grotesk text-ledger-ink/70 hover:text-ledger-marigold hover:underline">
+                        <button type="button" className="text-xs text-primary hover:underline">
                           Forgot password?
                         </button>
                       </DialogTrigger>
@@ -398,9 +401,8 @@ const Auth = () => {
 
               <Button
                 type="submit"
-                variant="ledger"
                 disabled={isLoading}
-                className="w-full h-11 sm:h-12 font-semibold text-sm sm:text-base mt-2"
+                className="w-full h-11 sm:h-12 bg-primary text-primary-foreground font-semibold text-sm sm:text-base mt-2"
               >
                 {isLoading ? (
                   <>
@@ -418,10 +420,10 @@ const Auth = () => {
               <>
                 <div className="relative my-5 sm:my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-ledger-rule" />
+                    <span className="w-full border-t border-border" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-ledger-paper px-2 text-ledger-ink/55 font-grotesk">Or continue with</span>
+                    <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
                   </div>
                 </div>
 
@@ -450,12 +452,12 @@ const Auth = () => {
             {/* Toggle mode */}
             {!isResetPassword && (
               <div className="mt-5 sm:mt-6 text-center">
-                <p className="text-ledger-ink/55 font-grotesk text-xs sm:text-sm">
+                <p className="text-muted-foreground text-xs sm:text-sm">
                   {isLogin ? "Don't have an account?" : "Already have an account?"}
                   {" "}
                   <Link
                     to={`/auth?mode=${isLogin ? "signup" : "login"}${redirectTo !== "/dashboard" ? `&redirect=${redirectTo}` : ""}`}
-                    className="text-ledger-ink font-semibold hover:text-ledger-marigold hover:underline"
+                    className="text-primary font-medium hover:underline"
                   >
                     {isLogin ? "Sign up" : "Sign in"}
                   </Link>
@@ -465,12 +467,12 @@ const Auth = () => {
 
             {/* Join as retailer CTA */}
             {isLogin && !isResetPassword && (
-              <div className="mt-4 pt-4 border-t border-ledger-rule">
-                <p className="text-center text-ledger-ink/55 font-grotesk text-xs sm:text-sm mb-3">
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-center text-muted-foreground text-xs sm:text-sm mb-3">
                   Want to list your store?
                 </p>
                 <Link to="/join">
-                  <Button variant="ledger-outline" className="w-full h-10 sm:h-11 font-semibold text-sm">
+                  <Button variant="outline" className="w-full h-10 sm:h-11 font-semibold text-sm">
                     Join as Retailer
                   </Button>
                 </Link>

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { TrendingUp, IndianRupee, Users, ShoppingBag, BarChart3 } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { CarouselDots } from "@/components/ui/carousel-dots";
-import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 const growthData = [
   { month: "Month 1", value: 50000, growth: "Baseline" },
@@ -34,7 +33,10 @@ const RevenueGrowthSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <EyebrowTag icon={BarChart3} tone="positive" className="mb-6">Revenue Growth</EyebrowTag>
+          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
+            <BarChart3 className="w-4 h-4 text-ledger-sage" strokeWidth={1.75} />
+            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Revenue Growth</span>
+          </div>
           <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-ledger-ink mb-6">
             Watch Your Business
             <span className="block mt-2">Grow 3X in 6 Months</span>

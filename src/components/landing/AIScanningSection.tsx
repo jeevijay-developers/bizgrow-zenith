@@ -3,7 +3,6 @@ import { Camera, Sparkles, Zap, Package, Check, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import aiScanningDemo from "@/assets/ai-scanning-demo.jpg";
-import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 
 const scanSteps = [
   { step: 1, title: "Point Camera", description: "Open app and point at products", icon: Camera },
@@ -104,7 +103,10 @@ const AIScanningSection = () => {
             viewport={{ once: true }}
             className="order-1 lg:order-2"
           >
-            <EyebrowTag icon={Sparkles} className="mb-6">AI Product Detection</EyebrowTag>
+            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
+              <Sparkles className="w-4 h-4 text-ledger-ink/60" />
+              AI Product Detection
+            </div>
 
             <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
               Snap, Scan,

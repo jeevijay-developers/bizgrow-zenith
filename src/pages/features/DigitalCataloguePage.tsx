@@ -5,8 +5,6 @@ import {
   Smartphone, Globe, Share2, QrCode, Star, Zap, Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { H1, H2, H3, Lead, Body, Caption } from "@/components/ui/typography";
-import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import catalogueMockup from "@/assets/feature-catalogue-mockup.png";
@@ -59,7 +57,13 @@ const DigitalCataloguePage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden bg-ledger-ink">
+      <section className="pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-light/20 rounded-full blur-3xl" />
+        </div>
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -67,72 +71,73 @@ const DigitalCataloguePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <EyebrowTag icon={Layers} className="mb-6 border-ledger-paper/25 text-ledger-paper/85">
+              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <Layers className="w-4 h-4" />
                 Digital Catalogue
-              </EyebrowTag>
-              <H1 className="text-ledger-paper mb-6">
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Your Store,{" "}
-                <span className="ledger-highlight">Now Online</span>
-              </H1>
-              <Lead className="text-ledger-paper/70 mb-8 max-w-xl">
-                Create a beautiful, shareable product catalogue in minutes. No coding, no app
+                <span className="text-gradient">Now Online</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
+                Create a beautiful, shareable product catalogue in minutes. No coding, no app 
                 development - just your products, beautifully displayed.
-              </Lead>
+              </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/join">
-                  <Button size="lg" variant="ledger-inverse" className="px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
                     Create Your Catalogue
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
                 <Link to="/store/demo">
-                  <Button size="lg" variant="ledger-outline-inverse" className="h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 text-base w-full sm:w-auto">
                     View Demo Store
                   </Button>
                 </Link>
               </div>
             </motion.div>
-
+            
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-ledger border border-ledger-paper/10">
-                <img
-                  src={catalogueMockup}
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <img 
+                  src={catalogueMockup} 
                   alt="Digital Catalogue Dashboard"
                   className="w-full h-auto"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ledger-ink/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
               </div>
-
+              
               {/* Floating elements */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-4 -right-4 bg-ledger-paper rounded-xl p-4 shadow-ledger"
+                className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 border border-ledger-rule rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-ledger-sage" />
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <Check className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-grotesk font-semibold text-ledger-ink text-sm">Live Store</p>
-                    <p className="font-grotesk text-ledger-ink/55 text-xs">bizgrow.link/store</p>
+                    <p className="font-semibold text-sm">Live Store</p>
+                    <p className="text-xs text-muted-foreground">bizgrow.link/store</p>
                   </div>
                 </div>
               </motion.div>
-
+              
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                className="absolute -bottom-4 -left-4 bg-ledger-paper rounded-xl p-4 shadow-ledger"
+                className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-ledger-sage fill-ledger-sage" />
-                  <span className="font-grotesk font-semibold text-ledger-ink">1.2k Visitors Today</span>
+                  <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+                  <span className="font-semibold">1.2k Visitors Today</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -149,12 +154,13 @@ const DigitalCataloguePage = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <H2 className="mb-4">
-              Everything You Need for Online Selling
-            </H2>
-            <Body className="text-lg max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Everything You Need for{" "}
+              <span className="text-primary">Online Selling</span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               A complete solution to showcase your products and accept orders - all without building an app.
-            </Body>
+            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -165,13 +171,13 @@ const DigitalCataloguePage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl border border-ledger-rule shadow-ledger-sm p-6"
+                className="bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:border-primary/20 transition-all group"
               >
-                <div className="w-14 h-14 rounded-xl border border-ledger-rule bg-transparent flex items-center justify-center mb-4">
-                  <feature.icon className="w-7 h-7 text-ledger-ink/70" />
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <feature.icon className="w-7 h-7 text-primary" />
                 </div>
-                <H3 className="mb-2">{feature.title}</H3>
-                <Body>{feature.description}</Body>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -179,7 +185,7 @@ const DigitalCataloguePage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 md:py-24 bg-ledger-paper">
+      <section className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -187,9 +193,9 @@ const DigitalCataloguePage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <H2 className="mb-4">
-              Go Live in 3 Simple Steps
-            </H2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Go Live in <span className="text-primary">3 Simple Steps</span>
+            </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -206,14 +212,14 @@ const DigitalCataloguePage = () => {
                 transition={{ delay: index * 0.2 }}
                 className="text-center relative"
               >
-                <div className="w-16 h-16 rounded-full bg-ledger-ink text-ledger-paper flex items-center justify-center text-2xl font-ledger font-semibold mx-auto mb-4 shadow-ledger-sm">
+                <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-primary/30">
                   {item.step}
                 </div>
                 {index < 2 && (
-                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-ledger-rule" />
+                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-primary to-primary/20" />
                 )}
-                <H3 className="mb-2">{item.title}</H3>
-                <Body>{item.desc}</Body>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -229,9 +235,10 @@ const DigitalCataloguePage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <H2 className="mb-6">
-                Why Retailers Love Digital Catalogue
-              </H2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Why Retailers Love{" "}
+                <span className="text-primary">Digital Catalogue</span>
+              </h2>
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <motion.div
@@ -242,29 +249,29 @@ const DigitalCataloguePage = () => {
                     transition={{ delay: index * 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full border border-ledger-sage/30 bg-ledger-sage/10 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-4 h-4 text-ledger-sage" />
+                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span className="text-lg font-grotesk text-ledger-ink/80">{benefit}</span>
+                    <span className="text-lg">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
-
+              
               <div className="mt-8">
                 <Link to="/join">
-                  <Button size="lg" variant="ledger" className="gap-2">
+                  <Button size="lg" className="gap-2">
                     Get Started Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
               </div>
             </motion.div>
-
+            
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-ledger-paper rounded-3xl p-8 border border-ledger-rule"
+              className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 border border-primary/10"
             >
               <div className="grid grid-cols-2 gap-6">
                 {[
@@ -273,10 +280,10 @@ const DigitalCataloguePage = () => {
                   { icon: Star, value: "4.9", label: "Average Rating" },
                   { icon: Zap, value: "<2s", label: "Load Time" },
                 ].map((stat, index) => (
-                  <div key={index} className="text-center p-4 bg-white border border-ledger-rule shadow-ledger-sm rounded-xl">
-                    <stat.icon className="w-8 h-8 text-ledger-ink/70 mx-auto mb-2" />
-                    <p className="font-ledger text-xl sm:text-2xl font-semibold text-ledger-ink">{stat.value}</p>
-                    <Caption>{stat.label}</Caption>
+                  <div key={index} className="text-center p-4 bg-white rounded-xl shadow-sm">
+                    <stat.icon className="w-8 h-8 text-primary mx-auto mb-2" />
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
                   </div>
                 ))}
               </div>

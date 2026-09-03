@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { H1, H3, Lead, Body, Caption } from "@/components/ui/typography";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
@@ -43,14 +42,18 @@ const ContactUs = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-24 sm:pt-28 md:pt-36 pb-12 sm:pb-16 md:pb-20 relative overflow-hidden bg-ledger-ink">
+      <section className="pt-24 sm:pt-28 md:pt-36 pb-12 sm:pb-16 md:pb-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+        </div>
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <H1 className="text-ledger-paper mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 font-display">
             Get in Touch
-          </H1>
-          <Lead className="text-ledger-paper/70 max-w-2xl mx-auto">
+          </h1>
+          <p className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto">
             Have questions about BizGrow 360? Want a custom enterprise plan? We'd love to hear from you.
-          </Lead>
+          </p>
         </div>
       </section>
 
@@ -61,38 +64,38 @@ const ContactUs = () => {
             {/* Contact Info */}
             <div className="lg:col-span-2 space-y-8">
               <div>
-                <H3 className="mb-2">Contact Information</H3>
-                <Body>
+                <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
+                <p className="text-muted-foreground">
                   Reach out to us through any channel. Our team responds within 24 hours.
-                </Body>
+                </p>
               </div>
 
               <div className="space-y-5">
                 <a href="tel:+919876543210" className="flex items-start gap-4 group">
-                  <div className="w-11 h-11 rounded-xl border border-ledger-rule bg-transparent flex items-center justify-center flex-shrink-0 group-hover:border-ledger-marigold/60 transition-colors">
-                    <Phone className="w-5 h-5 text-ledger-ink/70" />
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                    <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-grotesk font-semibold text-ledger-ink">Phone</p>
-                    <Caption>+91 98765 43210</Caption>
+                    <p className="font-medium">Phone</p>
+                    <p className="text-muted-foreground text-sm">+91 98765 43210</p>
                   </div>
                 </a>
                 <a href="mailto:hello@bizgrow360.com" className="flex items-start gap-4 group">
-                  <div className="w-11 h-11 rounded-xl border border-ledger-rule bg-transparent flex items-center justify-center flex-shrink-0 group-hover:border-ledger-marigold/60 transition-colors">
-                    <Mail className="w-5 h-5 text-ledger-ink/70" />
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                    <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-grotesk font-semibold text-ledger-ink">Email</p>
-                    <Caption>hello@bizgrow360.com</Caption>
+                    <p className="font-medium">Email</p>
+                    <p className="text-muted-foreground text-sm">hello@bizgrow360.com</p>
                   </div>
                 </a>
                 <div className="flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl border border-ledger-rule bg-transparent flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-ledger-ink/70" />
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-grotesk font-semibold text-ledger-ink">Office</p>
-                    <Caption>Bangalore, Karnataka, India</Caption>
+                    <p className="font-medium">Office</p>
+                    <p className="text-muted-foreground text-sm">Bangalore, Karnataka, India</p>
                   </div>
                 </div>
                 <a
@@ -105,8 +108,8 @@ const ContactUs = () => {
                     <MessageCircle className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-grotesk font-semibold text-ledger-ink">WhatsApp</p>
-                    <Caption>Chat with our team</Caption>
+                    <p className="font-medium">WhatsApp</p>
+                    <p className="text-muted-foreground text-sm">Chat with our team</p>
                   </div>
                 </a>
               </div>
@@ -114,8 +117,8 @@ const ContactUs = () => {
 
             {/* Contact Form */}
             <div className="lg:col-span-3">
-              <form onSubmit={handleSubmit} className="bg-white border border-ledger-rule shadow-ledger-sm rounded-2xl p-6 sm:p-8 space-y-5">
-                <H3 className="mb-2">Send us a message</H3>
+              <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-6 sm:p-8 space-y-5">
+                <h3 className="text-xl font-bold mb-2">Send us a message</h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name *</Label>
@@ -140,7 +143,7 @@ const ContactUs = () => {
                   <Label htmlFor="message">Message *</Label>
                   <Textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your needs..." rows={5} required />
                 </div>
-                <Button type="submit" size="lg" variant="ledger" className="w-full gap-2" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
                   {isSubmitting ? "Sending..." : "Send Message"}
                   <Send className="w-4 h-4" />
                 </Button>

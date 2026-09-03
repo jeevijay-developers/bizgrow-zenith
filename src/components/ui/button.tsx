@@ -15,13 +15,6 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // "The ledger, made modern" — shared marketing-page button system.
-        // Use on light/paper sections.
-        ledger: "bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink font-grotesk font-semibold rounded-md",
-        "ledger-outline": "border border-ledger-rule bg-transparent text-ledger-ink hover:border-ledger-marigold hover:text-ledger-marigold font-grotesk font-semibold rounded-md",
-        // Use on dark/ink sections (heroes, CTAs).
-        "ledger-inverse": "bg-ledger-paper text-ledger-ink hover:bg-ledger-marigold hover:text-ledger-ink font-grotesk font-semibold rounded-md",
-        "ledger-outline-inverse": "border border-ledger-paper/30 bg-transparent text-ledger-paper hover:border-ledger-marigold hover:text-ledger-marigold font-grotesk font-semibold rounded-md",
       },
       size: {
         default: "h-10 px-4 py-2",

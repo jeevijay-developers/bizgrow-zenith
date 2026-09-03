@@ -4,7 +4,6 @@ import { Globe, Mic, MessageCircle, ArrowRight, Check, Volume2 } from "lucide-re
 import { HiFlag } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
-import { EyebrowTag } from "@/components/ui/eyebrow-tag";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { CarouselDots } from "@/components/ui/carousel-dots";
 
@@ -41,7 +40,10 @@ const RegionalLanguageSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <EyebrowTag icon={Globe} className="mb-6">Regional Languages</EyebrowTag>
+          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
+            <Globe className="w-4 h-4 text-ledger-ink/60" strokeWidth={1.75} />
+            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Regional Languages</span>
+          </div>
           <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-ledger-ink mb-6">
             Apni Bhasha Mein
             <span className="block mt-2">Business Chalao</span>

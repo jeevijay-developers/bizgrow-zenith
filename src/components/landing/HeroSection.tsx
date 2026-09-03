@@ -13,9 +13,9 @@ const trustBadges = [
 ];
 
 const floatingStats = [
-  { value: "10K+", label: "Active Stores", color: "from-green-400 to-emerald-500" },
-  { value: "₹50Cr+", label: "Monthly GMV", color: "from-amber-400 to-orange-500" },
-  { value: "4.9", label: "User Rating", color: "from-purple-400 to-pink-500", hasStarIcon: true },
+  { value: "10K+", label: "Active Stores" },
+  { value: "₹50Cr+", label: "Monthly GMV" },
+  { value: "4.9", label: "User Rating", hasStarIcon: true },
 ];
 
 const HeroSection = () => {
@@ -65,11 +65,12 @@ const HeroSection = () => {
 
             {/* Main Headline */}
             <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6"
             >
               Apni Dukaan Ko
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
-                Digital Banao
+              <span className="block">
+                <span className="text-primary">Digital </span>
+                <span className="text-bizgrow-yellow-dark">Banao</span>
               </span>
             </h1>
 
@@ -159,7 +160,7 @@ const HeroSection = () => {
                   }}
                 >
                   <div>
-                    <p className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                    <p className="text-3xl font-bold text-primary">
                       {stat.value}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
@@ -172,7 +173,7 @@ const HeroSection = () => {
                 className="absolute left-[8%] top-[15%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
                     <Globe className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div>
@@ -195,13 +196,13 @@ const HeroSection = () => {
               </div>
 
               <div
-                className="absolute right-[12%] top-[24%] bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-3 shadow-xl z-20"
+                className="absolute right-[12%] top-[24%] btn-gradient-accent rounded-xl p-3 shadow-xl z-20"
               >
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary-foreground" />
+                  <Sparkles className="w-5 h-5 text-accent-foreground" />
                   <div>
-                    <p className="text-xs font-bold text-primary-foreground">AI Detected</p>
-                    <p className="text-[10px] text-primary-foreground/80">8 products added</p>
+                    <p className="text-xs font-bold text-accent-foreground">AI Detected</p>
+                    <p className="text-[10px] text-accent-foreground/70">8 products added</p>
                   </div>
                 </div>
               </div>
@@ -210,8 +211,8 @@ const HeroSection = () => {
                 className="absolute left-[15%] bottom-[12%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                    <Image className="w-5 h-5 text-primary-foreground" />
+                  <div className="w-10 h-10 rounded-lg btn-gradient-accent flex items-center justify-center">
+                    <Image className="w-5 h-5 text-accent-foreground" />
                   </div>
                   <div>
                     <p className="text-xs font-bold text-foreground">Flyer Generated!</p>

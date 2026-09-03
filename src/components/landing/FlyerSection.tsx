@@ -24,8 +24,8 @@ const FlyerSection = () => {
     <section className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 right-[10%] w-72 h-72 bg-pink-500/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/3 left-[5%] w-64 h-64 bg-amber-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/3 right-[10%] w-72 h-72 bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/3 left-[5%] w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -99,14 +99,14 @@ const FlyerSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 bg-pink-500/10 border border-pink-500/20 rounded-full px-4 py-2 mb-6">
-              <ImageIcon className="w-4 h-4 text-pink-500" />
-              <span className="text-sm font-semibold text-pink-600">Auto Flyer Creation</span>
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+              <ImageIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Auto Flyer Creation</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Marketing Posters
-              <span className="text-pink-500 block mt-2">In One Click</span>
+              <span className="text-bizgrow-yellow-dark block mt-2">In One Click</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -130,7 +130,7 @@ const FlyerSection = () => {
             <div className="grid grid-cols-2 gap-3 mb-8">
               {flyerFeatures.map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-pink-500 shrink-0" />
+                  <Check className="w-4 h-4 text-success shrink-0" />
                   <span className="text-sm text-foreground">{feature}</span>
                 </div>
               ))}
@@ -153,7 +153,7 @@ const FlyerSection = () => {
             </div>
 
             <Link to="/join">
-              <RippleButton size="lg" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white font-bold h-12 px-6 group">
+              <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
                 <Palette className="w-4 h-4 mr-2" />
                 Create Free Flyers
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

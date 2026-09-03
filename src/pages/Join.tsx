@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HiSparkles } from "react-icons/hi2";
@@ -72,7 +72,7 @@ const plans = [
   { 
     id: "free", 
     name: "Free", 
-    price: "₹0", 
+    price: "â‚¹0", 
     period: "/forever",
     features: ["Up to 10 products", "Basic catalogue", "Email support", "Mobile app access"],
     Icon: Zap,
@@ -80,7 +80,7 @@ const plans = [
   { 
     id: "starter", 
     name: "Starter", 
-    price: "₹999", 
+    price: "â‚¹999", 
     period: "/month",
     features: ["Up to 100 products", "Basic catalogue", "WhatsApp orders", "Email support", "Mobile app access"],
     Icon: Sparkles,
@@ -88,7 +88,7 @@ const plans = [
   { 
     id: "pro", 
     name: "Pro", 
-    price: "₹1,499", 
+    price: "â‚¹1,499", 
     period: "/month",
     features: ["Unlimited products", "AI Photo Upload", "Analytics dashboard", "Priority support", "Custom domain"],
     popular: true,
@@ -152,25 +152,25 @@ const featureSlides = [
     Icon: Camera,
     title: "AI-Powered Uploads",
     description: "Just snap a photo and our AI automatically extracts product details, pricing, and more.",
-    gradient: "from-violet-500 to-purple-600",
+    gradient: "from-primary to-accent",
   },
   {
     Icon: Globe,
     title: "Beautiful Storefront",
     description: "Get a professional online store that works on any device. No coding required.",
-    gradient: "from-blue-500 to-cyan-500",
+    gradient: "from-primary to-accent",
   },
   {
     Icon: Bell,
     title: "WhatsApp Orders",
     description: "Receive instant order notifications on WhatsApp. Never miss a customer again.",
-    gradient: "from-green-500 to-emerald-500",
+    gradient: "from-primary to-accent",
   },
   {
     Icon: BarChart3,
     title: "Smart Analytics",
     description: "Track sales, bestsellers, and customer insights with our intuitive dashboard.",
-    gradient: "from-orange-500 to-amber-500",
+    gradient: "from-primary to-accent",
   },
 ];
 
@@ -502,7 +502,7 @@ const Join = () => {
               }
             });
 
-            // Timeout after 8 seconds — likely email confirmation required
+            // Timeout after 8 seconds â€” likely email confirmation required
             setTimeout(() => doResolve(null, subscription), 8000);
           });
         };
@@ -824,9 +824,9 @@ const Join = () => {
                         scale: step === s.id ? 1 : 0.85,
                       }}
                       className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        step > s.id 
-                          ? "bg-green-500 text-white" 
-                          : step === s.id 
+                        step > s.id
+                          ? "bg-success text-success-foreground"
+                          : step === s.id
                             ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
                             : "bg-muted text-muted-foreground"
                       }`}
@@ -839,7 +839,7 @@ const Join = () => {
                     </motion.div>
                     {i < totalSteps - 1 && (
                       <div className={`w-4 xs:w-6 sm:w-8 md:w-12 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-colors duration-300 ${
-                        step > s.id ? "bg-green-500" : "bg-muted"
+                        step > s.id ? "bg-success" : "bg-muted"
                       }`} />
                     )}
                   </div>
@@ -928,10 +928,10 @@ const Join = () => {
                         type="checkbox"
                         checked={formData.sameAsWhatsapp}
                         onChange={(e) => updateForm("sameAsWhatsapp", e.target.checked)}
-                        className="w-4 h-4 rounded border-2 border-muted-foreground accent-green-500"
+                        className="w-4 h-4 rounded border-2 border-muted-foreground accent-primary"
                       />
                       <div className="flex items-center gap-2">
-                        <MessageCircle className="w-4 h-4 text-green-500" />
+                        <MessageCircle className="w-4 h-4 text-primary" />
                         <span className="text-sm text-muted-foreground">WhatsApp same as mobile</span>
                       </div>
                     </label>
@@ -946,7 +946,7 @@ const Join = () => {
                         >
                           <Label htmlFor="whatsapp" className="text-sm font-medium">WhatsApp Number</Label>
                           <div className="relative">
-                            <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                            <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                             <Input
                               id="whatsapp"
                               placeholder="9876543210"
@@ -1104,9 +1104,9 @@ const Join = () => {
                           <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center"
+                            className="absolute -top-1 -right-1 w-4 h-4 bg-success rounded-full flex items-center justify-center"
                           >
-                            <Check className="w-2.5 h-2.5 text-white" />
+                            <Check className="w-2.5 h-2.5 text-success-foreground" />
                           </motion.div>
                         )}
                       </motion.button>
@@ -1238,7 +1238,7 @@ const Join = () => {
                             <div className="flex flex-wrap gap-x-2 mt-1">
                               {plan.features.slice(0, 2).map((f) => (
                                 <span key={f} className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Check className="w-3 h-3 text-green-500" />
+                                  <Check className="w-3 h-3 text-success" />
                                   {f}
                                 </span>
                               ))}
@@ -1258,10 +1258,10 @@ const Join = () => {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                    <BadgeCheck className="w-4 h-4 text-green-500 shrink-0" />
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/20">
+                    <BadgeCheck className="w-4 h-4 text-success shrink-0" />
                     <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">No card required</span> — Start free today
+                      <span className="font-medium text-foreground">No card required</span> â€” Start free today
                     </p>
                   </div>
                 </motion.div>
@@ -1401,7 +1401,7 @@ const Join = () => {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting || !isStepValid()}
-                  className="gap-2 h-10 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6"
+                  className="gap-2 h-10 btn-gradient-accent text-accent-foreground font-semibold px-6"
                 >
                   {isSubmitting ? (
                     <>

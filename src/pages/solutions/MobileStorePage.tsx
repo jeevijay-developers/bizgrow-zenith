@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Smartphone, Shield, CreditCard, 
   Package, BarChart3, Zap, Users, FileText
@@ -35,14 +35,14 @@ const MobileStorePage = () => {
       <section className="pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-violet-500/20 text-violet-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
+              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Mobile Phone Shops
               </div>
@@ -56,7 +56,7 @@ const MobileStorePage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
                 <Link to="/join" className="w-full sm:w-auto">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
@@ -71,7 +71,7 @@ const MobileStorePage = () => {
               
               <div className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-violet-500" />
+                  <Zap className="w-5 h-5 text-accent" />
                   <span className="font-semibold text-sm">25 Phones Sold Today</span>
                 </div>
               </div>
@@ -85,7 +85,7 @@ const MobileStorePage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Built for <span className="text-primary">Mobile Retail</span>
+              Built for <span className="text-gradient">Mobile Retail</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Features designed specifically for phone and accessory shops.
@@ -116,7 +116,7 @@ const MobileStorePage = () => {
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-center lg:text-left">
                 Why Mobile Retailers Love{" "}
-                <span className="text-primary">BizGrow 360</span>
+                <span className="text-gradient">BizGrow 360</span>
               </h2>
               <div className="space-y-3 sm:space-y-4">
                 {benefits.map((benefit, index) => (
@@ -124,8 +124,8 @@ const MobileStorePage = () => {
                     key={index}
                     className="flex items-start sm:items-center gap-3"
                   >
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-violet-600" />
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-success" />
                     </div>
                     <span className="text-sm sm:text-base lg:text-lg">{benefit}</span>
                   </div>

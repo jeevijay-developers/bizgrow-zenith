@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Link2, Copy, ExternalLink, Share2, 
@@ -468,7 +468,7 @@ const CatalogueLinkPage = () => {
       <Button
         size="lg"
         onClick={handleNativeShare}
-        className="h-14 w-14 rounded-full shadow-xl bg-accent hover:bg-accent/90 p-0"
+        className="h-14 w-14 rounded-full shadow-xl btn-gradient-accent p-0"
       >
         <Share2 className="w-6 h-6" />
       </Button>

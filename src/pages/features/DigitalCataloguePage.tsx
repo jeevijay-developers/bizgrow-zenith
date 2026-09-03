@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Layers, Search, ShoppingCart, Tag, 
@@ -61,7 +61,7 @@ const DigitalCataloguePage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-light/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -85,13 +85,13 @@ const DigitalCataloguePage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/join">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
                     Create Your Catalogue
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
                 <Link to="/store/demo">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-14 text-base w-full sm:w-auto">
                     View Demo Store
                   </Button>
                 </Link>
@@ -120,8 +120,8 @@ const DigitalCataloguePage = () => {
                 className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
+                    <Check className="w-5 h-5 text-success" />
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Live Store</p>
@@ -136,7 +136,7 @@ const DigitalCataloguePage = () => {
                 className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+                  <Heart className="w-5 h-5 text-destructive fill-destructive" />
                   <span className="font-semibold">1.2k Visitors Today</span>
                 </div>
               </motion.div>
@@ -156,7 +156,7 @@ const DigitalCataloguePage = () => {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Everything You Need for{" "}
-              <span className="text-primary">Online Selling</span>
+              <span className="text-gradient">Online Selling</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               A complete solution to showcase your products and accept orders - all without building an app.
@@ -194,7 +194,7 @@ const DigitalCataloguePage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Go Live in <span className="text-primary">3 Simple Steps</span>
+              Go Live in <span className="text-gradient">3 Simple Steps</span>
             </h2>
           </motion.div>
 
@@ -237,7 +237,7 @@ const DigitalCataloguePage = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Why Retailers Love{" "}
-                <span className="text-primary">Digital Catalogue</span>
+                <span className="text-gradient">Digital Catalogue</span>
               </h2>
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
@@ -249,17 +249,17 @@ const DigitalCataloguePage = () => {
                     transition={{ delay: index * 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-4 h-4 text-green-600" />
+                    <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-success" />
                     </div>
                     <span className="text-lg">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
-              
+
               <div className="mt-8">
                 <Link to="/join">
-                  <Button size="lg" className="gap-2">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold gap-2">
                     Get Started Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>

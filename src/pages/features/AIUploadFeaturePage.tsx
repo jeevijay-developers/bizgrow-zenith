@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Sparkles, Camera, Cpu, Clock, 
@@ -79,7 +79,7 @@ const AIUploadFeaturePage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-40 left-10 w-72 h-72 bg-accent/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-light/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           {/* Floating particles */}
           {[...Array(6)].map((_, i) => (
             <motion.div
@@ -137,7 +137,7 @@ const AIUploadFeaturePage = () => {
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/join">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
                     Try AI Upload Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -184,7 +184,7 @@ const AIUploadFeaturePage = () => {
                   </div>
                   <div>
                     <p className="font-bold text-lg">Detected!</p>
-                    <p className="text-sm text-muted-foreground">Tata Salt 1kg — ₹28</p>
+                    <p className="text-sm text-muted-foreground">Tata Salt 1kg â€” â‚¹28</p>
                   </div>
                 </div>
               </motion.div>
@@ -203,7 +203,7 @@ const AIUploadFeaturePage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              How <span className="text-primary">AI Upload</span> Works
+              How <span className="text-gradient">AI Upload</span> Works
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Our advanced neural network processes your images to extract product information accurately.
@@ -247,7 +247,7 @@ const AIUploadFeaturePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Powerful <span className="text-primary">AI Features</span>
+              Powerful <span className="text-gradient">AI Features</span>
             </h2>
           </motion.div>
 
@@ -282,7 +282,7 @@ const AIUploadFeaturePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Manual Entry vs <span className="text-primary">AI Upload</span>
+              Manual Entry vs <span className="text-gradient">AI Upload</span>
             </h2>
           </motion.div>
 
@@ -303,8 +303,8 @@ const AIUploadFeaturePage = () => {
                   "Category guessing"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-muted-foreground">
-                    <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
-                      <span className="text-red-500 text-xs">✕</span>
+                    <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center">
+                      <span className="text-destructive text-xs">✕</span>
                     </div>
                     {item}
                   </li>
@@ -328,8 +328,8 @@ const AIUploadFeaturePage = () => {
                   "Smart categorization"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-green-600" />
+                    <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-success" />
                     </div>
                     {item}
                   </li>
@@ -337,10 +337,10 @@ const AIUploadFeaturePage = () => {
               </ul>
             </motion.div>
           </div>
-          
+
           <div className="text-center mt-12">
             <Link to="/join">
-              <Button size="lg" className="gap-2">
+              <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold gap-2">
                 Start Using AI Upload
                 <ArrowRight className="w-5 h-5" />
               </Button>

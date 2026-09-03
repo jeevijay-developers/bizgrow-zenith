@@ -38,7 +38,7 @@ const WhatsAppSection = () => {
     <section className="py-20 md:py-28 bg-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-[5%] w-72 h-72 bg-green-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-[5%] w-72 h-72 bg-primary/5 rounded-full blur-[100px]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -49,14 +49,14 @@ const WhatsAppSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-6">
-              <MessageSquare className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-semibold text-green-600">WhatsApp Orders</span>
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+              <MessageSquare className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">WhatsApp Orders</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Orders via WhatsApp
-              <span className="text-green-500 block mt-2">Where Customers Are</span>
+              <span className="text-bizgrow-yellow-dark block mt-2">Where Customers Are</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -73,10 +73,10 @@ const WhatsAppSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 * index }}
-                  className="bg-muted/50 rounded-xl p-4 border border-border hover:border-green-500/30 transition-colors"
+                  className="bg-muted/50 rounded-xl p-4 border border-border hover:border-primary/30 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center mb-3">
-                    <feature.icon className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                    <feature.icon className="w-5 h-5 text-primary" />
                   </div>
                   <p className="font-bold text-foreground text-sm">{feature.title}</p>
                   <p className="text-xs text-muted-foreground">{feature.description}</p>
@@ -86,7 +86,7 @@ const WhatsAppSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/join">
-                <RippleButton size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:opacity-90 text-white font-bold h-12 px-6 group">
+                <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Enable WhatsApp Orders
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

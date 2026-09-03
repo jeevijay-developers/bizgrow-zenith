@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -166,7 +166,7 @@ const Navbar = () => {
               </Button>
             </Link>
             <Link to="/join">
-              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-5 rounded-lg shadow-lg shadow-accent/20">
+              <Button className="btn-gradient-accent text-accent-foreground font-semibold px-5 rounded-lg shadow-lg shadow-accent/20">
                 Start Free Trial
               </Button>
             </Link>
@@ -256,7 +256,7 @@ const Navbar = () => {
                     </Button>
                   </Link>
                   <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
+                    <Button className="btn-gradient-accent text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
                       Start Free Trial
                     </Button>
                   </Link>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Camera, Sparkles, Zap, Package, Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import aiScanningDemo from "@/assets/ai-scanning-demo.jpg";
 
 const scanSteps = [
@@ -67,8 +68,8 @@ const AIScanningSection = () => {
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <Check className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-success" />
                   </div>
                   <div>
                     <p className="font-bold text-foreground text-sm">Tata Salt 1kg</p>
@@ -116,7 +117,7 @@ const AIScanningSection = () => {
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Snap, Scan,
-              <span className="text-primary block mt-2">Sell in Seconds</span>
+              <span className="text-bizgrow-yellow-dark block mt-2">Sell in Seconds</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -126,7 +127,7 @@ const AIScanningSection = () => {
             </p>
 
             {/* Process Steps */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div className="hidden sm:grid sm:grid-cols-4 gap-4 mb-8">
               {scanSteps.map((step, index) => (
                 <motion.div
                   key={step.step}
@@ -145,18 +146,33 @@ const AIScanningSection = () => {
               ))}
             </div>
 
+            {/* Process Steps - Mobile Carousel */}
+            <div className="sm:hidden mb-8">
+              <MobileCarousel slideClassName="w-[42%]">
+                {scanSteps.map((step) => (
+                  <div key={step.step} className="text-center">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+                      <step.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-sm font-bold text-foreground">{step.title}</p>
+                    <p className="text-xs text-muted-foreground">{step.description}</p>
+                  </div>
+                ))}
+              </MobileCarousel>
+            </div>
+
             {/* Feature List */}
             <div className="grid grid-cols-2 gap-3 mb-8">
               {detectionFeatures.map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500 shrink-0" />
+                  <Check className="w-4 h-4 text-success shrink-0" />
                   <span className="text-sm text-foreground">{feature}</span>
                 </div>
               ))}
             </div>
 
             <Link to="/join">
-              <RippleButton size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 font-bold h-12 px-6 group">
+              <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
                 Try AI Upload Free
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </RippleButton>

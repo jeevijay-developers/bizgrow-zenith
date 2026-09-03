@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
@@ -71,7 +71,7 @@ const Footer = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/join">
-                <RippleButton className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 h-14 text-lg shadow-lg">
+                <RippleButton className="btn-gradient-accent text-accent-foreground font-bold px-8 h-14 text-lg shadow-lg">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </RippleButton>
@@ -158,7 +158,7 @@ const Footer = () => {
           <div className="container mx-auto px-4 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <p className="text-background/40 text-sm text-center sm:text-left flex items-center gap-1 flex-wrap justify-center">
-                © {new Date().getFullYear()} BizGrow 360. Made with 
+                Â© {new Date().getFullYear()} BizGrow 360. Made with 
                 <Heart className="w-3.5 h-3.5 text-destructive fill-destructive inline-block mx-0.5" /> 
                 in India
               </p>

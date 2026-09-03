@@ -1,4 +1,4 @@
-import { UserPlus, Store, Rocket, ArrowRight } from "lucide-react";
+﻿import { UserPlus, Store, Rocket, ArrowRight } from "lucide-react";
 
 const steps = [
   {
@@ -78,7 +78,7 @@ const HowItWorksSection = () => {
         <div className="text-center mt-16">
           <a
             href="/join"
-            className="inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 py-4 rounded-xl text-lg transition-all shadow-glow-accent hover:scale-105"
+            className="inline-flex items-center gap-2 btn-gradient-accent text-accent-foreground font-bold px-8 py-4 rounded-xl text-lg transition-all shadow-glow-accent hover:scale-105"
           >
             Get Started Now
             <ArrowRight className="w-5 h-5" />

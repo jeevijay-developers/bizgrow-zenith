@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Smartphone, Zap, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ export const PWAInstallPrompt = () => {
 
           <Button
             onClick={handleInstall}
-            className="w-full mt-3 bg-accent hover:bg-accent/90 text-black font-semibold"
+            className="w-full mt-3 btn-gradient-accent text-black font-semibold"
             size="sm"
           >
             <Download className="w-4 h-4 mr-2" />

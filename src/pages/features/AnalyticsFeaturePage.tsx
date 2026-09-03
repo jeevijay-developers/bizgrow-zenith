@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, BarChart3, TrendingUp, PieChart, 
@@ -44,10 +44,10 @@ const features = [
 ];
 
 const metrics = [
-  { icon: IndianRupee, label: "Total Revenue", value: "₹2,45,678", change: "+23%" },
+  { icon: IndianRupee, label: "Total Revenue", value: "â‚¹2,45,678", change: "+23%" },
   { icon: ShoppingCart, label: "Total Orders", value: "1,234", change: "+18%" },
   { icon: Users, label: "Customers", value: "856", change: "+12%" },
-  { icon: Target, label: "Avg Order Value", value: "₹199", change: "+8%" }
+  { icon: Target, label: "Avg Order Value", value: "â‚¹199", change: "+8%" }
 ];
 
 const insights = [
@@ -78,7 +78,7 @@ const AnalyticsFeaturePage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-96 h-96 bg-accent/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-light/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -110,7 +110,7 @@ const AnalyticsFeaturePage = () => {
                     </div>
                     <div className="flex items-end gap-2">
                       <span className="text-2xl font-bold text-white">{metric.value}</span>
-                      <span className="text-green-400 text-sm">{metric.change}</span>
+                      <span className="text-success text-sm">{metric.change}</span>
                     </div>
                   </div>
                 ))}
@@ -118,7 +118,7 @@ const AnalyticsFeaturePage = () => {
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/join">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
                     Start Tracking Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -147,8 +147,8 @@ const AnalyticsFeaturePage = () => {
                 className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-success" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">This Month</p>
@@ -178,7 +178,7 @@ const AnalyticsFeaturePage = () => {
                 <p className="text-2xl md:text-3xl font-bold">{metric.value}</p>
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-muted-foreground text-sm">{metric.label}</p>
-                  <span className="text-green-500 text-xs font-medium">{metric.change}</span>
+                  <span className="text-success text-xs font-medium">{metric.change}</span>
                 </div>
               </motion.div>
             ))}
@@ -196,7 +196,7 @@ const AnalyticsFeaturePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Complete <span className="text-primary">Analytics Suite</span>
+              Complete <span className="text-gradient">Analytics Suite</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               All the metrics and reports you need to understand and grow your business.
@@ -238,7 +238,7 @@ const AnalyticsFeaturePage = () => {
               AI-Powered
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Smart <span className="text-primary">Business Insights</span>
+              Smart <span className="text-gradient">Business Insights</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Our AI analyzes your data and gives you actionable recommendations.
@@ -277,7 +277,7 @@ const AnalyticsFeaturePage = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Everything in{" "}
-                <span className="text-primary">One Dashboard</span>
+                <span className="text-gradient">One Dashboard</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
                 No need to juggle multiple tools. Get a complete view of your business 
@@ -301,17 +301,17 @@ const AnalyticsFeaturePage = () => {
                     transition={{ delay: i * 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                      <Check className="w-4 h-4 text-green-600" />
+                    <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-success" />
                     </div>
                     <span>{item}</span>
                   </motion.div>
                 ))}
               </div>
-              
+
               <div className="mt-8">
                 <Link to="/join">
-                  <Button size="lg" className="gap-2">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold gap-2">
                     Start Tracking Your Business
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -330,7 +330,7 @@ const AnalyticsFeaturePage = () => {
                 <div className="bg-card rounded-xl p-4 border border-border">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-sm font-medium">Revenue This Week</span>
-                    <span className="text-green-500 text-xs">+18%</span>
+                    <span className="text-success text-xs">+18%</span>
                   </div>
                   <div className="flex items-end gap-1 h-20">
                     {[40, 55, 45, 70, 65, 85, 75].map((h, i) => (
@@ -354,7 +354,7 @@ const AnalyticsFeaturePage = () => {
                   </div>
                   <div className="bg-card rounded-xl p-4 border border-border">
                     <Target className="w-5 h-5 text-primary mb-2" />
-                    <p className="text-2xl font-bold">₹245</p>
+                    <p className="text-2xl font-bold">â‚¹245</p>
                     <p className="text-xs text-muted-foreground">Avg Order</p>
                   </div>
                 </div>

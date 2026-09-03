@@ -402,7 +402,7 @@ const Auth = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 sm:h-12 bg-primary text-primary-foreground font-semibold text-sm sm:text-base mt-2"
+                className="w-full h-11 sm:h-12 btn-gradient-accent text-accent-foreground font-semibold text-sm sm:text-base mt-2"
               >
                 {isLoading ? (
                   <>

@@ -86,7 +86,7 @@ const WhatsAppOrdersPage = () => {
       <section className="pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-accent/15 rounded-full blur-3xl" />
         </div>
         
@@ -97,13 +97,13 @@ const WhatsAppOrdersPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
                 <MessageSquare className="w-4 h-4" />
                 WhatsApp Integration
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Orders Straight to{" "}
-                <span className="text-green-400">WhatsApp</span>
+                <span className="text-gradient">WhatsApp</span>
               </h1>
               <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
                 No app needed. Customers order from your catalogue and you receive everything 
@@ -116,21 +116,21 @@ const WhatsAppOrdersPage = () => {
                   { icon: Smartphone, text: "Works on any phone" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <item.icon className="w-5 h-5 text-green-400" />
+                    <item.icon className="w-5 h-5 text-accent" />
                     <span className="text-white/80">{item.text}</span>
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/join">
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
                     Connect WhatsApp
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
                 <Link to="#how-it-works">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-14 text-base w-full sm:w-auto">
                     See How It Works
                   </Button>
                 </Link>
@@ -213,7 +213,7 @@ const WhatsAppOrdersPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Simple <span className="text-primary">Order Flow</span>
+              Simple <span className="text-gradient">Order Flow</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               From customer browsing to order fulfillment - all through WhatsApp.
@@ -230,18 +230,18 @@ const WhatsAppOrdersPage = () => {
                 transition={{ delay: index * 0.15 }}
                 className="relative"
               >
-                <div className="bg-card rounded-2xl border border-border p-6 text-center hover:shadow-lg hover:border-green-500/20 transition-all h-full">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-green-500/10 flex items-center justify-center">
-                    <item.IconComponent className="w-7 h-7 text-green-500" />
+                <div className="bg-card rounded-2xl border border-border p-6 text-center hover:shadow-lg hover:border-primary/20 transition-all h-full">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <item.IconComponent className="w-7 h-7 text-primary" />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold mx-auto mb-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mx-auto mb-3">
                     {item.step}
                   </div>
                   <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                   <p className="text-muted-foreground text-sm">{item.description}</p>
                 </div>
                 {index < workflow.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-green-500/30" />
+                  <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-primary/30" />
                 )}
               </motion.div>
             ))}
@@ -259,7 +259,7 @@ const WhatsAppOrdersPage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              WhatsApp <span className="text-primary">Superpowers</span>
+              WhatsApp <span className="text-gradient">Superpowers</span>
             </h2>
           </motion.div>
 
@@ -271,10 +271,10 @@ const WhatsAppOrdersPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:border-green-500/20 transition-all group"
+                className="bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:border-primary/20 transition-all group"
               >
-                <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
-                  <feature.icon className="w-7 h-7 text-green-600" />
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <feature.icon className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
@@ -295,7 +295,7 @@ const WhatsAppOrdersPage = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 See What You{" "}
-                <span className="text-green-500">Receive</span>
+                <span className="text-gradient">Receive</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
                 Every order comes with complete details - customer info, items, address, 
@@ -311,17 +311,17 @@ const WhatsAppOrdersPage = () => {
                   "Special instructions or notes"
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                      <Check className="w-4 h-4 text-green-600" />
+                    <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-success" />
                     </div>
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-8">
                 <Link to="/join">
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600 gap-2">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold gap-2">
                     Get Started with WhatsApp
                     <ArrowRight className="w-5 h-5" />
                   </Button>

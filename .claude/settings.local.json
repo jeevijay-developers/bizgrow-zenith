@@ -6,5 +6,8 @@
       "WebFetch(domain:images.unsplash.com)",
       "Bash(node scripts/add-more-products.mjs)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

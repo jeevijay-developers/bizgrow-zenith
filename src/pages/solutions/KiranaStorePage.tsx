@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, ShoppingBag, Package, TrendingUp, 
   Bell, Clock, BarChart3, Truck, MessageSquare, Tag, Users
@@ -35,14 +35,14 @@ const KiranaStorePage = () => {
       <section className="pt-20 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(284,100%,8%)]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-green-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-20 right-10 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-36 sm:w-48 md:w-72 h-36 sm:h-48 md:h-72 bg-accent/20 rounded-full blur-3xl" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-400 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
+              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Kirana & Grocery Stores
               </div>
@@ -56,7 +56,7 @@ const KiranaStorePage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link to="/join" className="w-full sm:w-auto">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base w-full sm:w-auto">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
@@ -75,12 +75,12 @@ const KiranaStorePage = () => {
                 className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-4 shadow-xl hidden sm:block"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-success/10 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-success" />
                   </div>
                   <div>
                     <p className="font-semibold text-xs sm:text-sm">Sales Up</p>
-                    <p className="text-[10px] sm:text-xs text-green-600">+32% this month</p>
+                    <p className="text-[10px] sm:text-xs text-success">+32% this month</p>
                   </div>
                 </div>
               </div>
@@ -96,7 +96,7 @@ const KiranaStorePage = () => {
             className="text-center mb-8 sm:mb-10 md:mb-12"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
-              Built for <span className="text-primary">Kirana Stores</span>
+              Built for <span className="text-gradient">Kirana Stores</span>
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
               Features designed specifically for grocery and daily essentials retail.
@@ -127,7 +127,7 @@ const KiranaStorePage = () => {
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                 Why Kirana Owners Love{" "}
-                <span className="text-primary">BizGrow 360</span>
+                <span className="text-gradient">BizGrow 360</span>
               </h2>
               <div className="space-y-3 sm:space-y-4">
                 {benefits.map((benefit, index) => (
@@ -135,8 +135,8 @@ const KiranaStorePage = () => {
                     key={index}
                     className="flex items-center gap-2.5 sm:gap-3"
                   >
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-success" />
                     </div>
                     <span className="text-sm sm:text-base md:text-lg">{benefit}</span>
                   </div>

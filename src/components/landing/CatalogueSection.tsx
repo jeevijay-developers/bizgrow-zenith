@@ -130,7 +130,7 @@ const CatalogueSection = () => {
                       <p className="text-white/70 text-xs sm:text-sm">₹189 total</p>
                     </div>
                   </div>
-                  <button className="bg-accent text-primary font-bold px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-lg hover:shadow-accent/30 transition-shadow text-xs sm:text-base">
+                  <button className="btn-gradient-accent text-primary font-bold px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-lg hover:shadow-accent/30 transition-shadow text-xs sm:text-base">
                     Checkout →
                   </button>
                 </div>

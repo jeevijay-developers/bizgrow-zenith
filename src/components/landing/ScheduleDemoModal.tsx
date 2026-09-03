@@ -127,8 +127,8 @@ const ScheduleDemoModal = ({ open, onOpenChange }: ScheduleDemoModalProps) => {
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         {isSuccess ? (
           <div className="py-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/10 flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-success" />
             </div>
             <DialogTitle className="text-xl mb-2">Request Submitted!</DialogTitle>
             <DialogDescription className="text-muted-foreground">

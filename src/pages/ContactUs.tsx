@@ -104,8 +104,8 @@ const ContactUs = () => {
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 group"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-green-500/20 transition-colors">
-                    <MessageCircle className="w-5 h-5 text-green-600" />
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                    <MessageCircle className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium">WhatsApp</p>
@@ -143,7 +143,7 @@ const ContactUs = () => {
                   <Label htmlFor="message">Message *</Label>
                   <Textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your needs..." rows={5} required />
                 </div>
-                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
+                <Button type="submit" size="lg" className="w-full gap-2 btn-gradient-accent text-accent-foreground font-bold" disabled={isSubmitting}>
                   {isSubmitting ? "Sending..." : "Send Message"}
                   <Send className="w-4 h-4" />
                 </Button>

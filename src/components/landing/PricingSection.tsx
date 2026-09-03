@@ -5,6 +5,7 @@ import { Check, Star, Zap, Building2, Sparkles } from "lucide-react";
 import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { Badge } from "@/components/ui/badge";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 
 const plans = [
   {
@@ -87,6 +88,76 @@ const plans = [
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(true);
 
+  const renderPlanCard = (plan: typeof plans[number]) => (
+    <div
+      className={`relative rounded-2xl h-full ${
+        plan.popular
+          ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-2xl shadow-primary/25"
+          : "bg-card border border-border"
+      } overflow-hidden`}
+    >
+      {/* Popular Badge */}
+      {plan.popular && (
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
+          <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-xs px-3 py-1 flex items-center gap-1.5 shadow-lg">
+            <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
+          </Badge>
+        </div>
+      )}
+
+      <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
+        {/* Plan Icon & Name */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-12 h-12 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>
+            <plan.icon className={`w-6 h-6 ${plan.popular ? "text-white" : "text-primary"}`} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">{plan.name}</h3>
+            <p className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
+              {plan.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="mb-6">
+          <span className="text-4xl sm:text-5xl font-bold">
+            {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual ? plan.annualPrice : plan.price}
+          </span>
+          <span className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
+            {plan.period}
+          </span>
+          {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual && (
+            <span className={`block text-sm mt-1 ${plan.popular ? "text-white/60" : "text-muted-foreground"}`}>
+              <s>{plan.price}</s> billed annually
+            </span>
+          )}
+        </div>
+
+        {/* CTA Button */}
+        <Link to={plan.href} className="block mb-6">
+          <RippleButton className="w-full h-12 font-bold text-base btn-gradient-accent text-accent-foreground">
+            {plan.cta}
+          </RippleButton>
+        </Link>
+
+        {/* Features List */}
+        <ul className="space-y-3">
+          {plan.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-3">
+              <Check className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-primary"}`} />
+              <span className={`text-sm ${plan.popular ? "text-white/90" : "text-foreground"}`}>
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
+  const mobilePlanOrder = [...plans].sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+
   return (
     <section className="py-20 md:py-28 bg-secondary/30 relative overflow-hidden" id="pricing">
       {/* Background decoration */}
@@ -109,7 +180,7 @@ const PricingSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Plans That Scale
-            <span className="text-primary block mt-2">With Your Success</span>
+            <span className="text-bizgrow-yellow-dark block mt-2">With Your Success</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Start free, upgrade when you need. No hidden fees, cancel anytime.
@@ -140,7 +211,7 @@ const PricingSection = () => {
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 max-w-7xl mx-auto">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -148,77 +219,20 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`relative rounded-2xl ${
-                plan.popular 
-                  ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground scale-[1.02] lg:scale-105 shadow-2xl shadow-primary/25 z-10" 
-                  : "bg-card border border-border"
-              } overflow-hidden`}
+              className={plan.popular ? "scale-[1.02] lg:scale-105 z-10" : ""}
             >
-              {/* Popular Badge */}
-              {plan.popular && (
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
-                  <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-xs px-3 py-1 flex items-center gap-1.5 shadow-lg">
-                    <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
-                  </Badge>
-                </div>
-              )}
-
-              <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
-                {/* Plan Icon & Name */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>
-                    <plan.icon className={`w-6 h-6 ${plan.popular ? "text-white" : "text-primary"}`} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
-                    <p className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
-                      {plan.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-6">
-                  <span className="text-4xl sm:text-5xl font-bold">
-                    {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual ? plan.annualPrice : plan.price}
-                  </span>
-                  <span className={`text-sm ${plan.popular ? "text-white/70" : "text-muted-foreground"}`}>
-                    {plan.period}
-                  </span>
-                  {plan.price !== "₹0" && plan.price !== "Custom" && isAnnual && (
-                    <span className={`block text-sm mt-1 ${plan.popular ? "text-white/60" : "text-muted-foreground"}`}>
-                      <s>{plan.price}</s> billed annually
-                    </span>
-                  )}
-                </div>
-
-                {/* CTA Button */}
-                <Link to={plan.href} className="block mb-6">
-                  <RippleButton
-                    className={`w-full h-12 font-bold text-base ${
-                      plan.popular
-                        ? "bg-white text-primary hover:bg-white/90"
-                        : "bg-primary text-primary-foreground hover:bg-primary/90"
-                    }`}
-                  >
-                    {plan.cta}
-                  </RippleButton>
-                </Link>
-
-                {/* Features List */}
-                <ul className="space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Check className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-primary"}`} />
-                      <span className={`text-sm ${plan.popular ? "text-white/90" : "text-foreground"}`}>
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {renderPlanCard(plan)}
             </motion.div>
           ))}
+        </div>
+
+        {/* Pricing Cards - Mobile Carousel (most popular plan shown first) */}
+        <div className="sm:hidden max-w-7xl mx-auto">
+          <MobileCarousel slideClassName="w-[85%]">
+            {mobilePlanOrder.map((plan) => (
+              <div key={plan.name}>{renderPlanCard(plan)}</div>
+            ))}
+          </MobileCarousel>
         </div>
 
         {/* Trust badges */}

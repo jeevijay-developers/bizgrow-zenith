@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp, Clock, IndianRupee, FileText, Smartphone, ChartBar, XCircle, CheckCircle } from "lucide-react";
 import beforeAfterImage from "@/assets/before-after-transform.jpg";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 
 const transformMetrics = [
   { 
@@ -50,13 +51,13 @@ const TransformationSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-6">
-            <TrendingUp className="w-4 h-4 text-green-500" />
-            <span className="text-sm font-semibold text-green-600">Store Transformation</span>
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Store Transformation</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             From Khaata to
-            <span className="text-primary block mt-2">Smart Business</span>
+            <span className="text-bizgrow-yellow-dark block mt-2">Smart Business</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             See how thousands of stores transformed their business with BizGrow 360
@@ -79,12 +80,12 @@ const TransformationSection = () => {
             {/* Overlay Labels */}
             <div className="absolute inset-0 flex">
               <div className="w-1/2 flex items-end p-6">
-                <div className="bg-red-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+                <div className="bg-primary/90 backdrop-blur-sm text-primary-foreground px-4 py-2 rounded-lg font-bold flex items-center gap-2">
                   <XCircle className="w-4 h-4" /> BEFORE
                 </div>
               </div>
               <div className="w-1/2 flex items-end justify-end p-6">
-                <div className="bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+                <div className="btn-gradient-accent backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-lg font-bold flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" /> AFTER
                 </div>
               </div>
@@ -93,7 +94,7 @@ const TransformationSection = () => {
         </motion.div>
 
         {/* Transformation Metrics */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {transformMetrics.map((metric, index) => (
             <motion.div
               key={metric.label}
@@ -106,21 +107,50 @@ const TransformationSection = () => {
               <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <metric.icon className="w-6 h-6 text-primary" />
               </div>
-              
+
               <p className="text-sm text-muted-foreground mb-2">{metric.label}</p>
-              
+
               <div className="flex items-center justify-center gap-3 mb-3">
-                <span className="text-sm text-red-500 line-through">{metric.before}</span>
+                <span className="text-sm text-muted-foreground line-through">{metric.before}</span>
                 <ArrowRight className="w-4 h-4 text-primary" />
-                <span className="text-sm font-bold text-green-500">{metric.after}</span>
+                <span className="text-sm font-bold text-bizgrow-yellow-dark">{metric.after}</span>
               </div>
-              
-              <div className="inline-flex items-center gap-1 bg-green-500/10 text-green-600 text-xs font-bold px-3 py-1 rounded-full">
+
+              <div className="inline-flex items-center gap-1 bg-accent/10 text-bizgrow-yellow-dark text-xs font-bold px-3 py-1 rounded-full">
                 <TrendingUp className="w-3 h-3" />
                 {metric.improvement}
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Transformation Metrics - Mobile Carousel */}
+        <div className="sm:hidden max-w-6xl mx-auto">
+          <MobileCarousel slideClassName="w-[80%]">
+            {transformMetrics.map((metric) => (
+              <div
+                key={metric.label}
+                className="bg-background border border-border rounded-2xl p-6 text-center h-full"
+              >
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <metric.icon className="w-6 h-6 text-primary" />
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-2">{metric.label}</p>
+
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <span className="text-sm text-muted-foreground line-through">{metric.before}</span>
+                  <ArrowRight className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-bold text-bizgrow-yellow-dark">{metric.after}</span>
+                </div>
+
+                <div className="inline-flex items-center gap-1 bg-accent/10 text-bizgrow-yellow-dark text-xs font-bold px-3 py-1 rounded-full">
+                  <TrendingUp className="w-3 h-3" />
+                  {metric.improvement}
+                </div>
+              </div>
+            ))}
+          </MobileCarousel>
         </div>
       </div>
     </section>

@@ -4,7 +4,7 @@
 
 /* BizGrow 360 Design System
    Primary: Deep Purple #39004e
-   Accent: Yellow #ffd066
+   Accent: "360" badge yellow/gold gradient — #FFCF00 (top) to #CD9B13 (bottom)
    All colors in HSL format
 */
 
@@ -31,12 +31,16 @@
     --muted: 284 20% 96%;
     --muted-foreground: 284 20% 40%;
 
-    /* Yellow #ffd066 = hsl(42, 100%, 70%) */
-    --accent: 42 100% 70%;
+    /* "360" badge yellow #FFCF00 = hsl(49, 100%, 50%) */
+    --accent: 49 100% 50%;
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
+
+    /* Muted success green #1F9D55 — reserved for small positive-metric indicators only */
+    --success: 146 67% 37%;
+    --success-foreground: 0 0% 100%;
 
     --border: 284 20% 90%;
     --input: 284 20% 90%;
@@ -47,18 +51,19 @@
     /* Custom BizGrow variables */
     --purple-dark: 284 100% 10%;
     --purple-light: 284 60% 60%;
-    --yellow-dark: 42 100% 60%;
-    --yellow-light: 42 100% 85%;
+    /* "360" badge gold (gradient shadow/bottom) #CD9B13 = hsl(44, 83%, 44%) */
+    --yellow-dark: 44 83% 44%;
+    --yellow-light: 49 100% 75%;
 
     /* Sidebar */
     --sidebar-background: 284 100% 15%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 42 100% 70%;
+    --sidebar-primary: 49 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 284 100% 22%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 284 80% 25%;
-    --sidebar-ring: 42 100% 70%;
+    --sidebar-ring: 49 100% 50%;
     
     /* Safe area insets for mobile */
     --safe-area-inset-top: env(safe-area-inset-top, 0px);
@@ -77,7 +82,7 @@
     --popover: 284 100% 6%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 42 100% 70%;
+    --primary: 49 100% 50%;
     --primary-foreground: 0 0% 0%;
 
     --secondary: 284 50% 15%;
@@ -94,16 +99,16 @@
 
     --border: 284 30% 18%;
     --input: 284 30% 18%;
-    --ring: 42 100% 70%;
+    --ring: 49 100% 50%;
 
     --sidebar-background: 284 100% 8%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 42 100% 70%;
+    --sidebar-primary: 49 100% 50%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 284 100% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 284 50% 20%;
-    --sidebar-ring: 42 100% 70%;
+    --sidebar-ring: 49 100% 50%;
   }
 }
 
@@ -180,11 +185,26 @@ body[data-scroll-locked] {
   }
 
   .gradient-accent {
-    background: linear-gradient(135deg, hsl(42, 100%, 70%) 0%, hsl(38, 100%, 60%) 100%);
+    background: linear-gradient(135deg, hsl(49, 100%, 50%) 0%, hsl(44, 83%, 44%) 100%);
+  }
+
+  /* Shared "360" badge gradient — use on every yellow/accent CTA button */
+  .btn-gradient-accent {
+    background: linear-gradient(180deg, hsl(var(--accent)) 0%, hsl(var(--yellow-dark)) 100%);
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-gradient-accent:hover {
+    filter: brightness(0.95);
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.35);
+  }
+
+  .btn-gradient-accent:active {
+    filter: brightness(0.9);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(42, 100%, 70%) 0%, hsl(38, 100%, 75%) 100%);
+    background: linear-gradient(135deg, hsl(49, 100%, 50%) 0%, hsl(44, 83%, 50%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -195,7 +215,7 @@ body[data-scroll-locked] {
   }
 
   .shadow-glow-accent {
-    box-shadow: 0 0 30px hsl(42 100% 70% / 0.4);
+    box-shadow: 0 0 30px hsl(49 100% 50% / 0.4);
   }
 
   .float-animation {
@@ -232,10 +252,10 @@ body[data-scroll-locked] {
 
   @keyframes pulse-glow {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(42 100% 70% / 0.4);
+      box-shadow: 0 0 20px hsl(49 100% 50% / 0.4);
     }
     50% {
-      box-shadow: 0 0 40px hsl(42 100% 70% / 0.6);
+      box-shadow: 0 0 40px hsl(49 100% 50% / 0.6);
     }
   }
 

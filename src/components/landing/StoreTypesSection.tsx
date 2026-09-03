@@ -17,18 +17,18 @@ import hardwareImg from "@/assets/categories-ai/hardware.png";
 import otherImg from "@/assets/categories-ai/other.png";
 
 const storeTypes = [
-  { image: kiranaImg, title: "Kirana Store", description: "Daily essentials & groceries", products: "500+", color: "bg-orange-50", href: "/solutions/kirana" },
-  { image: bakeryImg, title: "Bakery", description: "Fresh bakes & confectionery", products: "200+", color: "bg-amber-50", href: "/solutions/bakery" },
-  { image: dairyImg, title: "Dairy Shop", description: "Milk & dairy products", products: "100+", color: "bg-sky-50", href: "/solutions/dairy" },
-  { image: clothingImg, title: "Clothing Store", description: "Fashion & apparel", products: "1000+", color: "bg-pink-50", href: "/solutions/clothing" },
-  { image: cosmeticsImg, title: "Cosmetics", description: "Beauty & skincare", products: "300+", color: "bg-rose-50", href: "/solutions/cosmetics" },
-  { image: electronicsImg, title: "Electronics", description: "Gadgets & phones", products: "500+", color: "bg-slate-50", href: "/solutions/electronics" },
-  { image: fruitsVegetablesImg, title: "Fruits & Vegetables", description: "Fresh produce daily", products: "150+", color: "bg-green-50", href: "/solutions/fruits-vegetables" },
-  { image: electricalImg, title: "Electrical Supplies", description: "Wires & equipment", products: "400+", color: "bg-yellow-50", href: "/solutions/electrical" },
-  { image: pharmacyImg, title: "Pharmacy", description: "Health & medicine", products: "600+", color: "bg-teal-50", href: "/solutions/pharmacy" },
-  { image: stationeryImg, title: "Stationery", description: "Books & office supplies", products: "350+", color: "bg-indigo-50", href: "/solutions/stationery" },
-  { image: hardwareImg, title: "Hardware", description: "Tools & equipment", products: "450+", color: "bg-gray-50", href: "/solutions/hardware" },
-  { image: otherImg, title: "Other Retail", description: "Specialty stores", products: "Unlimited", color: "bg-purple-50", href: "/solutions/other-retail" },
+  { image: kiranaImg, title: "Kirana Store", description: "Daily essentials & groceries", products: "500+", href: "/solutions/kirana" },
+  { image: bakeryImg, title: "Bakery", description: "Fresh bakes & confectionery", products: "200+", href: "/solutions/bakery" },
+  { image: dairyImg, title: "Dairy Shop", description: "Milk & dairy products", products: "100+", href: "/solutions/dairy" },
+  { image: clothingImg, title: "Clothing Store", description: "Fashion & apparel", products: "1000+", href: "/solutions/clothing" },
+  { image: cosmeticsImg, title: "Cosmetics", description: "Beauty & skincare", products: "300+", href: "/solutions/cosmetics" },
+  { image: electronicsImg, title: "Electronics", description: "Gadgets & phones", products: "500+", href: "/solutions/electronics" },
+  { image: fruitsVegetablesImg, title: "Fruits & Vegetables", description: "Fresh produce daily", products: "150+", href: "/solutions/fruits-vegetables" },
+  { image: electricalImg, title: "Electrical Supplies", description: "Wires & equipment", products: "400+", href: "/solutions/electrical" },
+  { image: pharmacyImg, title: "Pharmacy", description: "Health & medicine", products: "600+", href: "/solutions/pharmacy" },
+  { image: stationeryImg, title: "Stationery", description: "Books & office supplies", products: "350+", href: "/solutions/stationery" },
+  { image: hardwareImg, title: "Hardware", description: "Tools & equipment", products: "450+", href: "/solutions/hardware" },
+  { image: otherImg, title: "Other Retail", description: "Specialty stores", products: "Unlimited", href: "/solutions/other-retail" },
 ];
 
 const containerVariants = {
@@ -64,7 +64,7 @@ const StoreTypesSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Built for Your
-            <span className="text-primary block mt-2">Type of Business</span>
+            <span className="text-bizgrow-yellow-dark block mt-2">Type of Business</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             From neighborhood kirana stores to specialty shops, 
@@ -84,7 +84,7 @@ const StoreTypesSection = () => {
             <motion.div key={store.title} variants={itemVariants}>
               <Link
                 to={store.href}
-                className={`block ${store.color} border border-border rounded-2xl p-4 sm:p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full`}
+                className="block bg-card border border-border rounded-2xl p-4 sm:p-5 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group h-full"
               >
                 {/* Category Image */}
                 <div className="w-14 h-14 sm:w-16 sm:h-16 mb-3 rounded-xl overflow-hidden bg-white shadow-sm">

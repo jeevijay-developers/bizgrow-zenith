@@ -42,10 +42,10 @@ const testimonials = [
 ];
 
 const stats = [
-  { icon: Users, value: "10,000+", label: "Active Stores", color: "from-blue-500 to-cyan-500" },
-  { icon: IndianRupee, value: "₹50Cr+", label: "Monthly GMV", color: "from-green-500 to-emerald-500" },
-  { icon: Star, value: "4.9/5", label: "Average Rating", color: "from-amber-500 to-orange-500" },
-  { icon: ShoppingBag, value: "5L+", label: "Products Listed", color: "from-purple-500 to-pink-500" },
+  { icon: Users, value: "10,000+", label: "Active Stores" },
+  { icon: IndianRupee, value: "₹50Cr+", label: "Monthly GMV" },
+  { icon: Star, value: "4.9/5", label: "Average Rating" },
+  { icon: ShoppingBag, value: "5L+", label: "Products Listed" },
 ];
 
 const SocialProofSection = () => {
@@ -75,8 +75,8 @@ const SocialProofSection = () => {
         >
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
-                <stat.icon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+                <stat.icon className="w-6 h-6 text-primary-foreground" />
               </div>
               <p className="text-3xl sm:text-4xl font-bold text-foreground mb-1">{stat.value}</p>
               <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -97,7 +97,7 @@ const SocialProofSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Real Results from
-            <span className="text-primary block mt-2">Real Retailers</span>
+            <span className="text-bizgrow-yellow-dark block mt-2">Real Retailers</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             See how thousands of store owners are transforming their businesses with BizGrow 360.

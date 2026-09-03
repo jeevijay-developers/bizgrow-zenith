@@ -58,7 +58,13 @@ const SocialProofSection = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-ledger-paper relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-background relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/3 left-[5%] w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/3 right-[5%] w-72 h-72 bg-primary/5 rounded-full blur-[100px]" />
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         {/* Stats Row */}
         <motion.div
@@ -69,11 +75,11 @@ const SocialProofSection = () => {
         >
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-xl border border-ledger-rule bg-white flex items-center justify-center">
-                <stat.icon className="w-6 h-6 text-ledger-ink/70" strokeWidth={1.75} />
+              <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
+                <stat.icon className="w-6 h-6 text-white" />
               </div>
-              <p className="font-ledger text-3xl sm:text-4xl font-semibold text-ledger-ink mb-1">{stat.value}</p>
-              <p className="text-sm font-grotesk text-ledger-ink/60">{stat.label}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-foreground mb-1">{stat.value}</p>
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
             </div>
           ))}
         </motion.div>
@@ -85,15 +91,15 @@ const SocialProofSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
-            <TrendingUp className="w-4 h-4 text-ledger-sage" strokeWidth={1.75} />
-            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Success Stories</span>
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Success Stories</span>
           </div>
-          <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-medium text-ledger-ink mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Real Results from
-            <span className="block mt-2">Real Retailers</span>
+            <span className="text-primary block mt-2">Real Retailers</span>
           </h2>
-          <p className="font-grotesk text-lg text-ledger-ink/65">
+          <p className="text-lg text-muted-foreground">
             See how thousands of store owners are transforming their businesses with BizGrow 360.
           </p>
         </motion.div>
@@ -111,32 +117,32 @@ const SocialProofSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
-                className="snap-center min-w-full bg-white border border-ledger-rule rounded-2xl p-6 relative shadow-ledger-sm"
+                className="snap-center min-w-full bg-card border border-border rounded-2xl p-6 relative"
               >
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-ledger-ink/10" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
 
-                <div className="inline-flex items-center gap-1 border border-ledger-sage/30 text-ledger-sage text-xs font-grotesk font-semibold px-3 py-1 rounded-full mb-4">
-                  <TrendingUp className="w-3 h-3" strokeWidth={1.75} />
+                <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
+                  <TrendingUp className="w-3 h-3" />
                   {testimonial.highlight}
                 </div>
 
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-ledger-sage text-ledger-sage" />
+                    <Star key={i} className="w-4 h-4 fill-accent text-accent" />
                   ))}
                 </div>
 
-                <p className="font-grotesk text-ledger-ink/80 leading-relaxed mb-6">
+                <p className="text-foreground leading-relaxed mb-6">
                   "{testimonial.text}"
                 </p>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-ledger-ink flex items-center justify-center text-ledger-paper font-grotesk font-bold">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
                     {testimonial.image}
                   </div>
                   <div>
-                    <p className="font-ledger font-medium text-ledger-ink">{testimonial.name}</p>
-                    <p className="text-sm font-grotesk text-ledger-ink/55">
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">
                       {testimonial.role} • {testimonial.location}
                     </p>
                   </div>
@@ -150,7 +156,7 @@ const SocialProofSection = () => {
               <span
                 key={testimonial.name}
                 className={`h-1.5 rounded-full transition-all ${
-                  index === activeTestimonial ? "w-6 bg-ledger-ink" : "w-2 bg-ledger-rule"
+                  index === activeTestimonial ? "w-6 bg-primary" : "w-2 bg-border"
                 }`}
               />
             ))}
@@ -166,37 +172,37 @@ const SocialProofSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white border border-ledger-rule rounded-2xl p-6 sm:p-8 relative shadow-ledger-sm"
+              className="bg-card border border-border rounded-2xl p-6 sm:p-8 relative group hover:shadow-xl hover:border-primary/20 transition-all"
             >
               {/* Quote Icon */}
-              <Quote className="absolute top-6 right-6 w-8 h-8 text-ledger-ink/10" />
+              <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10 group-hover:text-primary/20 transition-colors" />
 
               {/* Highlight Badge */}
-              <div className="inline-flex items-center gap-1 border border-ledger-sage/30 text-ledger-sage text-xs font-grotesk font-semibold px-3 py-1 rounded-full mb-4">
-                <TrendingUp className="w-3 h-3" strokeWidth={1.75} />
+              <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
+                <TrendingUp className="w-3 h-3" />
                 {testimonial.highlight}
               </div>
 
               {/* Rating */}
               <div className="flex gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-ledger-sage text-ledger-sage" />
+                  <Star key={i} className="w-4 h-4 fill-accent text-accent" />
                 ))}
               </div>
 
               {/* Testimonial Text */}
-              <p className="font-grotesk text-ledger-ink/80 leading-relaxed mb-6">
+              <p className="text-foreground leading-relaxed mb-6">
                 "{testimonial.text}"
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-ledger-ink flex items-center justify-center text-ledger-paper font-grotesk font-bold">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
                   {testimonial.image}
                 </div>
                 <div>
-                  <p className="font-ledger font-medium text-ledger-ink">{testimonial.name}</p>
-                  <p className="text-sm font-grotesk text-ledger-ink/55">
+                  <p className="font-semibold text-foreground">{testimonial.name}</p>
+                  <p className="text-sm text-muted-foreground">
                     {testimonial.role} • {testimonial.location}
                   </p>
                 </div>

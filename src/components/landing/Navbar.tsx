@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import logoDarkBg from "@/assets/logo-dark-bg.png";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -45,7 +46,7 @@ const Navbar = () => {
     enabled: !!store?.id,
   });
 
-  const customLogoUrl = customization?.logo_url;
+  const logoUrl = customization?.logo_url || logoDarkBg;
 
   const navLinks = [
     {
@@ -94,23 +95,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-ledger-ink border-b border-ledger-marigold/20 shadow-ledger-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary backdrop-blur-lg border-b border-white/10 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
           <Link to="/" className="flex items-center shrink-0">
-            {customLogoUrl ? (
-              <img src={customLogoUrl} alt="Store logo" className="h-8 sm:h-9 md:h-10 w-auto" />
-            ) : (
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-ledger text-xl sm:text-2xl font-semibold tracking-tight text-ledger-paper">
-                  Bizgrow
-                </span>
-                <span className="inline-flex items-center justify-center h-5 px-1.5 rounded-full border border-ledger-marigold/70 text-ledger-marigold text-[10px] font-grotesk font-semibold tracking-wide">
-                  360°
-                </span>
-              </span>
-            )}
+            <img src={logoUrl} alt="BizGrow 360" className="h-8 sm:h-9 md:h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -135,29 +125,29 @@ const Navbar = () => {
                       }
                     }
                   }}
-                  className="flex items-center gap-1 text-ledger-paper/75 hover:text-ledger-paper transition-colors font-grotesk font-medium px-4 py-2 rounded-md hover:bg-ledger-paper/5"
+                  className="flex items-center gap-1 text-white/80 hover:text-white transition-colors font-medium px-4 py-2 rounded-lg hover:bg-white/5"
                 >
                   {link.label}
                   {link.dropdown && <ChevronDown className="w-4 h-4" />}
                 </a>
-
+                
                 {link.dropdown && activeDropdown === link.label && (
                   <div className="absolute top-full left-0 pt-2 w-64 animate-fade-in z-50">
-                    <div className="bg-ledger-paper rounded-lg shadow-ledger border border-ledger-rule p-2">
+                    <div className="bg-white rounded-xl shadow-2xl border border-border p-2">
                       {link.dropdown.map((item) => (
                         <Link
                           key={item.label}
                           to={item.href}
-                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-md hover:bg-ledger-ink/5 transition-colors group"
+                          className="flex items-start gap-3 px-3 py-2.5 text-sm rounded-lg hover:bg-muted transition-colors group"
                         >
                           {item.icon && (
-                            <div className="w-8 h-8 rounded-md border border-ledger-rule flex items-center justify-center flex-shrink-0 group-hover:border-ledger-marigold/60 transition-colors">
-                              <item.icon className="w-4 h-4 text-ledger-ink" />
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <item.icon className="w-4 h-4 text-primary" />
                             </div>
                           )}
                           <div>
-                            <p className="font-grotesk font-medium text-ledger-ink">{item.label}</p>
-                            {item.desc && <p className="text-xs text-ledger-ink/55">{item.desc}</p>}
+                            <p className="font-medium text-foreground">{item.label}</p>
+                            {item.desc && <p className="text-xs text-muted-foreground">{item.desc}</p>}
                           </div>
                         </Link>
                       ))}
@@ -171,12 +161,12 @@ const Navbar = () => {
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-2">
             <Link to="/auth">
-              <Button variant="ghost" className="text-ledger-paper/75 hover:text-ledger-marigold hover:bg-transparent font-grotesk">
+              <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10">
                 Seller Login
               </Button>
             </Link>
             <Link to="/join">
-              <Button className="bg-ledger-paper hover:bg-ledger-marigold text-ledger-ink hover:text-ledger-ink font-grotesk font-semibold px-5 rounded-md shadow-none">
+              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-5 rounded-lg shadow-lg shadow-accent/20">
                 Start Free Trial
               </Button>
             </Link>
@@ -186,7 +176,7 @@ const Navbar = () => {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <button
-                className="lg:hidden flex items-center justify-center text-ledger-paper p-2.5 sm:p-3 hover:bg-ledger-paper/15 rounded-md transition-colors bg-ledger-paper/10 border border-ledger-paper/25 active:scale-95 min-w-[44px] min-h-[44px]"
+                className="lg:hidden flex items-center justify-center text-white p-2.5 sm:p-3 hover:bg-white/20 rounded-xl transition-colors bg-white/20 border-2 border-white/40 active:scale-95 shadow-lg min-w-[44px] min-h-[44px]"
                 aria-label="Open menu"
               >
                 <Menu className="w-6 h-6" />
@@ -195,7 +185,7 @@ const Navbar = () => {
 
             <SheetContent
               side="right"
-              className="w-[min(92vw,380px)] p-0 bg-ledger-ink text-ledger-paper border-l border-ledger-marigold/20"
+              className="w-[min(92vw,380px)] p-0 bg-primary text-primary-foreground border-l border-border"
             >
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
               <SheetDescription className="sr-only">
@@ -210,32 +200,32 @@ const Navbar = () => {
                         <>
                           <button
                             onClick={() => toggleMobileDropdown(link.label)}
-                            className="w-full text-ledger-paper font-grotesk font-medium py-3.5 px-4 rounded-md hover:bg-ledger-paper/10 flex items-center justify-between active:bg-ledger-paper/15 transition-colors"
+                            className="w-full text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center justify-between active:bg-white/20 transition-colors"
                           >
                             <span className="text-base">{link.label}</span>
                             <ChevronRight
-                              className={`w-5 h-5 text-ledger-paper transition-transform duration-200 ${
+                              className={`w-5 h-5 text-white transition-transform duration-200 ${
                                 mobileExpanded === link.label ? "rotate-90" : ""
                               }`}
                             />
                           </button>
                           {mobileExpanded === link.label && (
-                            <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-ledger-marigold/50 pl-4 bg-ledger-paper/5 rounded-r-md py-3 animate-fade-in">
+                            <div className="ml-4 mt-1 mb-2 space-y-1 border-l-2 border-accent/50 pl-4 bg-white/5 rounded-r-xl py-3 animate-fade-in">
                               {link.dropdown.map((item) => (
                                 <Link
                                   key={item.label}
                                   to={item.href}
-                                  className="text-ledger-paper/85 hover:text-ledger-paper text-sm py-3 px-4 rounded-md hover:bg-ledger-paper/10 flex items-center gap-3 active:bg-ledger-paper/15 transition-colors"
+                                  className="text-white/90 hover:text-white text-sm py-3 px-4 rounded-lg hover:bg-white/10 flex items-center gap-3 active:bg-white/15 transition-colors"
                                   onClick={() => setIsOpen(false)}
                                 >
                                   {item.icon && (
-                                    <div className="w-8 h-8 rounded-md border border-ledger-paper/20 flex items-center justify-center shrink-0">
-                                      <item.icon className="w-4 h-4 text-ledger-marigold" />
+                                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                                      <item.icon className="w-4 h-4 text-accent" />
                                     </div>
                                   )}
                                   <div>
-                                    <span className="font-grotesk font-medium block">{item.label}</span>
-                                    {item.desc && <p className="text-xs text-ledger-paper/55 mt-0.5">{item.desc}</p>}
+                                    <span className="font-medium block">{item.label}</span>
+                                    {item.desc && <p className="text-xs text-white/60 mt-0.5">{item.desc}</p>}
                                   </div>
                                 </Link>
                               ))}
@@ -245,7 +235,7 @@ const Navbar = () => {
                       ) : (
                         <a
                           href={link.href}
-                          className="text-ledger-paper font-grotesk font-medium py-3.5 px-4 rounded-md hover:bg-ledger-paper/10 flex items-center text-base active:bg-ledger-paper/15 transition-colors"
+                          className="text-white font-medium py-3.5 px-4 rounded-xl hover:bg-white/15 flex items-center text-base active:bg-white/20 transition-colors"
                           onClick={() => setIsOpen(false)}
                         >
                           {link.label}
@@ -256,17 +246,17 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile CTAs */}
-                <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-ledger-paper/15">
+                <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-white/20">
                   <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
                     <Button
                       variant="outline"
-                      className="bg-transparent border-ledger-paper/25 text-ledger-paper hover:bg-ledger-paper/10 hover:text-ledger-paper w-full justify-center font-grotesk font-semibold h-12 text-base rounded-md"
+                      className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
                     >
                       Seller Login
                     </Button>
                   </Link>
                   <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                    <Button className="bg-ledger-paper hover:bg-ledger-marigold text-ledger-ink font-grotesk font-semibold w-full h-12 text-base rounded-md shadow-none">
+                    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
                       Start Free Trial
                     </Button>
                   </Link>

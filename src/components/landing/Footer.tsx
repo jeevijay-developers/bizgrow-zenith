@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, MapPin, Phone, Mail, ArrowRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import logoDarkBg from "@/assets/logo-dark-bg.png";
 import ScheduleDemoModal from "./ScheduleDemoModal";
 import { RippleButton } from "@/components/ui/ripple-button";
 
@@ -88,33 +89,30 @@ const Footer = () => {
       </div> */}
 
       {/* Main Footer */}
-      <div className="bg-ledger-ink text-ledger-paper">
+      <div className="bg-foreground text-background">
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
             {/* Brand Column */}
             <div className="col-span-2">
-              <Link to="/" className="inline-flex items-baseline gap-1.5 mb-4">
-                <span className="font-ledger text-2xl font-semibold tracking-tight text-ledger-paper">Bizgrow</span>
-                <span className="inline-flex items-center justify-center h-5 px-1.5 rounded-full border border-ledger-marigold/70 text-ledger-marigold text-[10px] font-grotesk font-semibold tracking-wide">
-                  360°
-                </span>
+              <Link to="/" className="inline-block mb-4">
+                <img src={logoDarkBg} alt="BizGrow 360" className="h-10 w-auto" />
               </Link>
-              <p className="font-grotesk text-ledger-paper/70 mb-6 text-sm leading-relaxed max-w-xs">
+              <p className="text-background/60 mb-6 text-sm leading-relaxed max-w-xs">
                 Empowering Indian retailers with AI-powered tools to grow their business digitally.
               </p>
-
+              
               {/* Contact Info */}
-              <div className="space-y-2.5 text-sm font-grotesk mb-6">
-                <a href="#" className="flex items-center gap-2 text-ledger-paper/70 hover:text-ledger-marigold transition-colors">
-                  <MapPin className="w-4 h-4 text-ledger-paper/50 shrink-0" strokeWidth={1.75} />
+              <div className="space-y-2.5 text-sm mb-6">
+                <a href="#" className="flex items-center gap-2 text-background/60 hover:text-accent transition-colors">
+                  <MapPin className="w-4 h-4 text-accent shrink-0" />
                   <span>Bangalore, Karnataka</span>
                 </a>
-                <a href="tel:+919876543210" className="flex items-center gap-2 text-ledger-paper/70 hover:text-ledger-marigold transition-colors">
-                  <Phone className="w-4 h-4 text-ledger-paper/50 shrink-0" strokeWidth={1.75} />
+                <a href="tel:+919876543210" className="flex items-center gap-2 text-background/60 hover:text-accent transition-colors">
+                  <Phone className="w-4 h-4 text-accent shrink-0" />
                   <span>+91 98765 43210</span>
                 </a>
-                <a href="mailto:hello@bizgrow360.com" className="flex items-center gap-2 text-ledger-paper/70 hover:text-ledger-marigold transition-colors">
-                  <Mail className="w-4 h-4 text-ledger-paper/50 shrink-0" strokeWidth={1.75} />
+                <a href="mailto:hello@bizgrow360.com" className="flex items-center gap-2 text-background/60 hover:text-accent transition-colors">
+                  <Mail className="w-4 h-4 text-accent shrink-0" />
                   <span>hello@bizgrow360.com</span>
                 </a>
               </div>
@@ -126,9 +124,9 @@ const Footer = () => {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="w-9 h-9 rounded-lg border border-ledger-paper/20 flex items-center justify-center text-ledger-paper/70 hover:text-ledger-marigold hover:border-ledger-marigold/50 transition-colors"
+                    className="w-9 h-9 rounded-lg bg-background/10 border border-background/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all"
                   >
-                    <social.icon className="w-4 h-4" strokeWidth={1.75} />
+                    <social.icon className="w-4 h-4" />
                   </a>
                 ))}
               </div>
@@ -137,13 +135,13 @@ const Footer = () => {
             {/* Links Columns */}
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h4 className="font-grotesk font-semibold text-ledger-paper mb-4 text-sm">{title}</h4>
+                <h4 className="font-semibold text-background mb-4 text-sm">{title}</h4>
                 <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
                       <Link
                         to={link.href}
-                        className="font-grotesk text-ledger-paper/70 hover:text-ledger-marigold transition-colors text-sm"
+                        className="text-background/60 hover:text-accent transition-colors text-sm"
                       >
                         {link.label}
                       </Link>
@@ -156,22 +154,22 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-ledger-paper/15">
+        <div className="border-t border-background/10">
           <div className="container mx-auto px-4 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <p className="font-grotesk text-ledger-paper/50 text-sm text-center sm:text-left flex items-center gap-1 flex-wrap justify-center">
-                © {new Date().getFullYear()} BizGrow 360. Made with
-                <Heart className="w-3.5 h-3.5 text-destructive fill-destructive inline-block mx-0.5" />
+              <p className="text-background/40 text-sm text-center sm:text-left flex items-center gap-1 flex-wrap justify-center">
+                © {new Date().getFullYear()} BizGrow 360. Made with 
+                <Heart className="w-3.5 h-3.5 text-destructive fill-destructive inline-block mx-0.5" /> 
                 in India
               </p>
-              <div className="flex flex-wrap justify-center gap-6 text-sm font-grotesk">
-                <a href="#" className="text-ledger-paper/50 hover:text-ledger-marigold transition-colors">
+              <div className="flex flex-wrap justify-center gap-6 text-sm">
+                <a href="#" className="text-background/40 hover:text-accent transition-colors">
                   Privacy
                 </a>
-                <a href="#" className="text-ledger-paper/50 hover:text-ledger-marigold transition-colors">
+                <a href="#" className="text-background/40 hover:text-accent transition-colors">
                   Terms
                 </a>
-                <a href="#" className="text-ledger-paper/50 hover:text-ledger-marigold transition-colors">
+                <a href="#" className="text-background/40 hover:text-accent transition-colors">
                   Cookies
                 </a>
               </div>

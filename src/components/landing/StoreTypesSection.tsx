@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { ArrowRight, ShoppingBag } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
-import { CarouselDots } from "@/components/ui/carousel-dots";
 
 // AI-generated category images
 import kiranaImg from "@/assets/categories-ai/kirana.png";
@@ -45,10 +42,14 @@ const itemVariants = {
 };
 
 const StoreTypesSection = () => {
-  const [api, setApi] = useState<CarouselApi>();
-
   return (
-    <section className="py-20 md:py-28 bg-white relative overflow-hidden" id="solutions">
+    <section className="py-20 md:py-28 bg-secondary/30 relative overflow-hidden" id="solutions">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-[20%] w-72 h-72 bg-accent/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 left-[10%] w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <motion.div
@@ -57,45 +58,56 @@ const StoreTypesSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6">
-            <ShoppingBag className="w-4 h-4 text-ledger-ink/60" strokeWidth={1.75} />
-            <span className="text-sm font-grotesk font-medium text-ledger-ink/75">Made for Every Store</span>
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+            <ShoppingBag className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">Made for Every Store</span>
           </div>
-          <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-medium text-ledger-ink mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Built for Your
-            <span className="block mt-2">Type of Business</span>
+            <span className="text-primary block mt-2">Type of Business</span>
           </h2>
-          <p className="font-grotesk text-lg text-ledger-ink/65">
-            From neighborhood kirana stores to specialty shops,
+          <p className="text-lg text-muted-foreground">
+            From neighborhood kirana stores to specialty shops, 
             BizGrow 360 adapts to your needs.
           </p>
         </motion.div>
 
-        {/* Store Types - Mobile Carousel (2 cards at a time) */}
-        <div className="sm:hidden">
-          <Carousel opts={{ align: "start", slidesToScroll: 2 }} setApi={setApi}>
-            <CarouselContent>
-              {storeTypes.map((store) => (
-                <CarouselItem key={store.title} className="basis-1/2">
-                  <StoreTypeCard store={store} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-          <CarouselDots api={api} />
-        </div>
-
-        {/* Store Types Grid (tablet & up) */}
+        {/* Store Types Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
         >
           {storeTypes.map((store) => (
             <motion.div key={store.title} variants={itemVariants}>
-              <StoreTypeCard store={store} />
+              <Link
+                to={store.href}
+                className={`block ${store.color} border border-border rounded-2xl p-4 sm:p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full`}
+              >
+                {/* Category Image */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mb-3 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <img 
+                    src={store.image} 
+                    alt={store.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+
+                {/* Content */}
+                <h3 className="text-sm sm:text-base font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                  {store.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-1">
+                  {store.description}
+                </p>
+
+                {/* Product Count */}
+                <span className="text-xs font-semibold text-primary">
+                  {store.products} products
+                </span>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
@@ -107,12 +119,12 @@ const StoreTypesSection = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <p className="font-grotesk text-ledger-ink/65 mb-3">
-            Don't see your business type? <span className="text-ledger-ink font-medium">We support all retail categories!</span>
+          <p className="text-muted-foreground mb-3">
+            Don't see your business type? <span className="text-primary font-medium">We support all retail categories!</span>
           </p>
-          <Link
+          <Link 
             to="/join"
-            className="inline-flex items-center gap-2 text-ledger-ink font-grotesk font-semibold underline decoration-ledger-rule decoration-2 underline-offset-4 hover:decoration-ledger-marigold transition-colors"
+            className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
           >
             Get Started with Your Store
             <ArrowRight className="w-4 h-4" />
@@ -122,34 +134,5 @@ const StoreTypesSection = () => {
     </section>
   );
 };
-
-const StoreTypeCard = ({ store }: { store: (typeof storeTypes)[number] }) => (
-  <Link
-    to={store.href}
-    className="block bg-ledger-paper border border-ledger-rule rounded-2xl p-4 sm:p-5 hover:shadow-ledger-sm hover:-translate-y-1 transition-all duration-300 group h-full"
-  >
-    {/* Category Image */}
-    <div className="w-14 h-14 sm:w-16 sm:h-16 mb-3 rounded-xl overflow-hidden border border-ledger-rule bg-white">
-      <img
-        src={store.image}
-        alt={store.title}
-        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-      />
-    </div>
-
-    {/* Content */}
-    <h3 className="font-ledger text-sm sm:text-base font-medium text-ledger-ink mb-1">
-      {store.title}
-    </h3>
-    <p className="text-xs sm:text-sm font-grotesk text-ledger-ink/60 mb-2 line-clamp-1">
-      {store.description}
-    </p>
-
-    {/* Product Count */}
-    <span className="text-xs font-grotesk font-semibold text-ledger-ink/70">
-      {store.products} products
-    </span>
-  </Link>
-);
 
 export default StoreTypesSection;

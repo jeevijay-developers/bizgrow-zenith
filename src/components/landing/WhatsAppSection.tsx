@@ -35,7 +35,12 @@ const whatsappFeatures = [
 
 const WhatsAppSection = () => {
   return (
-    <section className="py-20 md:py-28 bg-ledger-paper relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-background relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-[5%] w-72 h-72 bg-green-500/10 rounded-full blur-[100px]" />
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left - Content */}
@@ -44,18 +49,18 @@ const WhatsAppSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
-              <MessageSquare className="w-4 h-4 text-ledger-ink/60" />
-              WhatsApp Orders
+            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-6">
+              <MessageSquare className="w-4 h-4 text-green-500" />
+              <span className="text-sm font-semibold text-green-600">WhatsApp Orders</span>
             </div>
 
-            <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl font-semibold text-ledger-ink mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Orders via WhatsApp
-              <span className="block mt-2">Where Customers Are</span>
+              <span className="text-green-500 block mt-2">Where Customers Are</span>
             </h2>
 
-            <p className="font-grotesk text-lg text-ledger-ink/65 mb-8 leading-relaxed">
-              Your customers don't need to download any app. They browse your digital catalogue
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Your customers don't need to download any app. They browse your digital catalogue 
               and order directly on WhatsApp. You manage everything from one dashboard.
             </p>
 
@@ -68,20 +73,20 @@ const WhatsAppSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 * index }}
-                  className="bg-white rounded-xl p-4 border border-ledger-rule"
+                  className="bg-muted/50 rounded-xl p-4 border border-border hover:border-green-500/30 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-lg border border-ledger-rule flex items-center justify-center mb-3">
-                    <feature.icon className="w-5 h-5 text-ledger-sage" />
+                  <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center mb-3">
+                    <feature.icon className="w-5 h-5 text-green-500" />
                   </div>
-                  <p className="font-grotesk font-semibold text-ledger-ink text-sm">{feature.title}</p>
-                  <p className="text-xs font-grotesk text-ledger-ink/55">{feature.description}</p>
+                  <p className="font-bold text-foreground text-sm">{feature.title}</p>
+                  <p className="text-xs text-muted-foreground">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/join">
-                <RippleButton size="lg" className="bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink font-grotesk font-semibold h-12 px-6 group">
+                <RippleButton size="lg" className="bg-gradient-to-r from-green-500 to-green-600 hover:opacity-90 text-white font-bold h-12 px-6 group">
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Enable WhatsApp Orders
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -100,7 +105,7 @@ const WhatsAppSection = () => {
             {/* Phone Frame */}
             <div className="relative w-[300px] sm:w-[340px]">
               {/* Phone Body */}
-              <div className="bg-gray-900 rounded-[40px] p-2 shadow-ledger">
+              <div className="bg-gray-900 rounded-[40px] p-2 shadow-2xl">
                 {/* Screen */}
                 <div className="bg-white rounded-[32px] overflow-hidden">
                   {/* WhatsApp Header */}
@@ -157,15 +162,18 @@ const WhatsAppSection = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Glow Effect */}
+              <div className="absolute -inset-8 bg-green-500/20 rounded-[60px] blur-3xl -z-10" />
             </div>
 
             {/* Floating Badge */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="absolute -right-4 top-1/4 bg-ledger-sage text-ledger-paper rounded-xl px-4 py-2 shadow-ledger"
+              className="absolute -right-4 top-1/4 bg-green-500 text-white rounded-xl px-4 py-2 shadow-xl"
             >
-              <p className="text-sm font-grotesk font-semibold flex items-center gap-1">New Order! <Bell className="w-3.5 h-3.5" /></p>
+              <p className="text-sm font-bold flex items-center gap-1">New Order! <Bell className="w-3.5 h-3.5" /></p>
             </motion.div>
           </motion.div>
         </div>

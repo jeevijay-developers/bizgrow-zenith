@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowRight, Play, Star, Shield, Zap, Globe, CheckCircle } from "lucide-react";
+import { ArrowRight, Play, Star, Shield, Zap, Globe, Sparkles, CheckCircle, MessageSquare, Image } from "lucide-react";
+import { HiSparkles, HiStar } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import ScheduleDemoModal from "./ScheduleDemoModal";
@@ -11,25 +12,35 @@ const trustBadges = [
   { icon: Zap, text: "AI Powered" },
 ];
 
+const floatingStats = [
+  { value: "10K+", label: "Active Stores", color: "from-green-400 to-emerald-500" },
+  { value: "₹50Cr+", label: "Monthly GMV", color: "from-amber-400 to-orange-500" },
+  { value: "4.9", label: "User Rating", color: "from-purple-400 to-pink-500", hasStarIcon: true },
+];
+
 const HeroSection = () => {
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   return (
-    <section className="relative min-h-[100svh] flex items-center overflow-hidden bg-ledger-paper">
+    <section className="relative min-h-[100svh] flex items-center overflow-hidden">
       {/* Schedule Demo Modal */}
       <ScheduleDemoModal open={showDemoModal} onOpenChange={setShowDemoModal} />
 
-      {/* Background Image — warm ink duotone, like a printed poster, not a CSS gradient wash */}
+      {/* Background Image with Overlay */}
       <div className="absolute inset-0">
-        <img
-          src={heroShopkeeper}
+        <img 
+          src={heroShopkeeper} 
           alt="Indian shopkeeper with BizGrow app"
-          className="w-full h-full object-cover grayscale contrast-[1.08] brightness-[0.97]"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-ledger-ink/35 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ledger-paper via-ledger-paper/92 to-ledger-paper/10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ledger-ink/25 via-transparent to-transparent" />
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
       </div>
+
+      {/* Floating decorative elements */}
+      <div className="absolute top-20 right-[20%] w-72 h-72 bg-primary/20 rounded-full blur-[100px]" />
+      <div className="absolute bottom-20 left-[10%] w-96 h-96 bg-accent/15 rounded-full blur-[120px]" />
 
       <div className="container mx-auto px-4 relative z-10 pt-20 pb-12">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -37,47 +48,49 @@ const HeroSection = () => {
           <div
             className="text-center lg:text-left"
           >
-            {/* Trust Badges — one text-led row, hairline dividers, no pill fills */}
+            {/* Trust Badges */}
             <div
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-x-1 gap-y-2 sm:gap-x-0 sm:divide-x sm:divide-ledger-rule mb-8 ledger-enter ledger-enter-1"
+              className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8"
             >
               {trustBadges.map((badge) => (
                 <div
                   key={badge.text}
-                  className="flex items-center gap-2 px-4 first:pl-0 py-1 text-sm"
+                  className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 text-sm"
                 >
-                  <badge.icon className="w-4 h-4 text-ledger-ink/50" strokeWidth={1.75} />
-                  <span className="text-ledger-ink/75 font-grotesk font-medium">{badge.text}</span>
+                  <badge.icon className="w-4 h-4 text-primary" />
+                  <span className="text-foreground font-medium">{badge.text}</span>
                 </div>
               ))}
             </div>
 
             {/* Main Headline */}
             <h1
-              className="font-ledger text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-ledger-ink leading-[1.05] tracking-tight ledger-enter ledger-enter-2"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display"
             >
               Apni Dukaan Ko
-              <span className="block mt-1 ledger-highlight">Digital Banao</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
+                Digital Banao
+              </span>
             </h1>
 
             {/* Subheadline */}
             <p
-              className="font-grotesk text-lg md:text-xl text-ledger-ink/65 max-w-xl mx-auto lg:mx-0 mt-6 mb-8 leading-relaxed ledger-enter ledger-enter-2"
+              className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
-              AI-powered platform to digitize your store, accept WhatsApp orders,
+              AI-powered platform to digitize your store, accept WhatsApp orders, 
               create marketing posters, and grow your business — all in your language.
             </p>
 
-            {/* Feature Tags — hairline outline, no fill, its own distinct family */}
+            {/* Feature Pills */}
             <div
-              className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10 ledger-enter ledger-enter-3"
+              className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10"
             >
               {["AI Product Upload", "WhatsApp Orders", "Auto Flyers", "GST Billing", "Hindi/Regional"].map((feature) => (
                 <span
                   key={feature}
-                  className="flex items-center gap-1.5 bg-ledger-paper/70 text-ledger-ink/80 text-sm font-grotesk font-medium px-3 py-1.5 rounded-full border border-ledger-rule"
+                  className="flex items-center gap-1.5 bg-primary/10 text-primary text-sm font-medium px-3 py-1.5 rounded-full border border-primary/20"
                 >
-                  <CheckCircle className="w-3.5 h-3.5 text-ledger-sage" strokeWidth={1.75} />
+                  <CheckCircle className="w-3.5 h-3.5" />
                   {feature}
                 </span>
               ))}
@@ -85,35 +98,34 @@ const HeroSection = () => {
 
             {/* CTAs */}
             <div
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10 ledger-enter ledger-enter-4"
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
             >
               <Link to="/join">
-                <RippleButton
-                  size="lg"
-                  className="font-grotesk font-semibold group h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg w-full sm:w-auto rounded-md bg-ledger-ink text-ledger-paper hover:bg-ledger-marigold hover:text-ledger-ink"
-                >
+                <RippleButton size="lg" variant="glow-accent" className="font-bold group h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg w-full sm:w-auto">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </RippleButton>
               </Link>
-              <button
+              <RippleButton 
+                size="lg" 
+                variant="outline" 
+                className="h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg group border-border/50 bg-background/50 backdrop-blur-sm"
                 onClick={() => setShowDemoModal(true)}
-                className="group inline-flex items-center justify-center sm:justify-start gap-2 h-11 sm:h-14 px-2 text-base sm:text-lg font-grotesk font-semibold text-ledger-ink underline decoration-ledger-rule decoration-2 underline-offset-4 hover:decoration-ledger-marigold transition-colors"
               >
-                <Play className="w-5 h-5 text-ledger-ink/70 group-hover:text-ledger-marigold transition-colors" strokeWidth={1.75} />
+                <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
                 Schedule a demo
-              </button>
+              </RippleButton>
             </div>
 
             {/* Social Proof */}
             <div
-              className="flex items-center justify-center lg:justify-start gap-4 ledger-enter ledger-enter-5"
+              className="flex items-center justify-center lg:justify-start gap-4"
             >
               <div className="flex -space-x-3">
                 {["RS", "PP", "MI", "SD"].map((initials, i) => (
                   <div
                     key={i}
-                    className="w-10 h-10 rounded-full bg-ledger-ink flex items-center justify-center text-ledger-paper text-xs font-grotesk font-bold border-2 border-ledger-paper"
+                    className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground text-xs font-bold border-2 border-background"
                   >
                     {initials}
                   </div>
@@ -122,17 +134,101 @@ const HeroSection = () => {
               <div className="text-left">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-ledger-sage text-ledger-sage" />
+                    <Star key={i} className="w-4 h-4 fill-accent text-accent" />
                   ))}
-                  <span className="ml-1 font-ledger font-semibold text-ledger-ink">4.9</span>
+                  <span className="ml-1 font-bold text-foreground">4.9</span>
                 </div>
-                <p className="text-sm font-grotesk text-ledger-ink/60">10,000+ stores trust us</p>
+                <p className="text-sm text-muted-foreground">10,000+ stores trust us</p>
               </div>
             </div>
           </div>
 
-          {/* Right — kept as a spacer so the photo reads clean and unobstructed */}
-          <div className="hidden lg:block relative h-[550px] w-full" />
+          {/* Right - Floating Stats Cards (visible on larger screens) */}
+          <div
+            className="hidden lg:block relative"
+          >
+            <div className="relative h-[550px] w-full">
+              {/* Floating stat cards - Better positioned */}
+              {floatingStats.map((stat, index) => (
+                <div
+                  key={stat.label}
+                  className="absolute bg-background/90 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-2xl"
+                  style={{
+                    top: index === 0 ? "5%" : index === 1 ? "35%" : "65%",
+                    right: index === 0 ? "5%" : index === 1 ? "25%" : "10%",
+                  }}
+                >
+                  <div>
+                    <p className={`text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                      {stat.value}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Floating Feature Cards - Repositioned to avoid overlaps */}
+              <div
+                className="absolute left-[8%] top-[15%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">हिंदी में उपलब्ध</p>
+                    <p className="text-[10px] text-muted-foreground">+ 9 more languages</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute left-[5%] top-[52%] bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary-foreground" />
+                  <div>
+                    <p className="text-xs font-bold text-primary-foreground flex items-center gap-1">New Order! <HiSparkles className="w-3 h-3" /></p>
+                    <p className="text-[10px] text-primary-foreground/80">₹1,250 via WhatsApp</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute right-[12%] top-[24%] bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
+                  <div>
+                    <p className="text-xs font-bold text-primary-foreground">AI Detected</p>
+                    <p className="text-[10px] text-primary-foreground/80">8 products added</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute left-[15%] bottom-[12%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                    <Image className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Flyer Generated!</p>
+                    <p className="text-[10px] text-muted-foreground">Ready to share</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Badge - Repositioned */}
+              <div
+                className="absolute bottom-[8%] right-[30%] bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl p-4 shadow-xl z-10"
+              >
+                <Sparkles className="w-8 h-8" />
+                <p className="text-sm font-bold mt-2">AI Powered</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -141,9 +237,9 @@ const HeroSection = () => {
         className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <div
-          className="w-6 h-10 border-2 border-ledger-ink/25 rounded-full flex justify-center pt-2 animate-bounce"
+          className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 animate-bounce"
         >
-          <div className="w-1.5 h-2.5 bg-ledger-marigold rounded-full" />
+          <div className="w-1.5 h-2.5 bg-primary rounded-full" />
         </div>
       </div>
     </section>

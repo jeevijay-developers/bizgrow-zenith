@@ -1,9 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { ArrowRight, TrendingUp, Clock, IndianRupee, FileText, Smartphone, ChartBar, XCircle, CheckCircle } from "lucide-react";
 import beforeAfterImage from "@/assets/before-after-transform.jpg";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
-import { CarouselDots } from "@/components/ui/carousel-dots";
 
 const transformMetrics = [
   { 
@@ -37,10 +34,14 @@ const transformMetrics = [
 ];
 
 const TransformationSection = () => {
-  const [api, setApi] = useState<CarouselApi>();
-
   return (
-    <section className="py-20 md:py-28 bg-ledger-paper relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-[10%] w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-[10%] w-72 h-72 bg-accent/10 rounded-full blur-[100px]" />
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <motion.div
@@ -49,15 +50,15 @@ const TransformationSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 border border-ledger-rule rounded-full px-4 py-2 mb-6 text-sm font-grotesk font-medium text-ledger-ink/75">
-            <TrendingUp className="w-4 h-4 text-ledger-sage" />
-            Store Transformation
+          <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-6">
+            <TrendingUp className="w-4 h-4 text-green-500" />
+            <span className="text-sm font-semibold text-green-600">Store Transformation</span>
           </div>
-          <h2 className="font-ledger text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-ledger-ink mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             From Khaata to
-            <span className="block mt-2">Smart Business</span>
+            <span className="text-primary block mt-2">Smart Business</span>
           </h2>
-          <p className="font-grotesk text-lg md:text-xl text-ledger-ink/65 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             See how thousands of stores transformed their business with BizGrow 360
           </p>
         </motion.div>
@@ -69,21 +70,21 @@ const TransformationSection = () => {
           viewport={{ once: true }}
           className="max-w-5xl mx-auto mb-16"
         >
-          <div className="relative rounded-2xl overflow-hidden shadow-ledger border border-ledger-rule">
-            <img
-              src={beforeAfterImage}
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
+            <img 
+              src={beforeAfterImage} 
               alt="Store transformation - Before and After"
               className="w-full aspect-video object-cover"
             />
             {/* Overlay Labels */}
             <div className="absolute inset-0 flex">
               <div className="w-1/2 flex items-end p-6">
-                <div className="bg-ledger-ink/80 backdrop-blur-sm text-ledger-paper px-4 py-2 rounded-lg font-grotesk font-semibold flex items-center gap-2">
+                <div className="bg-red-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
                   <XCircle className="w-4 h-4" /> BEFORE
                 </div>
               </div>
               <div className="w-1/2 flex items-end justify-end p-6">
-                <div className="bg-ledger-sage backdrop-blur-sm text-ledger-paper px-4 py-2 rounded-lg font-grotesk font-semibold flex items-center gap-2">
+                <div className="bg-green-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" /> AFTER
                 </div>
               </div>
@@ -91,22 +92,8 @@ const TransformationSection = () => {
           </div>
         </motion.div>
 
-        {/* Transformation Metrics - Mobile Carousel */}
-        <div className="sm:hidden">
-          <Carousel opts={{ align: "start" }} setApi={setApi}>
-            <CarouselContent>
-              {transformMetrics.map((metric) => (
-                <CarouselItem key={metric.label} className="basis-[85%] h-auto">
-                  <TransformMetricCard metric={metric} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-          <CarouselDots api={api} />
-        </div>
-
-        {/* Transformation Metrics - Grid (tablet & up) */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        {/* Transformation Metrics */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {transformMetrics.map((metric, index) => (
             <motion.div
               key={metric.label}
@@ -114,9 +101,24 @@ const TransformationSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="h-full"
+              className="bg-background border border-border rounded-2xl p-6 text-center hover:shadow-xl hover:border-primary/30 transition-all group"
             >
-              <TransformMetricCard metric={metric} />
+              <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <metric.icon className="w-6 h-6 text-primary" />
+              </div>
+              
+              <p className="text-sm text-muted-foreground mb-2">{metric.label}</p>
+              
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <span className="text-sm text-red-500 line-through">{metric.before}</span>
+                <ArrowRight className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold text-green-500">{metric.after}</span>
+              </div>
+              
+              <div className="inline-flex items-center gap-1 bg-green-500/10 text-green-600 text-xs font-bold px-3 py-1 rounded-full">
+                <TrendingUp className="w-3 h-3" />
+                {metric.improvement}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -124,26 +126,5 @@ const TransformationSection = () => {
     </section>
   );
 };
-
-const TransformMetricCard = ({ metric }: { metric: (typeof transformMetrics)[number] }) => (
-  <div className="h-full flex flex-col bg-white border border-ledger-rule rounded-2xl p-6 text-center shadow-ledger-sm">
-    <div className="w-12 h-12 mx-auto mb-4 rounded-xl border border-ledger-rule flex items-center justify-center">
-      <metric.icon className="w-6 h-6 text-ledger-ink/70" />
-    </div>
-
-    <p className="text-sm font-grotesk text-ledger-ink/60 mb-2">{metric.label}</p>
-
-    <div className="flex-1 flex items-center justify-center flex-wrap gap-x-3 gap-y-1 mb-3">
-      <span className="text-sm font-grotesk text-ledger-ink/40 line-through">{metric.before}</span>
-      <ArrowRight className="w-4 h-4 text-ledger-ink/40 shrink-0" />
-      <span className="text-sm font-grotesk font-semibold text-ledger-sage">{metric.after}</span>
-    </div>
-
-    <div className="inline-flex items-center gap-1 bg-ledger-sage/10 text-ledger-sage border border-ledger-sage/20 text-xs font-grotesk font-semibold px-3 py-1 rounded-full mx-auto">
-      <TrendingUp className="w-3 h-3" />
-      {metric.improvement}
-    </div>
-  </div>
-);
 
 export default TransformationSection;

@@ -43,25 +43,25 @@ const WhatsAppSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full min-w-0">
           {/* Left - Content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center sm:text-left"
+            className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
               <MessageSquare className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-primary">WhatsApp Orders</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
               Orders via WhatsApp
               <span className="text-gold block mt-2">Where Customers Are</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed break-words">
               Your customers don't need to download any app. They browse your digital catalogue 
               and order directly on WhatsApp. You manage everything from one dashboard.
             </p>
@@ -87,8 +87,8 @@ const WhatsAppSection = () => {
             </div>
 
             {/* Feature Carousel - Mobile */}
-            <div className="sm:hidden mb-8 text-left">
-              <MobileCarousel slideClassName="w-[46%]">
+            <div className="sm:hidden mb-8 text-left w-full min-w-0">
+              <MobileCarousel slideClassName="w-[calc(50%-8px)]" slidesToScroll={2}>
                 {whatsappFeatures.map((feature) => (
                   <div
                     key={feature.title}
@@ -104,7 +104,7 @@ const WhatsAppSection = () => {
               </MobileCarousel>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start">
               <Link to="/join">
                 <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
                   <MessageSquare className="w-4 h-4 mr-2" />
@@ -117,10 +117,10 @@ const WhatsAppSection = () => {
 
           {/* Right - Phone Mockup (hidden on mobile so the text content isn't crowded by the screenshot) */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="hidden sm:flex relative justify-center"
+            className="hidden sm:flex relative justify-center w-full min-w-0"
           >
             {/* Phone Frame */}
             <div className="relative w-[300px] sm:w-[340px]">

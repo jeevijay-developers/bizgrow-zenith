@@ -98,42 +98,42 @@ const AIScanningSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full min-w-0">
           {/* Desktop Left - Image */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="hidden lg:block relative"
+            className="hidden lg:block relative w-full min-w-0"
           >
             <ScanningVisual />
           </motion.div>
 
           {/* Right - Content */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center sm:text-left"
+            className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-primary">AI Product Detection</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
               Snap, Scan,
               <span className="text-gold block mt-2">Sell in Seconds</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed break-words">
               Simply point your phone camera at products. Our AI instantly recognizes items, 
               suggests prices from market data, and auto-categorizes everything. 
               <strong className="text-foreground"> No manual typing needed.</strong>
             </p>
 
             {/* Mobile View - Image below section description */}
-            <div className="block lg:hidden mb-8">
+            <div className="block lg:hidden mb-8 w-full min-w-0">
               <ScanningVisual />
             </div>
 
@@ -158,8 +158,8 @@ const AIScanningSection = () => {
             </div>
 
             {/* Process Steps - Mobile Carousel */}
-            <div className="sm:hidden mb-8">
-              <MobileCarousel slideClassName="w-[42%]">
+            <div className="sm:hidden mb-8 w-full min-w-0">
+              <MobileCarousel slideClassName="w-[calc(50%-8px)]" slidesToScroll={2}>
                 {scanSteps.map((step) => (
                   <div key={step.step} className="text-center">
                     <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
@@ -182,12 +182,14 @@ const AIScanningSection = () => {
               ))}
             </div>
 
-            <Link to="/join">
-              <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
-                Try AI Upload Free
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </RippleButton>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start">
+              <Link to="/join">
+                <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
+                  Try AI Upload Free
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </RippleButton>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </div>

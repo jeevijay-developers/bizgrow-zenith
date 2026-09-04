@@ -52,11 +52,11 @@ export function MobileCarousel({
   }, [emblaApi, onSelect]);
 
   return (
-    <div className={className}>
-      <div className="overflow-hidden -mx-4 px-4" ref={emblaRef}>
+    <div className={cn("w-full min-w-0 max-w-full", className)}>
+      <div className="overflow-hidden w-full min-w-0" ref={emblaRef}>
         <div className="flex gap-4">
           {children.map((child, i) => (
-            <div key={i} className={cn("shrink-0", slideClassName)}>
+            <div key={i} className={cn("shrink-0 min-w-0", slideClassName)}>
               {child}
             </div>
           ))}

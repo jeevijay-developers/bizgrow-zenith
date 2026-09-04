@@ -63,7 +63,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.08 }}
-              className="text-[clamp(2.25rem,9.3vw,3rem)] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6 whitespace-nowrap sm:whitespace-normal"
+              className="text-[clamp(2.25rem,9.3vw,3rem)] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6 break-words sm:whitespace-normal"
             >
               Apni Dukaan Ko
               <span className="block mt-2 sm:mt-3 text-[#cea300]">

@@ -83,41 +83,41 @@ const FlyerSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full min-w-0">
           {/* Desktop Left - Flyer Preview */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="hidden lg:block relative"
+            className="hidden lg:block relative w-full min-w-0"
           >
             <FlyerVisual />
           </motion.div>
 
           {/* Right - Content */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center sm:text-left"
+            className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
               <ImageIcon className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-primary">Auto Flyer Creation</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
               Marketing Posters
               <span className="text-gold block mt-2">In One Click</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed break-words">
               Select your products, pick a festival template, and let AI create stunning promotional 
               flyers with your branding. Share directly to WhatsApp, Instagram, and Facebook.
             </p>
 
             {/* Mobile View - Flyer Preview below section description */}
-            <div className="block lg:hidden mb-8">
+            <div className="block lg:hidden mb-8 w-full min-w-0">
               <FlyerVisual />
             </div>
 
@@ -144,16 +144,18 @@ const FlyerSection = () => {
               ))}
             </div>
 
-            <Link to="/join">
-              <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group mb-8">
-                <Palette className="w-4 h-4 mr-2" />
-                Create Free Flyers
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </RippleButton>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start mb-8">
+              <Link to="/join">
+                <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group w-full sm:w-auto">
+                  <Palette className="w-4 h-4 mr-2" />
+                  Create Free Flyers
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </RippleButton>
+              </Link>
+            </div>
 
             {/* Share Icons */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center sm:justify-start gap-4">
               <span className="text-sm text-muted-foreground">Share to:</span>
               <div className="flex gap-2">
                 <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">

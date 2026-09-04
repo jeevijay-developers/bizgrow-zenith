@@ -21,6 +21,73 @@ const detectionFeatures = [
   "Hindi/Regional language labels",
 ];
 
+const ScanningVisual = () => (
+  <div className="relative">
+    {/* Main Image */}
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
+      <img 
+        src={aiScanningDemo} 
+        alt="AI Product Scanning Demo"
+        className="w-full aspect-video object-cover"
+      />
+      
+      {/* Scanning Animation Overlay */}
+      <motion.div
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"
+      />
+    </div>
+
+    {/* Floating Product Cards */}
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.3 }}
+      className="absolute top-2 right-2 sm:-right-4 sm:top-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-lg sm:rounded-xl p-1.5 sm:p-4 shadow-xl max-w-[45%] sm:max-w-none"
+    >
+      <motion.div
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      >
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-success/20 flex items-center justify-center shrink-0">
+            <Check className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-success" />
+          </div>
+          <div className="min-w-0">
+            <p className="font-bold text-foreground text-[10px] sm:text-sm truncate">Tata Salt 1kg</p>
+            <p className="text-[9px] sm:text-xs text-muted-foreground truncate">₹28 • Grocery</p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.5 }}
+      className="absolute bottom-2 left-2 sm:-left-4 sm:bottom-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-lg sm:rounded-xl p-1.5 sm:p-4 shadow-xl max-w-[45%] sm:max-w-none"
+    >
+      <motion.div
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+      >
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+            <Sparkles className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <p className="font-bold text-foreground text-[10px] sm:text-sm truncate">AI Detecting...</p>
+            <p className="text-[9px] sm:text-xs text-muted-foreground truncate">5 products found</p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  </div>
+);
+
 const AIScanningSection = () => {
   return (
     <section className="py-20 md:py-28 bg-gradient-to-b from-background to-muted/30 relative overflow-hidden">
@@ -32,75 +99,14 @@ const AIScanningSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left - Image */}
+          {/* Desktop Left - Image */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="relative order-2 lg:order-1"
+            className="hidden lg:block relative"
           >
-            {/* Main Image */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
-              <img 
-                src={aiScanningDemo} 
-                alt="AI Product Scanning Demo"
-                className="w-full aspect-video object-cover"
-              />
-              
-              {/* Scanning Animation Overlay */}
-              <motion.div
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"
-              />
-            </div>
-
-            {/* Floating Product Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="absolute -right-4 top-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-xl p-4 shadow-xl"
-            >
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
-                    <Check className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">Tata Salt 1kg</p>
-                    <p className="text-xs text-muted-foreground">₹28 • Grocery</p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="absolute -left-4 bottom-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-xl p-4 shadow-xl"
-            >
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">AI Detecting...</p>
-                    <p className="text-xs text-muted-foreground">5 products found</p>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
+            <ScanningVisual />
           </motion.div>
 
           {/* Right - Content */}
@@ -108,7 +114,7 @@ const AIScanningSection = () => {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="order-1 lg:order-2"
+            className="text-center sm:text-left"
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -117,7 +123,7 @@ const AIScanningSection = () => {
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Snap, Scan,
-              <span className="text-accent block mt-2">Sell in Seconds</span>
+              <span className="text-gold block mt-2">Sell in Seconds</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -125,6 +131,11 @@ const AIScanningSection = () => {
               suggests prices from market data, and auto-categorizes everything. 
               <strong className="text-foreground"> No manual typing needed.</strong>
             </p>
+
+            {/* Mobile View - Image below section description */}
+            <div className="block lg:hidden mb-8">
+              <ScanningVisual />
+            </div>
 
             {/* Process Steps */}
             <div className="hidden sm:grid sm:grid-cols-4 gap-4 mb-8">

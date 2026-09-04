@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { ArrowRight, Play, Star, Shield, Zap, Globe, CheckCircle } from "lucide-react";
+import { ArrowRight, Play, Star, Zap, CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import ScheduleDemoModal from "./ScheduleDemoModal";
 import heroShopkeeper from "@/assets/hero-shopkeeper.jpg";
 
 const trustBadges = [
-  { icon: Shield, text: "Bank-Level Security" },
-  { icon: Globe, text: "10+ Languages" },
   { icon: Zap, text: "AI Powered" },
 ];
 
@@ -42,43 +41,55 @@ const HeroSection = () => {
             className="text-center lg:text-left"
           >
             {/* Trust Badges */}
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0 }}
               className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8"
             >
               {trustBadges.map((badge) => (
                 <div
                   key={badge.text}
-                  className="flex items-center gap-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-4 py-2 text-sm"
+                  className="flex items-center gap-1.5 sm:gap-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm"
                 >
-                  <badge.icon className="w-4 h-4 text-primary" />
+                  <badge.icon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                   <span className="text-foreground font-medium">{badge.text}</span>
                 </div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Main Headline */}
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6"
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.08 }}
+              className="text-[clamp(2.25rem,9.3vw,3rem)] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6 whitespace-nowrap sm:whitespace-normal"
             >
               Apni Dukaan Ko
-              <span className="block mt-2 sm:mt-3 text-accent">
+              <span className="block mt-2 sm:mt-3 text-gold">
                 Digital Banao
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Subheadline */}
-            <p
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.16 }}
               className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
-              AI-powered platform to digitize your store, accept WhatsApp orders, 
+              AI-powered platform to digitize your store, accept WhatsApp orders,
               create marketing posters, and grow your business — all in your language.
-            </p>
+            </motion.p>
 
             {/* Feature Pills */}
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.24 }}
               className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10"
             >
-              {["AI Product Upload", "WhatsApp Orders", "Auto Flyers", "GST Billing", "Hindi/Regional"].map((feature) => (
+              {["AI Product Upload", "WhatsApp Orders", "Auto Flyers", "GST Billing"].map((feature) => (
                 <span
                   key={feature}
                   className="flex items-center gap-1.5 bg-primary/10 text-primary text-sm font-medium px-3 py-1.5 rounded-full border border-primary/20"
@@ -87,31 +98,37 @@ const HeroSection = () => {
                   {feature}
                 </span>
               ))}
-            </div>
+            </motion.div>
 
             {/* CTAs */}
-            <div
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.32 }}
+              className="flex flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-10"
             >
-              <Link to="/join">
-                <RippleButton size="lg" variant="glow-accent" className="font-bold group h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg w-full sm:w-auto">
+              <Link to="/join" className="flex-1 sm:flex-none">
+                <RippleButton size="lg" variant="glow-accent" className="font-bold group h-11 sm:h-14 px-3 sm:px-8 text-sm sm:text-lg w-full sm:w-auto">
                   Start Free Trial
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
                 </RippleButton>
               </Link>
-              <RippleButton 
-                size="lg" 
-                variant="outline" 
-                className="h-11 sm:h-14 px-5 sm:px-8 text-base sm:text-lg group border-border/50 bg-background/50 backdrop-blur-sm"
+              <RippleButton
+                size="lg"
+                variant="outline"
+                className="h-11 sm:h-14 px-3 sm:px-8 text-sm sm:text-lg group border-border/50 bg-background/50 backdrop-blur-sm flex-1 sm:flex-none w-full sm:w-auto"
                 onClick={() => setShowDemoModal(true)}
               >
-                <Play className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-primary group-hover:scale-110 transition-transform shrink-0" />
                 Schedule a demo
               </RippleButton>
-            </div>
+            </motion.div>
 
             {/* Social Proof */}
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
               className="flex items-center justify-center lg:justify-start gap-4"
             >
               <div className="flex -space-x-3">
@@ -133,7 +150,7 @@ const HeroSection = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">10,000+ stores trust us</p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

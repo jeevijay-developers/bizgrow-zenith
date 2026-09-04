@@ -1,10 +1,11 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Layers, Search, ShoppingCart, Tag, 
   Smartphone, Globe, Share2, QrCode, Star, Zap, Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import catalogueMockup from "@/assets/feature-catalogue-mockup.png";
@@ -83,15 +84,15 @@ const DigitalCataloguePage = () => {
                 Create a beautiful, shareable product catalogue in minutes. No coding, no app 
                 development - just your products, beautifully displayed.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/join">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
-                    Create Your Catalogue
-                    <ArrowRight className="w-5 h-5" />
+              <div className="flex flex-row gap-3 sm:gap-4">
+                <Link to="/join" className="flex-1 sm:flex-none">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-4 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full sm:w-auto">
+                    Create Catalogue
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                 </Link>
-                <Link to="/store/demo">
-                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-14 text-base w-full sm:w-auto">
+                <Link to="/store/demo" className="flex-1 sm:flex-none">
+                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-12 sm:h-14 text-sm sm:text-base w-full sm:w-auto">
                     View Demo Store
                   </Button>
                 </Link>
@@ -163,7 +164,8 @@ const DigitalCataloguePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Features - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -180,6 +182,24 @@ const DigitalCataloguePage = () => {
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Features - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="bg-card rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col justify-start"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>
@@ -198,7 +218,8 @@ const DigitalCataloguePage = () => {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          {/* Steps - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
               { step: "1", title: "Add Products", desc: "Upload photos, set prices, and organize by categories" },
               { step: "2", title: "Customize Store", desc: "Add your logo, choose colors, and set up your profile" },
@@ -222,6 +243,28 @@ const DigitalCataloguePage = () => {
                 <p className="text-muted-foreground">{item.desc}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Steps - Mobile Carousel */}
+          <div className="md:hidden max-w-sm mx-auto">
+            <MobileCarousel slideClassName="w-[85%]">
+              {[
+                { step: "1", title: "Add Products", desc: "Upload photos, set prices, and organize by categories" },
+                { step: "2", title: "Customize Store", desc: "Add your logo, choose colors, and set up your profile" },
+                { step: "3", title: "Share & Sell", desc: "Get your unique link and start receiving orders via WhatsApp" },
+              ].map((item) => (
+                <div
+                  key={item.step}
+                  className="bg-card rounded-2xl border border-border p-6 text-center shadow-sm h-full"
+                >
+                  <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold mx-auto mb-4 shadow-md shadow-primary/20">
+                    {item.step}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>

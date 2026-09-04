@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, BarChart3, TrendingUp, PieChart, 
@@ -6,6 +6,7 @@ import {
   Lightbulb, Clock, IndianRupee
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import analyticsMockup from "@/assets/feature-analytics-mockup.png";
@@ -203,7 +204,8 @@ const AnalyticsFeaturePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Features - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -220,6 +222,24 @@ const AnalyticsFeaturePage = () => {
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Features - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="bg-card rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col justify-start"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1.5">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>
@@ -245,7 +265,8 @@ const AnalyticsFeaturePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {/* Insights - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {insights.map((insight, index) => (
               <motion.div
                 key={insight.title}
@@ -262,6 +283,24 @@ const AnalyticsFeaturePage = () => {
                 <p className="text-muted-foreground text-sm">{insight.description}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Insights - Mobile Carousel */}
+          <div className="md:hidden max-w-sm mx-auto">
+            <MobileCarousel slideClassName="w-[85%]">
+              {insights.map((insight) => (
+                <div
+                  key={insight.title}
+                  className="bg-card rounded-2xl border border-border p-6 shadow-sm h-full"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
+                    <insight.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1.5">{insight.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{insight.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>

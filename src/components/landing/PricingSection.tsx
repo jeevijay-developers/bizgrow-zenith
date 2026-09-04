@@ -88,9 +88,9 @@ const plans = [
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(true);
 
-  const renderPlanCard = (plan: typeof plans[number]) => (
+  const renderPlanCard = (plan: typeof plans[number], fillHeight = false) => (
     <div
-      className={`relative rounded-2xl h-full ${
+      className={`relative rounded-2xl ${fillHeight ? "h-full" : ""} ${
         plan.popular
           ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-2xl shadow-primary/25"
           : "bg-card border border-border"
@@ -98,9 +98,9 @@ const PricingSection = () => {
     >
       {/* Popular Badge */}
       {plan.popular && (
-        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30">
-          <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-xs px-3 py-1 flex items-center gap-1.5 shadow-lg">
-            <HiStar className="w-3.5 h-3.5" /> MOST POPULAR <HiStar className="w-3.5 h-3.5" />
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%]">
+          <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 flex items-center gap-1 whitespace-nowrap shadow-lg">
+            <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> MOST POPULAR <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
           </Badge>
         </div>
       )}
@@ -156,8 +156,6 @@ const PricingSection = () => {
     </div>
   );
 
-  const mobilePlanOrder = [...plans].sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
-
   return (
     <section className="py-20 md:py-28 bg-secondary/30 relative overflow-hidden" id="pricing">
       {/* Background decoration */}
@@ -180,7 +178,7 @@ const PricingSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Plans That Scale
-            <span className="text-accent block mt-2">With Your Success</span>
+            <span className="text-gold block mt-2">With Your Success</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Start free, upgrade when you need. No hidden fees, cancel anytime.
@@ -219,18 +217,18 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={plan.popular ? "scale-[1.02] lg:scale-105 z-10" : ""}
+              className={`self-start ${plan.popular ? "scale-[1.02] lg:scale-105 z-10" : ""}`}
             >
               {renderPlanCard(plan)}
             </motion.div>
           ))}
         </div>
 
-        {/* Pricing Cards - Mobile Carousel (most popular plan shown first) */}
+        {/* Pricing Cards - Mobile Carousel (same left-to-right order as desktop) */}
         <div className="sm:hidden max-w-7xl mx-auto">
           <MobileCarousel slideClassName="w-[85%]">
-            {mobilePlanOrder.map((plan) => (
-              <div key={plan.name}>{renderPlanCard(plan)}</div>
+            {plans.map((plan) => (
+              <div key={plan.name} className="h-full">{renderPlanCard(plan, true)}</div>
             ))}
           </MobileCarousel>
         </div>

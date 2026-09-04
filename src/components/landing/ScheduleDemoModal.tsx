@@ -192,9 +192,20 @@ const ScheduleDemoModal = ({ open, onOpenChange }: ScheduleDemoModalProps) => {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    inputMode="numeric"
+                    placeholder="9876543210"
+                    maxLength={10}
                     value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
+                    onKeyDown={(e) => {
+                      if (
+                        !/[0-9]/.test(e.key) &&
+                        !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key) &&
+                        !(e.ctrlKey || e.metaKey)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => handleChange("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
                     className={errors.phone ? "border-destructive" : ""}
                   />
                   {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}

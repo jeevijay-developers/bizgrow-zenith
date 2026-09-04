@@ -111,9 +111,9 @@ const Footer = () => {
                   <Phone className="w-4 h-4 text-accent shrink-0" />
                   <span>+91 98765 43210</span>
                 </a>
-                <a href="mailto:hello@bizgrow360.com" className="flex items-center gap-2 text-background/60 hover:text-accent transition-colors">
+                <a href="mailto:support@bizgrow360.com" className="flex items-center gap-2 text-background/60 hover:text-accent transition-colors">
                   <Mail className="w-4 h-4 text-accent shrink-0" />
-                  <span>hello@bizgrow360.com</span>
+                  <span>support@bizgrow360.com</span>
                 </a>
               </div>
 

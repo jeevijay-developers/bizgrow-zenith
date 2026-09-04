@@ -31,17 +31,17 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 md:mb-12 px-4 sm:px-0">
-              <Link to="/join" className="w-full sm:w-auto">
-                <RippleButton size="lg" variant="glow-accent" className="font-bold group w-full sm:w-auto h-12 sm:h-14">
+            <div className="flex flex-row gap-2 sm:gap-4 justify-center mb-8 md:mb-12">
+              <Link to="/join" className="flex-1 min-w-0 sm:flex-none sm:w-auto">
+                <RippleButton size="lg" variant="glow-accent" className="font-bold group w-full min-w-0 sm:w-auto h-11 sm:h-14 px-2 sm:px-8 text-xs sm:text-base">
                   Start Your Free Trial
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="hidden sm:block w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
                 </RippleButton>
               </Link>
-              <RippleButton 
-                size="lg" 
-                variant="outline-light" 
-                className="h-12 sm:h-14 w-full sm:w-auto"
+              <RippleButton
+                size="lg"
+                variant="outline-light"
+                className="h-11 sm:h-14 px-2 sm:px-8 text-xs sm:text-base flex-1 min-w-0 sm:flex-none w-full sm:w-auto"
                 onClick={() => setShowDemoModal(true)}
               >
                 Schedule a Demo
@@ -55,9 +55,9 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
                 <span>+91 98765 43210</span>
               </a>
               <span className="hidden sm:block">•</span>
-              <a href="mailto:hello@bizgrow360.com" className="flex items-center gap-2 hover:text-primary-foreground transition-colors text-sm md:text-base">
+              <a href="mailto:support@bizgrow360.com" className="flex items-center gap-2 hover:text-primary-foreground transition-colors text-sm md:text-base">
                 <Mail className="w-4 h-4 md:w-5 md:h-5" />
-                <span>hello@bizgrow360.com</span>
+                <span>support@bizgrow360.com</span>
               </a>
             </div>
           </div>

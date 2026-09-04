@@ -1,9 +1,10 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Shirt, Palette, Ruler, 
   Heart, TrendingUp, BarChart3, Users, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import clothingMockup from "@/assets/solution-clothing-mockup.png";
@@ -92,7 +93,8 @@ const ClothingStorePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+          {/* Features - Desktop Grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {features.map((feature, index) => (
               <div
                 key={feature.title}
@@ -105,6 +107,24 @@ const ClothingStorePage = () => {
                 <p className="text-muted-foreground text-sm sm:text-base">{feature.description}</p>
               </div>
             ))}
+          </div>
+
+          {/* Features - Mobile Carousel */}
+          <div className="sm:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="bg-card rounded-xl border border-border p-5 shadow-sm h-full flex flex-col justify-start"
+                >
+                  <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                    <feature.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-base font-semibold mb-1">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>

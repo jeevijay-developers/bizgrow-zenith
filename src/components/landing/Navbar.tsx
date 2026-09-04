@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -246,18 +246,18 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile CTAs */}
-                <div className="flex flex-col gap-3 pt-6 mt-6 border-t border-white/20">
-                  <Link to="/auth" className="w-full" onClick={() => setIsOpen(false)}>
+                <div className="flex flex-row gap-2.5 pt-6 mt-6 border-t border-white/20">
+                  <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
                     <Button
                       variant="outline"
-                      className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-12 text-base"
+                      className="bg-transparent border-white/30 text-white hover:bg-white/15 hover:text-white w-full justify-center font-semibold h-11 sm:h-12 text-sm sm:text-base px-2"
                     >
                       Seller Login
                     </Button>
                   </Link>
-                  <Link to="/join" className="w-full" onClick={() => setIsOpen(false)}>
-                    <Button className="btn-gradient-accent text-accent-foreground font-bold w-full shadow-lg h-12 text-base">
-                      Start Free Trial
+                  <Link to="/join" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button className="btn-gradient-accent text-accent-foreground font-bold w-full shadow-lg h-11 sm:h-12 text-sm sm:text-base px-2">
+                      Free Trial
                     </Button>
                   </Link>
                 </div>

@@ -1,10 +1,11 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Sparkles, Camera, Cpu, Clock, 
   Target, Zap, Upload, Brain, Scan, Wand2, Pencil, CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import aiMockup from "@/assets/feature-ai-upload-mockup.png";
@@ -210,7 +211,8 @@ const AIUploadFeaturePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Steps - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((step, index) => (
               <motion.div
                 key={step.number}
@@ -234,6 +236,25 @@ const AIUploadFeaturePage = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Steps - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {steps.map((step) => (
+                <div
+                  key={step.number}
+                  className="bg-card rounded-2xl border border-border p-6 h-full shadow-sm"
+                >
+                  <div className="w-12 h-12 mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <step.IconComponent className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="text-primary font-bold text-xs mb-1.5">{step.number}</div>
+                  <h3 className="text-lg font-semibold mb-1.5">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
+          </div>
         </div>
       </section>
 
@@ -251,7 +272,8 @@ const AIUploadFeaturePage = () => {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Features - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -268,6 +290,24 @@ const AIUploadFeaturePage = () => {
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Features - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="bg-card rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col justify-start"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-3">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1.5">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>

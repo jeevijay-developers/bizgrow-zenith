@@ -19,15 +19,34 @@ const ContactUs = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    if (name === "phone") {
+      // Only allow numeric digits up to 10 digits
+      const numericValue = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.message.trim()) {
       toast.error("Please fill in all required fields");
       return;
     }
+
+    if (formData.phone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     setIsSubmitting(true);
     // Simulate submission
     setTimeout(() => {
@@ -80,13 +99,13 @@ const ContactUs = () => {
                     <p className="text-muted-foreground text-sm">+91 98765 43210</p>
                   </div>
                 </a>
-                <a href="mailto:hello@bizgrow360.com" className="flex items-start gap-4 group">
+                <a href="mailto:support@bizgrow360.com" className="flex items-start gap-4 group">
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground text-sm">hello@bizgrow360.com</p>
+                    <p className="text-muted-foreground text-sm">support@bizgrow360.com</p>
                   </div>
                 </a>
                 <div className="flex items-start gap-4">
@@ -131,8 +150,19 @@ const ContactUs = () => {
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 98765 43210" />
+                    <Label htmlFor="phone">Phone *</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="10-digit mobile number"
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="subject">Subject</Label>

@@ -206,8 +206,14 @@ body[data-scroll-locked] {
     filter: brightness(0.9);
   }
 
-  .text-gradient {
-    color: hsl(var(--accent));
+  /* Shared headline accent — single flat gold, no gradient, used on every
+     heading highlight sitewide. Reuse .text-gold (or .text-gradient, kept as
+     an alias for compatibility with existing markup) instead of hardcoding
+     a color on any future heading. */
+  .text-gradient,
+  .text-gold {
+    color: #C29E00;
+    font-weight: 800;
   }
 
   .shadow-glow {

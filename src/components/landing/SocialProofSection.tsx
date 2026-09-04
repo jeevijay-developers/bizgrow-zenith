@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Star, Quote, TrendingUp, Users, ShoppingBag, IndianRupee } from "lucide-react";
-import { useState } from "react";
+import { Star, Quote, TrendingUp } from "lucide-react";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 
 const testimonials = [
   {
@@ -41,22 +41,7 @@ const testimonials = [
   },
 ];
 
-const stats = [
-  { icon: Users, value: "10,000+", label: "Active Stores" },
-  { icon: IndianRupee, value: "₹50Cr+", label: "Monthly GMV" },
-  { icon: Star, value: "4.9/5", label: "Average Rating" },
-  { icon: ShoppingBag, value: "5L+", label: "Products Listed" },
-];
-
 const SocialProofSection = () => {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-
-  const handleCarouselScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollLeft, clientWidth } = event.currentTarget;
-    const currentIndex = Math.round(scrollLeft / clientWidth);
-    setActiveTestimonial(Math.max(0, Math.min(testimonials.length - 1, currentIndex)));
-  };
-
   return (
     <section className="py-20 md:py-28 bg-background relative overflow-hidden">
       {/* Background decoration */}
@@ -66,24 +51,6 @@ const SocialProofSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
-        >
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
-                <stat.icon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <p className="text-3xl sm:text-4xl font-bold text-foreground mb-1">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </motion.div>
-
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -97,7 +64,7 @@ const SocialProofSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Real Results from
-            <span className="text-accent block mt-2">Real Retailers</span>
+            <span className="text-gold block mt-2">Real Retailers</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             See how thousands of store owners are transforming their businesses with BizGrow 360.
@@ -106,35 +73,30 @@ const SocialProofSection = () => {
 
         {/* Mobile Testimonials Carousel */}
         <div className="md:hidden">
-          <div
-            className="flex overflow-x-auto snap-x snap-mandatory gap-4 -mx-4 px-4 pb-2"
-            onScroll={handleCarouselScroll}
-          >
-            {testimonials.map((testimonial, index) => (
-              <motion.div
+          <MobileCarousel slideClassName="w-[90%]">
+            {testimonials.map((testimonial) => (
+              <div
                 key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="snap-center min-w-full bg-card border border-border rounded-2xl p-6 relative"
+                className="bg-card border border-border rounded-2xl p-6 relative h-full flex flex-col justify-between"
               >
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
+                <div>
+                  <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
 
-                <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
-                  <TrendingUp className="w-3 h-3" />
-                  {testimonial.highlight}
+                  <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
+                    <TrendingUp className="w-3 h-3" />
+                    {testimonial.highlight}
+                  </div>
+
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-accent text-accent" />
+                    ))}
+                  </div>
+
+                  <p className="text-foreground leading-relaxed mb-6 text-sm">
+                    "{testimonial.text}"
+                  </p>
                 </div>
-
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-accent text-accent" />
-                  ))}
-                </div>
-
-                <p className="text-foreground leading-relaxed mb-6">
-                  "{testimonial.text}"
-                </p>
 
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
@@ -142,25 +104,14 @@ const SocialProofSection = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {testimonial.role} • {testimonial.location}
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </div>
-
-          <div className="flex justify-center gap-2 mt-4">
-            {testimonials.map((testimonial, index) => (
-              <span
-                key={testimonial.name}
-                className={`h-1.5 rounded-full transition-all ${
-                  index === activeTestimonial ? "w-6 bg-primary" : "w-2 bg-border"
-                }`}
-              />
-            ))}
-          </div>
+          </MobileCarousel>
         </div>
 
         {/* Desktop Testimonials Grid */}

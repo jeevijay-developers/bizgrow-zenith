@@ -9,6 +9,8 @@ interface MobileCarouselProps {
   className?: string;
   align?: "start" | "center";
   startIndex?: number;
+  /** How many slides one swipe advances. Default 1 (swipe reveals the next single card). */
+  slidesToScroll?: number;
 }
 
 /**
@@ -21,11 +23,13 @@ export function MobileCarousel({
   className,
   align = "start",
   startIndex = 0,
+  slidesToScroll = 1,
 }: MobileCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align,
     containScroll: "trimSnaps",
     startIndex,
+    slidesToScroll,
   });
   const [selectedIndex, setSelectedIndex] = useState(startIndex);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);

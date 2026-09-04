@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 
 // AI-generated category images
 import kiranaImg from "@/assets/categories-ai/kirana.png";
@@ -64,7 +65,7 @@ const StoreTypesSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Built for Your
-            <span className="text-accent block mt-2">Type of Business</span>
+            <span className="text-gold block mt-2">Type of Business</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             From neighborhood kirana stores to specialty shops, 
@@ -72,13 +73,13 @@ const StoreTypesSection = () => {
           </p>
         </motion.div>
 
-        {/* Store Types Grid */}
+        {/* Store Types Grid - Desktop/Tablet */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
+          className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
         >
           {storeTypes.map((store) => (
             <motion.div key={store.title} variants={itemVariants}>
@@ -88,8 +89,8 @@ const StoreTypesSection = () => {
               >
                 {/* Category Image */}
                 <div className="w-14 h-14 sm:w-16 sm:h-16 mb-3 rounded-xl overflow-hidden bg-white shadow-sm">
-                  <img 
-                    src={store.image} 
+                  <img
+                    src={store.image}
                     alt={store.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -111,6 +112,36 @@ const StoreTypesSection = () => {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Store Types - Mobile Carousel */}
+        <div className="sm:hidden">
+          <MobileCarousel slideClassName="w-[46%]" slidesToScroll={2}>
+            {storeTypes.map((store) => (
+              <Link
+                key={store.title}
+                to={store.href}
+                className="block bg-card border border-border rounded-2xl p-4 h-full"
+              >
+                <div className="w-16 h-16 mb-3 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <img
+                    src={store.image}
+                    alt={store.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-base font-bold text-foreground mb-1 leading-tight">
+                  {store.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
+                  {store.description}
+                </p>
+                <span className="text-xs font-semibold text-primary">
+                  {store.products} products
+                </span>
+              </Link>
+            ))}
+          </MobileCarousel>
+        </div>
 
         {/* CTA */}
         <motion.div

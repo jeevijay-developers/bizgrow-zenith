@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { HiSparkles } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import whatsappMockup from "@/assets/feature-whatsapp-mockup.png";
@@ -122,18 +123,18 @@ const WhatsAppOrdersPage = () => {
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/join">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+              <div className="flex flex-row gap-3 sm:gap-4">
+                <Link to="/join" className="flex-1 sm:flex-none">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-4 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full sm:w-auto">
                     Connect WhatsApp
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
                 </Link>
-                <Link to="#how-it-works">
-                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-14 text-base w-full sm:w-auto">
-                    See How It Works
+                <a href="#how-it-works" className="flex-1 sm:flex-none">
+                  <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-12 sm:h-14 text-sm sm:text-base w-full sm:w-auto">
+                    How It Works
                   </Button>
-                </Link>
+                </a>
               </div>
             </motion.div>
             
@@ -220,7 +221,8 @@ const WhatsAppOrdersPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Order Flow - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {workflow.map((item, index) => (
               <motion.div
                 key={item.step}
@@ -246,6 +248,27 @@ const WhatsAppOrdersPage = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Order Flow - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {workflow.map((item) => (
+                <div
+                  key={item.step}
+                  className="bg-card rounded-2xl border border-border p-6 text-center shadow-sm h-full"
+                >
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <item.IconComponent className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold mx-auto mb-2.5">
+                    {item.step}
+                  </div>
+                  <h3 className="text-base font-semibold mb-1.5">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
+          </div>
         </div>
       </section>
 
@@ -263,7 +286,8 @@ const WhatsAppOrdersPage = () => {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Features - Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -280,6 +304,24 @@ const WhatsAppOrdersPage = () => {
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Features - Mobile Carousel */}
+          <div className="md:hidden">
+            <MobileCarousel slideClassName="w-[85%]">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="bg-card rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col justify-start"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1.5">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </MobileCarousel>
           </div>
         </div>
       </section>

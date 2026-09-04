@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { TrendingUp, IndianRupee, Users, ShoppingBag, BarChart3 } from "lucide-react";
+import { MobileCarousel } from "@/components/ui/mobile-carousel";
 
 const growthData = [
   { month: "Month 1", value: 50000, growth: "Baseline" },
@@ -40,7 +41,7 @@ const RevenueGrowthSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             Watch Your Business
-            <span className="text-accent block mt-2">Grow 3X in 6 Months</span>
+            <span className="text-gold block mt-2">Grow 3X in 6 Months</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Average revenue growth of our partner stores after switching to BizGrow 360
@@ -103,8 +104,8 @@ const RevenueGrowthSection = () => {
           </div>
         </motion.div>
 
-        {/* Metrics */}
-        <div className="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+        {/* Metrics - Desktop/Tablet */}
+        <div className="hidden sm:grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
           {avgMetrics.map((metric, index) => (
             <motion.div
               key={metric.label}
@@ -125,6 +126,28 @@ const RevenueGrowthSection = () => {
               </span>
             </motion.div>
           ))}
+        </div>
+
+        {/* Metrics - Mobile Carousel (equal-sized cards, no orphan) */}
+        <div className="sm:hidden">
+          <MobileCarousel slideClassName="w-[46%]">
+            {avgMetrics.map((metric) => (
+              <div
+                key={metric.label}
+                className="bg-card border border-border rounded-xl p-4 text-center h-full"
+              >
+                <div className="w-9 h-9 mx-auto mb-2 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <metric.icon className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-xl font-bold text-foreground mb-0.5">{metric.value}</p>
+                <p className="text-xs text-muted-foreground mb-1.5">{metric.label}</p>
+                <span className="inline-flex items-center gap-1 bg-accent/10 text-bizgrow-yellow-dark text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <TrendingUp className="w-2.5 h-2.5" />
+                  {metric.growth}
+                </span>
+              </div>
+            ))}
+          </MobileCarousel>
         </div>
       </div>
     </section>

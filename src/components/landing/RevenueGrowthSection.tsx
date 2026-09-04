@@ -40,7 +40,7 @@ const RevenueGrowthSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             Watch Your Business
-            <span className="text-bizgrow-yellow-dark block mt-2">Grow 3X in 6 Months</span>
+            <span className="text-accent block mt-2">Grow 3X in 6 Months</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Average revenue growth of our partner stores after switching to BizGrow 360

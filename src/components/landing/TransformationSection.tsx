@@ -57,7 +57,7 @@ const TransformationSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             From Khaata to
-            <span className="text-bizgrow-yellow-dark block mt-2">Smart Business</span>
+            <span className="text-accent block mt-2">Smart Business</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             See how thousands of stores transformed their business with BizGrow 360

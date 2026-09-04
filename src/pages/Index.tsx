@@ -4,7 +4,6 @@ import TransformationSection from "@/components/landing/TransformationSection";
 import AIScanningSection from "@/components/landing/AIScanningSection";
 import WhatsAppSection from "@/components/landing/WhatsAppSection";
 import FlyerSection from "@/components/landing/FlyerSection";
-import RegionalLanguageSection from "@/components/landing/RegionalLanguageSection";
 import RevenueGrowthSection from "@/components/landing/RevenueGrowthSection";
 import StoreTypesSection from "@/components/landing/StoreTypesSection";
 import SocialProofSection from "@/components/landing/SocialProofSection";
@@ -49,8 +48,6 @@ const Index = () => {
       <WhatsAppSection />
       <MobileSectionDivider />
       <FlyerSection />
-      <MobileSectionDivider />
-      <RegionalLanguageSection />
       <MobileSectionDivider />
       <RevenueGrowthSection />
       <MobileSectionDivider />

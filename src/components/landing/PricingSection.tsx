@@ -180,7 +180,7 @@ const PricingSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Plans That Scale
-            <span className="text-bizgrow-yellow-dark block mt-2">With Your Success</span>
+            <span className="text-accent block mt-2">With Your Success</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Start free, upgrade when you need. No hidden fees, cancel anytime.

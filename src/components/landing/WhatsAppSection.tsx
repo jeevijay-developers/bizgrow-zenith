@@ -56,7 +56,7 @@ const WhatsAppSection = () => {
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Orders via WhatsApp
-              <span className="text-bizgrow-yellow-dark block mt-2">Where Customers Are</span>
+              <span className="text-accent block mt-2">Where Customers Are</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">

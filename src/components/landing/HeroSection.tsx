@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Play, Star, Shield, Zap, Globe, Sparkles, CheckCircle, MessageSquare, Image } from "lucide-react";
-import { HiSparkles, HiStar } from "react-icons/hi2";
+import { ArrowRight, Play, Star, Shield, Zap, Globe, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import ScheduleDemoModal from "./ScheduleDemoModal";
@@ -10,12 +9,6 @@ const trustBadges = [
   { icon: Shield, text: "Bank-Level Security" },
   { icon: Globe, text: "10+ Languages" },
   { icon: Zap, text: "AI Powered" },
-];
-
-const floatingStats = [
-  { value: "10K+", label: "Active Stores" },
-  { value: "₹50Cr+", label: "Monthly GMV" },
-  { value: "4.9", label: "User Rating", hasStarIcon: true },
 ];
 
 const HeroSection = () => {
@@ -34,8 +27,8 @@ const HeroSection = () => {
           className="w-full h-full object-cover"
         />
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-background/20" />
       </div>
 
       {/* Floating decorative elements */}
@@ -43,7 +36,7 @@ const HeroSection = () => {
       <div className="absolute bottom-20 left-[10%] w-96 h-96 bg-accent/15 rounded-full blur-[120px]" />
 
       <div className="container mx-auto px-4 relative z-10 pt-20 pb-12">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="max-w-3xl mx-auto lg:mx-0">
           {/* Left Content */}
           <div
             className="text-center lg:text-left"
@@ -68,9 +61,8 @@ const HeroSection = () => {
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6"
             >
               Apni Dukaan Ko
-              <span className="block">
-                <span className="text-primary">Digital </span>
-                <span className="text-bizgrow-yellow-dark">Banao</span>
+              <span className="block mt-2 sm:mt-3 text-accent">
+                Digital Banao
               </span>
             </h1>
 
@@ -140,93 +132,6 @@ const HeroSection = () => {
                   <span className="ml-1 font-bold text-foreground">4.9</span>
                 </div>
                 <p className="text-sm text-muted-foreground">10,000+ stores trust us</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right - Floating Stats Cards (visible on larger screens) */}
-          <div
-            className="hidden lg:block relative"
-          >
-            <div className="relative h-[550px] w-full">
-              {/* Floating stat cards - Better positioned */}
-              {floatingStats.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className="absolute bg-background/90 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-2xl"
-                  style={{
-                    top: index === 0 ? "5%" : index === 1 ? "35%" : "65%",
-                    right: index === 0 ? "5%" : index === 1 ? "25%" : "10%",
-                  }}
-                >
-                  <div>
-                    <p className="text-3xl font-bold text-primary">
-                      {stat.value}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
-                  </div>
-                </div>
-              ))}
-
-              {/* Floating Feature Cards - Repositioned to avoid overlaps */}
-              <div
-                className="absolute left-[8%] top-[15%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">हिंदी में उपलब्ध</p>
-                    <p className="text-[10px] text-muted-foreground">+ 9 more languages</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="absolute left-[5%] top-[52%] bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-3 shadow-xl z-20"
-              >
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-primary-foreground" />
-                  <div>
-                    <p className="text-xs font-bold text-primary-foreground flex items-center gap-1">New Order! <HiSparkles className="w-3 h-3" /></p>
-                    <p className="text-[10px] text-primary-foreground/80">₹1,250 via WhatsApp</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="absolute right-[12%] top-[24%] btn-gradient-accent rounded-xl p-3 shadow-xl z-20"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-accent-foreground" />
-                  <div>
-                    <p className="text-xs font-bold text-accent-foreground">AI Detected</p>
-                    <p className="text-[10px] text-accent-foreground/70">8 products added</p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="absolute left-[15%] bottom-[12%] bg-background border border-border rounded-xl p-3 shadow-xl z-20"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg btn-gradient-accent flex items-center justify-center">
-                    <Image className="w-5 h-5 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Flyer Generated!</p>
-                    <p className="text-[10px] text-muted-foreground">Ready to share</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* AI Badge - Repositioned */}
-              <div
-                className="absolute bottom-[8%] right-[30%] bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl p-4 shadow-xl z-10"
-              >
-                <Sparkles className="w-8 h-8" />
-                <p className="text-sm font-bold mt-2">AI Powered</p>
               </div>
             </div>
           </div>

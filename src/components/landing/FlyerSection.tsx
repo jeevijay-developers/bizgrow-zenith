@@ -3,12 +3,7 @@ import { Image as ImageIcon, Palette, Share2, ArrowRight, Sparkles, Check, Insta
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 
-const flyerTypes = [
-  { name: "Diwali Sale", color: "from-orange-500 to-red-500" },
-  { name: "Holi Offers", color: "from-pink-500 to-purple-500" },
-  { name: "New Arrivals", color: "from-blue-500 to-cyan-500" },
-  { name: "Weekend Deals", color: "from-green-500 to-emerald-500" },
-];
+const flyerTypes = ["Diwali Sale", "Holi Offers", "New Arrivals", "Weekend Deals"];
 
 const flyerFeatures = [
   "100+ Festival Templates",
@@ -106,7 +101,7 @@ const FlyerSection = () => {
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Marketing Posters
-              <span className="text-bizgrow-yellow-dark block mt-2">In One Click</span>
+              <span className="text-accent block mt-2">In One Click</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -118,10 +113,10 @@ const FlyerSection = () => {
             <div className="flex flex-wrap gap-2 mb-6">
               {flyerTypes.map((type) => (
                 <span
-                  key={type.name}
-                  className={`bg-gradient-to-r ${type.color} text-white text-xs font-bold px-3 py-1.5 rounded-full`}
+                  key={type}
+                  className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full"
                 >
-                  {type.name}
+                  {type}
                 </span>
               ))}
             </div>

@@ -117,7 +117,7 @@ const AIScanningSection = () => {
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
               Snap, Scan,
-              <span className="text-bizgrow-yellow-dark block mt-2">Sell in Seconds</span>
+              <span className="text-accent block mt-2">Sell in Seconds</span>
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">

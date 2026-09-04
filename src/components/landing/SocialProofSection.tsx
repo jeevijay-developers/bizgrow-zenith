@@ -97,7 +97,7 @@ const SocialProofSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Real Results from
-            <span className="text-bizgrow-yellow-dark block mt-2">Real Retailers</span>
+            <span className="text-accent block mt-2">Real Retailers</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             See how thousands of store owners are transforming their businesses with BizGrow 360.

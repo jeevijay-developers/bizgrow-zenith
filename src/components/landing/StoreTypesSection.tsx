@@ -64,7 +64,7 @@ const StoreTypesSection = () => {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Built for Your
-            <span className="text-bizgrow-yellow-dark block mt-2">Type of Business</span>
+            <span className="text-accent block mt-2">Type of Business</span>
           </h2>
           <p className="text-lg text-muted-foreground">
             From neighborhood kirana stores to specialty shops, 

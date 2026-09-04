@@ -169,7 +169,7 @@ const TransformationSection = () => {
 
             {/* After Tag */}
             <div className="absolute bottom-[1.5%] sm:bottom-[2%] md:bottom-[2.5%] left-[75%] -translate-x-1/2 z-20 w-[40%] sm:w-[34%] md:w-[30%] max-w-[260px]">
-              <div className="w-full flex items-center justify-center gap-2 sm:gap-2.5 bg-[#FFCF00] text-black border-2 border-black/10 px-3 sm:px-6 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md">
+              <div className="w-full flex items-center justify-center gap-2 sm:gap-2.5 bg-[#cea300] text-black border-2 border-black/10 px-3 sm:px-6 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md">
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-black shrink-0" />
                 <span className="text-xs sm:text-sm md:text-base font-black uppercase tracking-wider sm:tracking-widest text-black">
                   AFTER

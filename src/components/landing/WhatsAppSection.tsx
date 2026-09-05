@@ -1,15 +1,10 @@
 import { motion } from "framer-motion";
-import { MessageSquare, Send, CheckCheck, Bell, ArrowRight, Phone, ShoppingCart, Clock } from "lucide-react";
+import { MessageSquare, CheckCheck, Bell, ArrowRight, ShoppingCart, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
-
-const chatMessages = [
-  { type: "customer", message: "Bhaiya, 2kg Aata aur 1L Oil dena", time: "10:30 AM" },
-  { type: "system", message: "🛒 Order received! Items: Aata 2kg (₹85), Oil 1L (₹180). Total: ₹265", time: "10:30 AM" },
-  { type: "seller", message: "Order ready! Delivery in 30 mins 🚚", time: "10:32 AM" },
-  { type: "customer", message: "Shukriya bhaiya! 👍", time: "10:33 AM" },
-];
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
+import whatsappMerchantImg from "@/assets/whatsapp-orders-merchant.jpg";
 
 const whatsappFeatures = [
   { 
@@ -34,6 +29,33 @@ const whatsappFeatures = [
   },
 ];
 
+const WhatsAppVisual = () => (
+  <div className="relative mx-auto max-w-[330px] sm:max-w-[370px] lg:max-w-[410px]">
+    {/* Ambient Background Glow */}
+    <div className="absolute -inset-4 bg-gradient-to-tr from-green-500/20 via-primary/15 to-emerald-500/20 rounded-[36px] blur-2xl -z-10" />
+
+    {/* Main Image Container */}
+    <div className="relative rounded-[28px] sm:rounded-[32px] overflow-hidden border-2 border-border/80 shadow-2xl bg-card aspect-[4/5] max-h-[520px] w-full">
+      <img
+        src={whatsappMerchantImg}
+        alt="Store merchant managing WhatsApp orders on BizGrow 360"
+        className="w-full h-full object-cover object-[center_28%] block"
+      />
+
+      {/* Floating Top Badge */}
+      <motion.div
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-4 right-4 bg-green-600/95 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 border border-white/20"
+      >
+        <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+        <span>New Order!</span>
+        <Bell className="w-3.5 h-3.5" />
+      </motion.div>
+    </div>
+  </div>
+);
+
 const WhatsAppSection = () => {
   return (
     <section className="py-20 md:py-28 bg-background relative overflow-hidden">
@@ -51,9 +73,8 @@ const WhatsAppSection = () => {
             viewport={{ once: true }}
             className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">WhatsApp Orders</span>
+            <div className="mb-6">
+              <BizgrowTag icon={MessageSquare}>WhatsApp Orders</BizgrowTag>
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
@@ -65,6 +86,11 @@ const WhatsAppSection = () => {
               Your customers don't need to download any app. They browse your digital catalogue 
               and order directly on WhatsApp. You manage everything from one dashboard.
             </p>
+
+            {/* Mobile Visual */}
+            <div className="block lg:hidden mb-8 w-full min-w-0">
+              <WhatsAppVisual />
+            </div>
 
             {/* Feature Grid - Desktop */}
             <div className="hidden sm:grid sm:grid-cols-2 gap-4 mb-8 text-left">
@@ -88,7 +114,7 @@ const WhatsAppSection = () => {
 
             {/* Feature Carousel - Mobile */}
             <div className="sm:hidden mb-8 text-left w-full min-w-0">
-              <MobileCarousel slideClassName="w-[calc(50%-8px)]" slidesToScroll={2}>
+              <MobileCarousel slideClassName="w-[42%]" slidesToScroll={1} gapClassName="gap-3">
                 {whatsappFeatures.map((feature) => (
                   <div
                     key={feature.title}
@@ -115,86 +141,14 @@ const WhatsAppSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - Phone Mockup (hidden on mobile so the text content isn't crowded by the screenshot) */}
+          {/* Right - Image Mockup */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="hidden sm:flex relative justify-center w-full min-w-0"
+            className="hidden lg:flex relative justify-center w-full min-w-0"
           >
-            {/* Phone Frame */}
-            <div className="relative w-[300px] sm:w-[340px]">
-              {/* Phone Body */}
-              <div className="bg-gray-900 rounded-[40px] p-2 shadow-2xl">
-                {/* Screen */}
-                <div className="bg-white rounded-[32px] overflow-hidden">
-                  {/* WhatsApp Header */}
-                  <div className="bg-green-600 px-4 py-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <Phone className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white font-bold text-sm">Sharma Kirana Store</p>
-                      <p className="text-white/70 text-xs">Online</p>
-                    </div>
-                  </div>
-
-                  {/* Chat Area */}
-                  <div className="bg-[#e5ddd5] p-3 min-h-[350px] space-y-3">
-                    {chatMessages.map((msg, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.2 + index * 0.15 }}
-                        className={`flex ${msg.type === "customer" ? "justify-start" : "justify-end"}`}
-                      >
-                        <div
-                          className={`max-w-[85%] rounded-lg px-3 py-2 shadow-sm ${
-                            msg.type === "customer"
-                              ? "bg-white"
-                              : msg.type === "system"
-                              ? "bg-amber-100"
-                              : "bg-green-100"
-                          }`}
-                        >
-                          <p className="text-gray-800 text-sm">{msg.message}</p>
-                          <div className="flex items-center justify-end gap-1 mt-1">
-                            <span className="text-[10px] text-gray-500">{msg.time}</span>
-                            {msg.type !== "customer" && (
-                              <CheckCheck className="w-3 h-3 text-blue-500" />
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Input Area */}
-                  <div className="bg-gray-100 px-3 py-2 flex items-center gap-2">
-                    <div className="flex-1 bg-white rounded-full px-4 py-2">
-                      <p className="text-gray-400 text-sm">Type a message</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                      <Send className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Glow Effect */}
-              <div className="absolute -inset-8 bg-green-500/20 rounded-[60px] blur-3xl -z-10" />
-            </div>
-
-            {/* Floating Badge */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute -right-4 top-1/4 bg-green-500 text-white rounded-xl px-4 py-2 shadow-xl"
-            >
-              <p className="text-sm font-bold flex items-center gap-1">New Order! <Bell className="w-3.5 h-3.5" /></p>
-            </motion.div>
+            <WhatsAppVisual />
           </motion.div>
         </div>
       </div>

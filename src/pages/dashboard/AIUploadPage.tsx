@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -548,14 +549,9 @@ const AIUploadPage = () => {
           <HelpCircle className="w-5 h-5 text-muted-foreground" />
         </Button>
 
-        <motion.div 
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/20 to-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 border border-primary/20"
-          animate={{ scale: [1, 1.02, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Sparkles className="w-4 h-4" />
-          AI-Powered Product Upload
-        </motion.div>
+        <div className="mb-4">
+          <BizgrowTag icon={Sparkles}>AI-Powered Product Upload</BizgrowTag>
+        </div>
         <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
           Add Products in Seconds
         </h1>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp, Clock, IndianRupee, FileText, CheckCircle2, Zap, Sparkles, XCircle } from "lucide-react";
 import beforeAfterImage from "@/assets/before-after-transform.jpg";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 const transformMetrics = [
   { 
@@ -130,9 +131,8 @@ const TransformationSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Store Transformation</span>
+          <div className="mb-6">
+            <BizgrowTag icon={TrendingUp}>Store Transformation</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             From Khaata to
@@ -158,20 +158,20 @@ const TransformationSection = () => {
             />
 
             {/* Before Tag */}
-            <div className="absolute bottom-[1.5%] sm:bottom-[2%] md:bottom-[2.5%] left-[25%] -translate-x-1/2 z-20 w-[40%] sm:w-[34%] md:w-[30%] max-w-[260px]">
-              <div className="w-full flex items-center justify-center gap-2 sm:gap-2.5 bg-primary text-white border-2 border-white/20 px-3 sm:px-6 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md">
-                <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
-                <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wider sm:tracking-widest">
+            <div className="absolute bottom-[2%] sm:bottom-[2%] md:bottom-[2.5%] left-[25%] -translate-x-1/2 z-20 w-[32%] sm:w-[34%] md:w-[30%] max-w-[260px]">
+              <div className="w-full flex items-center justify-center gap-1.5 sm:gap-2.5 bg-primary text-white border sm:border-2 border-white/20 px-2 sm:px-6 py-1.5 sm:py-4 md:py-5 rounded-lg sm:rounded-2xl shadow-2xl backdrop-blur-md">
+                <XCircle className="w-3 h-3 sm:w-5 sm:h-5 text-white shrink-0" />
+                <span className="text-[10px] sm:text-sm md:text-base font-extrabold uppercase tracking-wider sm:tracking-widest">
                   BEFORE
                 </span>
               </div>
             </div>
 
             {/* After Tag */}
-            <div className="absolute bottom-[1.5%] sm:bottom-[2%] md:bottom-[2.5%] left-[75%] -translate-x-1/2 z-20 w-[40%] sm:w-[34%] md:w-[30%] max-w-[260px]">
-              <div className="w-full flex items-center justify-center gap-2 sm:gap-2.5 bg-[#cea300] text-black border-2 border-black/10 px-3 sm:px-6 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-black shrink-0" />
-                <span className="text-xs sm:text-sm md:text-base font-black uppercase tracking-wider sm:tracking-widest text-black">
+            <div className="absolute bottom-[2%] sm:bottom-[2%] md:bottom-[2.5%] left-[75%] -translate-x-1/2 z-20 w-[32%] sm:w-[34%] md:w-[30%] max-w-[260px]">
+              <div className="w-full flex items-center justify-center gap-1.5 sm:gap-2.5 bg-[#cea300] text-black border sm:border-2 border-black/10 px-2 sm:px-6 py-1.5 sm:py-4 md:py-5 rounded-lg sm:rounded-2xl shadow-2xl backdrop-blur-md">
+                <CheckCircle2 className="w-3 h-3 sm:w-5 sm:h-5 text-black shrink-0" />
+                <span className="text-[10px] sm:text-sm md:text-base font-black uppercase tracking-wider sm:tracking-widest text-black">
                   AFTER
                 </span>
               </div>
@@ -197,7 +197,7 @@ const TransformationSection = () => {
 
         {/* Transformation Metrics - Mobile Carousel */}
         <div className="sm:hidden max-w-6xl mx-auto">
-          <MobileCarousel slideClassName="w-[85%]">
+          <MobileCarousel slideClassName="w-[80%]">
             {transformMetrics.map((metric) => (
               <div key={metric.label} className="h-full py-1">
                 <MetricCard metric={metric} />

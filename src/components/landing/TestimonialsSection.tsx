@@ -1,38 +1,43 @@
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
+import reviewerRamesh from "@/assets/reviewer-ramesh.jpg";
+import reviewerSunita from "@/assets/reviewer-sunita.jpg";
+import reviewerIqbal from "@/assets/reviewer-iqbal.jpg";
+import reviewerPriya from "@/assets/reviewer-priya.jpg";
 
 const testimonials = [
   {
     name: "Ramesh Sharma",
     role: "Kirana Store Owner",
     location: "Delhi",
-    image: "RS",
+    image: reviewerRamesh,
     rating: 5,
     text: "BizGrow 360 transformed my small grocery shop. Now customers order on WhatsApp and I never miss a sale. My revenue increased by 40% in just 3 months!",
-  },
-  {
-    name: "Priya Patel",
-    role: "Bakery Owner",
-    location: "Mumbai",
-    image: "PP",
-    rating: 5,
-    text: "The AI product upload is magical! I just take a photo of my cakes and everything gets listed automatically. Saves me hours every day.",
-  },
-  {
-    name: "Mohammed Iqbal",
-    role: "Electronics Shop",
-    location: "Bangalore",
-    image: "MI",
-    rating: 5,
-    text: "Managing 500+ products was a nightmare before BizGrow 360. Now everything is organized and I get real-time stock alerts. Best investment I made!",
   },
   {
     name: "Sunita Devi",
     role: "Clothing Boutique",
     location: "Jaipur",
-    image: "SD",
+    image: reviewerSunita,
     rating: 5,
     text: "My boutique now has a professional online presence. Customers love browsing my collection on their phones. The GST billing feature is a lifesaver!",
+  },
+  {
+    name: "Mohammed Iqbal",
+    role: "Electronics Shop",
+    location: "Bangalore",
+    image: reviewerIqbal,
+    rating: 5,
+    text: "Managing 500+ products was a nightmare before BizGrow 360. Now everything is organized and I get real-time stock alerts. Best investment I made!",
+  },
+  {
+    name: "Priya Patel",
+    role: "Dairy & Grocery Store",
+    location: "Mumbai",
+    image: reviewerPriya,
+    rating: 5,
+    text: "The AI product upload is magical! I just take a photo of my cakes and everything gets listed automatically. Saves me hours every day.",
   },
 ];
 
@@ -53,8 +58,8 @@ const TestimonialsSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <span className="text-sm font-semibold text-primary">Customer Stories</span>
+          <div className="mb-6">
+            <BizgrowTag icon={Quote}>Customer Stories</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Loved by Retailers
@@ -93,9 +98,11 @@ const TestimonialsSection = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
-                  {testimonial.image}
-                </div>
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-primary/20 shadow-sm shrink-0"
+                />
                 <div>
                   <p className="font-semibold text-foreground">{testimonial.name}</p>
                   <p className="text-sm text-muted-foreground">

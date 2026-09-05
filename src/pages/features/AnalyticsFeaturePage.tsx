@@ -7,9 +7,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import analyticsMockup from "@/assets/feature-analytics-mockup.png";
+import analyticsDashboard from "@/assets/feature-analytics-dashboard.png";
 
 const features = [
   {
@@ -45,10 +46,17 @@ const features = [
 ];
 
 const metrics = [
-  { icon: IndianRupee, label: "Total Revenue", value: "â‚¹2,45,678", change: "+23%" },
+  { icon: IndianRupee, label: "Total Revenue", value: "₹2,45,678", change: "+23%" },
   { icon: ShoppingCart, label: "Total Orders", value: "1,234", change: "+18%" },
   { icon: Users, label: "Customers", value: "856", change: "+12%" },
-  { icon: Target, label: "Avg Order Value", value: "â‚¹199", change: "+8%" }
+  { icon: Target, label: "Avg Order Value", value: "₹199", change: "+8%" }
+];
+
+const displayMetrics = [
+  { icon: IndianRupee, label: "Total Revenue", value: "₹2,45,678", change: "+23%" },
+  { icon: ShoppingCart, label: "Total Orders", value: "1,234", change: "+18%" },
+  { icon: Users, label: "Customers", value: "856", change: "+12%" },
+  { icon: Target, label: "Avg Order Value", value: "₹199", change: "+8%" }
 ];
 
 const insights = [
@@ -88,38 +96,42 @@ const AnalyticsFeaturePage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="text-center sm:text-left"
             >
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <BarChart3 className="w-4 h-4" />
-                Business Analytics
+              <div className="mb-6 flex justify-center sm:justify-start">
+                <BizgrowTag icon={BarChart3}>Business Analytics</BizgrowTag>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Data-Driven{" "}
                 <span className="text-gradient">Decisions</span>
               </h1>
-              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
-                Understand your business like never before. Track sales, analyze trends, 
+              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl sm:mx-0 mx-auto">
+                Understand your business like never before. Track sales, analyze trends,
                 and get AI-powered insights to grow faster.
               </p>
-              
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {metrics.slice(0, 2).map((metric, i) => (
-                  <div key={i} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <metric.icon className="w-5 h-5 text-accent" />
-                      <span className="text-white/60 text-sm">{metric.label}</span>
+
+              <div className="grid grid-cols-2 gap-2 mb-8 text-left sm:gap-4">
+                {displayMetrics.slice(0, 2).map((metric, i) => (
+                  <div key={i} className="min-w-0 rounded-xl bg-white/10 p-3 backdrop-blur-sm sm:p-4">
+                    <div className="mb-2 flex min-w-0 items-center gap-1.5 sm:gap-2">
+                      <metric.icon className="h-4 w-4 shrink-0 text-accent sm:h-5 sm:w-5" />
+                      <span className="truncate text-xs text-white/60 sm:text-sm">{metric.label}</span>
                     </div>
-                    <div className="flex items-end gap-2">
-                      <span className="text-2xl font-bold text-white">{metric.value}</span>
-                      <span className="text-success text-sm">{metric.change}</span>
+                    <div className="flex flex-wrap items-end gap-x-1 gap-y-0.5 sm:gap-2">
+                      <span className="whitespace-nowrap text-lg font-bold leading-none text-white sm:text-2xl">{metric.value}</span>
+                      <span className="text-xs leading-none text-success sm:text-sm">{metric.change}</span>
                     </div>
                   </div>
                 ))}
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
+
+              <div className="relative mb-8 lg:hidden rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <img src={analyticsDashboard} alt="Analytics Dashboard" className="w-full h-auto" />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                 <Link to="/join">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base">
                     Start Tracking Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -131,32 +143,9 @@ const AnalyticsFeaturePage = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative hidden lg:block rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src={analyticsMockup} 
-                  alt="Analytics Dashboard"
-                  className="w-full h-auto"
-                />
-              </div>
-              
-              {/* Floating chart */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-success" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">This Month</p>
-                    <p className="font-bold text-lg">+28% Growth</p>
-                  </div>
-                </div>
-              </motion.div>
+              <img src={analyticsDashboard} alt="Analytics Dashboard" className="w-full h-auto" />
             </motion.div>
           </div>
         </div>
@@ -166,7 +155,7 @@ const AnalyticsFeaturePage = () => {
       <section className="py-8 bg-card border-y border-border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {metrics.map((metric, index) => (
+            {displayMetrics.map((metric, index) => (
               <motion.div
                 key={metric.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -226,7 +215,7 @@ const AnalyticsFeaturePage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}
@@ -253,9 +242,8 @@ const AnalyticsFeaturePage = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Lightbulb className="w-4 h-4" />
-              AI-Powered
+            <div className="mb-4">
+              <BizgrowTag icon={Lightbulb}>AI-Powered</BizgrowTag>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Smart <span className="text-gradient">Business Insights</span>
@@ -287,7 +275,7 @@ const AnalyticsFeaturePage = () => {
 
           {/* Insights - Mobile Carousel */}
           <div className="md:hidden max-w-sm mx-auto">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {insights.map((insight) => (
                 <div
                   key={insight.title}
@@ -313,17 +301,18 @@ const AnalyticsFeaturePage = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="text-center sm:text-left"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Everything in{" "}
                 <span className="text-gradient">One Dashboard</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
-                No need to juggle multiple tools. Get a complete view of your business 
+                No need to juggle multiple tools. Get a complete view of your business
                 performance in a single, beautiful dashboard.
               </p>
-              
-              <div className="space-y-4">
+
+              <div className="space-y-4 w-fit mx-auto sm:w-auto sm:mx-0">
                 {[
                   "Real-time sales and order updates",
                   "Visual charts and graphs",
@@ -343,7 +332,7 @@ const AnalyticsFeaturePage = () => {
                     <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center">
                       <Check className="w-4 h-4 text-success" />
                     </div>
-                    <span>{item}</span>
+                    <span className="text-left">{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -393,7 +382,7 @@ const AnalyticsFeaturePage = () => {
                   </div>
                   <div className="bg-card rounded-xl p-4 border border-border">
                     <Target className="w-5 h-5 text-primary mb-2" />
-                    <p className="text-2xl font-bold">â‚¹245</p>
+                    <p className="text-2xl font-bold">₹245</p>
                     <p className="text-xs text-muted-foreground">Avg Order</p>
                   </div>
                 </div>

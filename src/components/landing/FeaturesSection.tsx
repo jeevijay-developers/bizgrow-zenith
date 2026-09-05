@@ -9,6 +9,7 @@ import {
   Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 const features = [
   {
@@ -93,8 +94,8 @@ const FeaturesSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16 md:mb-20"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
-            <span className="text-sm font-semibold text-accent-foreground">Complete Solution</span>
+          <div className="mb-6">
+            <BizgrowTag icon={Layers}>Complete Solution</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Everything Else You Need

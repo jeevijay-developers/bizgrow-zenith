@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
-import { Image as ImageIcon, Palette, Share2, ArrowRight, Sparkles, Check, Instagram, Facebook, MapPin, Phone } from "lucide-react";
+import { Image as ImageIcon, Palette, ArrowRight, Sparkles, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
+import whatsappIcon from "@/assets/whatsapp-tile.svg";
+import instagramIcon from "@/assets/instagram-icon.webp";
+import facebookIcon from "@/assets/facebook-icon.png";
+
+import marketingPosterImg from "@/assets/marketing-poster-builder.jpg";
 
 const flyerTypes = ["Diwali Sale", "Holi Offers", "New Arrivals", "Weekend Deals"];
 
@@ -15,61 +21,28 @@ const flyerFeatures = [
 ];
 
 const FlyerVisual = () => (
-  <div className="relative py-4">
-    {/* Main Flyer Card */}
-    <motion.div
-      animate={{ rotate: [-2, 2, -2] }}
-      transition={{ duration: 6, repeat: Infinity }}
-      className="relative z-20 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-2xl p-6 shadow-2xl max-w-sm mx-auto"
-    >
-      <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-10 rounded-2xl" />
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full">
-            🪔 DIWALI SALE
-          </span>
-          <span className="text-white/80 text-xs">Sharma Store</span>
-        </div>
-        <h3 className="text-3xl font-bold text-white mb-2">FLAT 30% OFF</h3>
-        <p className="text-white/90 text-sm mb-4">On All Products</p>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white/20 backdrop-blur-sm rounded-lg p-2 text-center">
-              <div className="w-full h-12 bg-white/30 rounded mb-1" />
-              <p className="text-white text-xs">₹{99 * i}</p>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center justify-between">
-          <p className="text-white text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> Valid till 15 Nov</p>
-          <p className="text-white text-xs flex items-center gap-1"><Phone className="w-3 h-3" /> 98765 43210</p>
-        </div>
-      </div>
-    </motion.div>
+  <div className="relative mx-auto max-w-[340px] sm:max-w-[390px] lg:max-w-[430px]">
+    {/* Ambient Background Glow */}
+    <div className="absolute -inset-4 bg-gradient-to-tr from-amber-500/25 via-primary/20 to-orange-500/25 rounded-[36px] blur-2xl -z-10" />
 
-    {/* Background Flyers */}
-    <motion.div
-      animate={{ rotate: [5, 8, 5] }}
-      transition={{ duration: 5, repeat: Infinity }}
-      className="absolute top-4 right-4 z-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-4 w-48 h-48 shadow-xl opacity-60"
-    />
-    <motion.div
-      animate={{ rotate: [-8, -5, -8] }}
-      transition={{ duration: 5, repeat: Infinity }}
-      className="absolute top-8 left-4 z-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-4 w-40 h-40 shadow-xl opacity-40"
-    />
+    {/* Main Image Container */}
+    <div className="relative rounded-[28px] sm:rounded-[32px] overflow-hidden border-2 border-border/80 shadow-2xl bg-card aspect-[4/5] max-h-[520px] w-full">
+      <img
+        src={marketingPosterImg}
+        alt="Store owner creating 1-click festive marketing poster on tablet with BizGrow 360"
+        className="w-full h-full object-cover object-center block scale-110 -rotate-[4.5deg] origin-center"
+      />
 
-    {/* AI Badge */}
-    <motion.div
-      animate={{ y: [0, -5, 0] }}
-      transition={{ duration: 3, repeat: Infinity }}
-      className="absolute right-2 sm:-right-4 bottom-1/4 z-30 bg-background border border-border rounded-xl p-3 shadow-xl"
-    >
-      <div className="flex items-center gap-2">
-        <Sparkles className="w-5 h-5 text-primary" />
-        <span className="text-sm font-bold text-foreground">AI Generated</span>
-      </div>
-    </motion.div>
+      {/* Floating Top Badge */}
+      <motion.div
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 border border-white/20"
+      >
+        <Sparkles className="w-3.5 h-3.5" />
+        <span>1-Click Festival Poster</span>
+      </motion.div>
+    </div>
   </div>
 );
 
@@ -101,9 +74,8 @@ const FlyerSection = () => {
             viewport={{ once: true }}
             className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-              <ImageIcon className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">Auto Flyer Creation</span>
+            <div className="mb-6">
+              <BizgrowTag icon={ImageIcon}>Auto Flyer Creation</BizgrowTag>
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
@@ -124,13 +96,9 @@ const FlyerSection = () => {
             {/* Flyer Types */}
             <div className="grid grid-cols-2 justify-items-stretch sm:flex sm:flex-wrap gap-2.5 mb-6">
               {flyerTypes.map((type) => (
-                <span
-                  key={type}
-                  className="inline-flex items-center justify-center gap-1.5 bg-primary/5 border border-primary/20 text-primary text-[11px] font-semibold uppercase tracking-wider px-4 py-2 rounded-full transition-colors hover:bg-primary/10"
-                >
-                  <span className="w-1 h-1 rounded-full bg-accent shrink-0" />
+                <BizgrowTag key={type} className="text-xs uppercase tracking-wider justify-center">
                   {type}
-                </span>
+                </BizgrowTag>
               ))}
             </div>
 
@@ -146,7 +114,7 @@ const FlyerSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start mb-8">
               <Link to="/join">
-                <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group w-full sm:w-auto">
+                <RippleButton size="lg" className="btn-gradient-accent text-accent-foreground font-bold h-12 px-6 group">
                   <Palette className="w-4 h-4 mr-2" />
                   Create Free Flyers
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -155,17 +123,17 @@ const FlyerSection = () => {
             </div>
 
             {/* Share Icons */}
-            <div className="flex items-center justify-center sm:justify-start gap-4">
-              <span className="text-sm text-muted-foreground">Share to:</span>
-              <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                  <Share2 className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-center sm:justify-start gap-3.5">
+              <span className="text-sm font-medium text-muted-foreground">Share to:</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm hover:scale-110 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center bg-white border border-border/50 p-0.5">
+                  <img src={whatsappIcon} alt="Share on WhatsApp" className="w-full h-full object-cover rounded-full" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <Instagram className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm hover:scale-110 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center bg-white border border-border/50 p-0.5">
+                  <img src={instagramIcon} alt="Share on Instagram" className="w-full h-full object-cover rounded-full" />
                 </div>
-                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                  <Facebook className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm hover:scale-110 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center bg-white border border-border/50 p-0.5">
+                  <img src={facebookIcon} alt="Share on Facebook" className="w-full h-full object-cover rounded-full" />
                 </div>
               </div>
             </div>

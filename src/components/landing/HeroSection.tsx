@@ -3,8 +3,20 @@ import { ArrowRight, Play, Star, Zap, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import ScheduleDemoModal from "./ScheduleDemoModal";
 import heroShopkeeper from "@/assets/hero-shopkeeper.jpg";
+import reviewerRamesh from "@/assets/reviewer-ramesh.jpg";
+import reviewerSunita from "@/assets/reviewer-sunita.jpg";
+import reviewerIqbal from "@/assets/reviewer-iqbal.jpg";
+import reviewerPriya from "@/assets/reviewer-priya.jpg";
+
+const reviewerAvatars = [
+  { name: "Ramesh Sharma", image: reviewerRamesh },
+  { name: "Sunita Devi", image: reviewerSunita },
+  { name: "Mohammed Iqbal", image: reviewerIqbal },
+  { name: "Priya Patel", image: reviewerPriya },
+];
 
 const trustBadges = [
   { icon: Zap, text: "AI Powered" },
@@ -48,13 +60,9 @@ const HeroSection = () => {
               className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8"
             >
               {trustBadges.map((badge) => (
-                <div
-                  key={badge.text}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-background/80 backdrop-blur-sm border border-border/50 rounded-full px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm"
-                >
-                  <badge.icon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-                  <span className="text-foreground font-medium">{badge.text}</span>
-                </div>
+                <BizgrowTag key={badge.text} icon={badge.icon}>
+                  {badge.text}
+                </BizgrowTag>
               ))}
             </motion.div>
 
@@ -63,10 +71,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.08 }}
-              className="text-[clamp(2.25rem,9.3vw,3rem)] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight font-display mb-5 sm:mb-6 break-words sm:whitespace-normal"
+              className="text-[clamp(2.35rem,10.2vw,3.35rem)] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] font-display mb-5 sm:mb-6"
             >
-              Apni Dukaan Ko
-              <span className="block mt-2 sm:mt-3 text-[#cea300]">
+              <span className="block whitespace-nowrap sm:whitespace-normal">
+                Apni Dukaan Ko
+              </span>
+              <span className="block mt-2 sm:mt-3 text-[#cea300] whitespace-nowrap sm:whitespace-normal">
                 Digital Banao
               </span>
             </motion.h1>
@@ -87,16 +97,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.24 }}
-              className="flex flex-wrap justify-center lg:justify-start gap-2 mb-10"
+              className="flex flex-wrap justify-center lg:justify-start gap-2.5 mb-10"
             >
               {["AI Product Upload", "WhatsApp Orders", "Auto Flyers", "GST Billing"].map((feature) => (
-                <span
-                  key={feature}
-                  className="flex items-center gap-1.5 bg-primary/10 text-primary text-sm font-medium px-3 py-1.5 rounded-full border border-primary/20"
-                >
-                  <CheckCircle className="w-3.5 h-3.5" />
+                <BizgrowTag key={feature} icon={CheckCircle}>
                   {feature}
-                </span>
+                </BizgrowTag>
               ))}
             </motion.div>
 
@@ -132,13 +138,13 @@ const HeroSection = () => {
               className="flex items-center justify-center lg:justify-start gap-4"
             >
               <div className="flex -space-x-3">
-                {["RS", "PP", "MI", "SD"].map((initials, i) => (
-                  <div
+                {reviewerAvatars.map((r, i) => (
+                  <img
                     key={i}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground text-xs font-bold border-2 border-background"
-                  >
-                    {initials}
-                  </div>
+                    src={r.image}
+                    alt={r.name}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-background shadow-md"
+                  />
                 ))}
               </div>
               <div className="text-left">
@@ -152,17 +158,6 @@ const HeroSection = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div
-        className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <div
-          className="w-6 h-10 border-2 border-foreground/30 rounded-full flex justify-center pt-2 animate-bounce"
-        >
-          <div className="w-1.5 h-2.5 bg-primary rounded-full" />
         </div>
       </div>
     </section>

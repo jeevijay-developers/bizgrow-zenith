@@ -42,7 +42,7 @@ const DashboardPreview = () => {
           </h2>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Track sales, manage orders, monitor inventory â€” all from a dashboard 
+            Track sales, manage orders, monitor inventory — all from a dashboard 
             designed for busy Indian retailers. Simple, fast, and powerful.
           </p>
         </AnimatedSection>
@@ -139,7 +139,7 @@ const DashboardPreview = () => {
                 {/* Stats Row */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
-                    { label: "Today's Sales", value: "â‚¹12,450", change: "+23%", up: true, icon: TrendingUp, color: "from-green-500 to-emerald-600" },
+                    { label: "Today's Sales", value: "₹12,450", change: "+23%", up: true, icon: TrendingUp, color: "from-green-500 to-emerald-600" },
                     { label: "Total Orders", value: "24", change: "+5 new", up: true, icon: ShoppingCart, color: "from-blue-500 to-cyan-600" },
                     { label: "Products", value: "120", change: "3 low stock", up: false, icon: Package, color: "from-primary to-purple-600" },
                     { label: "Customers", value: "89", change: "+12 today", up: true, icon: Users, color: "from-amber-500 to-orange-600" },
@@ -175,9 +175,9 @@ const DashboardPreview = () => {
                   </div>
                   <div className="space-y-4">
                     {[
-                      { id: "#1234", customer: "Priya Sharma", items: 3, amount: "â‚¹450", time: "2 min ago", status: "New", avatar: "PS" },
-                      { id: "#1233", customer: "Rahul Verma", items: 5, amount: "â‚¹890", time: "15 min ago", status: "Preparing", avatar: "RV" },
-                      { id: "#1232", customer: "Anita Gupta", items: 2, amount: "â‚¹180", time: "1 hr ago", status: "Delivered", avatar: "AG" },
+                      { id: "#1234", customer: "Priya Sharma", items: 3, amount: "₹450", time: "2 min ago", status: "New", avatar: "PS" },
+                      { id: "#1233", customer: "Rahul Verma", items: 5, amount: "₹890", time: "15 min ago", status: "Preparing", avatar: "RV" },
+                      { id: "#1232", customer: "Anita Gupta", items: 2, amount: "₹180", time: "1 hr ago", status: "Delivered", avatar: "AG" },
                     ].map((order) => (
                       <div key={order.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 -mx-2 px-2 rounded-lg transition-colors cursor-pointer">
                         <div className="flex items-center gap-4">
@@ -224,7 +224,7 @@ const DashboardPreview = () => {
           </p>
           <Link to="/join">
             <RippleButton size="xl" variant="glow" className="font-bold group">
-              Get Your Dashboard Now â€” It's Free
+              Get Your Dashboard Now — It's Free
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </RippleButton>
           </Link>

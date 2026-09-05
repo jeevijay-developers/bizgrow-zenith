@@ -7,6 +7,7 @@ import {
 import { HiSparkles } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import whatsappMockup from "@/assets/feature-whatsapp-mockup.png";
@@ -97,21 +98,21 @@ const WhatsAppOrdersPage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="text-center sm:text-left"
             >
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <MessageSquare className="w-4 h-4" />
-                WhatsApp Integration
+              <div className="mb-6 flex justify-center sm:justify-start">
+                <BizgrowTag icon={MessageSquare}>WhatsApp Integration</BizgrowTag>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Orders Straight to{" "}
                 <span className="text-gradient">WhatsApp</span>
               </h1>
-              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
-                No app needed. Customers order from your catalogue and you receive everything 
+              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl sm:mx-0 mx-auto">
+                No app needed. Customers order from your catalogue and you receive everything
                 on WhatsApp - the app you already use every day.
               </p>
-              
-              <div className="flex items-center gap-6 mb-8">
+
+              <div className="flex items-center justify-center sm:justify-start gap-6 mb-8">
                 {[
                   { icon: CheckCheck, text: "Instant delivery" },
                   { icon: Smartphone, text: "Works on any phone" },
@@ -121,6 +122,24 @@ const WhatsAppOrdersPage = () => {
                     <span className="text-white/80">{item.text}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* Mobile-only preview, placed before the actions. */}
+              <div className="relative mb-8 lg:hidden">
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+                  <img
+                    src={whatsappMockup}
+                    alt="WhatsApp Orders Interface"
+                    className="w-full h-auto"
+                  />
+                </div>
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -bottom-4 -right-3 bg-green-500 text-white rounded-2xl rounded-br-sm p-3 shadow-xl"
+                >
+                  <p className="flex items-center gap-1 text-sm font-medium">Order confirmed! <HiSparkles className="w-4 h-4" /></p>
+                </motion.div>
               </div>
 
               <div className="flex flex-row gap-3 sm:gap-4">
@@ -142,7 +161,7 @@ const WhatsAppOrdersPage = () => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative hidden lg:block"
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <img 
@@ -157,7 +176,7 @@ const WhatsAppOrdersPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
-                className="absolute -top-4 -left-4 bg-white rounded-xl p-4 shadow-xl max-w-[200px]"
+                className="absolute -top-4 -left-4 hidden max-w-[200px] rounded-xl bg-white p-4 shadow-xl lg:block"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -236,9 +255,6 @@ const WhatsAppOrdersPage = () => {
                   <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
                     <item.IconComponent className="w-7 h-7 text-primary" />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mx-auto mb-3">
-                    {item.step}
-                  </div>
                   <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                   <p className="text-muted-foreground text-sm">{item.description}</p>
                 </div>
@@ -251,7 +267,7 @@ const WhatsAppOrdersPage = () => {
 
           {/* Order Flow - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {workflow.map((item) => (
                 <div
                   key={item.step}
@@ -259,9 +275,6 @@ const WhatsAppOrdersPage = () => {
                 >
                   <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
                     <item.IconComponent className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold mx-auto mb-2.5">
-                    {item.step}
                   </div>
                   <h3 className="text-base font-semibold mb-1.5">{item.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
@@ -308,7 +321,7 @@ const WhatsAppOrdersPage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}
@@ -334,17 +347,18 @@ const WhatsAppOrdersPage = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="text-center sm:text-left"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 See What You{" "}
                 <span className="text-gradient">Receive</span>
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
-                Every order comes with complete details - customer info, items, address, 
+                Every order comes with complete details - customer info, items, address,
                 and payment method. Everything you need to fulfill the order.
               </p>
-              
-              <div className="space-y-4">
+
+              <div className="space-y-4 w-fit mx-auto sm:w-auto sm:mx-0">
                 {[
                   "Customer name & phone number",
                   "Complete order with item details",
@@ -356,7 +370,7 @@ const WhatsAppOrdersPage = () => {
                     <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center">
                       <Check className="w-4 h-4 text-success" />
                     </div>
-                    <span>{item}</span>
+                    <span className="text-left">{item}</span>
                   </div>
                 ))}
               </div>

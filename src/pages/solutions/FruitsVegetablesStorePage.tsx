@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import fruitsMockup from "@/assets/solution-fruits-mockup.png";
@@ -42,10 +43,9 @@ const FruitsVegetablesStorePage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
-                <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Fruits & Vegetables
+            <div className="contents text-center sm:block lg:text-left">
+              <div className="mb-4 sm:mb-6 flex justify-center lg:justify-start">
+                <BizgrowTag icon={Leaf}>Fruits & Vegetables</BizgrowTag>
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                 Fresh Produce,{" "}
@@ -55,9 +55,9 @@ const FruitsVegetablesStorePage = () => {
                 Manage your fruits and vegetable shop with daily pricing, 
                 freshness tracking, and quick delivery management.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-                <Link to="/join" className="w-full sm:w-auto">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full">
+              <div className="order-12 flex flex-col justify-center gap-3 sm:order-none sm:flex-row sm:gap-4 lg:justify-start">
+                <Link to="/join">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
@@ -65,7 +65,7 @@ const FruitsVegetablesStorePage = () => {
               </div>
             </div>
             
-            <div className="relative">
+            <div className="order-10 relative sm:order-none">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                 <img src={fruitsMockup} alt="Fruits & Vegetables Dashboard" className="w-full h-auto" />
               </div>
@@ -111,7 +111,7 @@ const FruitsVegetablesStorePage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="sm:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}
@@ -138,7 +138,7 @@ const FruitsVegetablesStorePage = () => {
                 Why Produce Sellers Love{" "}
                 <span className="text-gradient">BizGrow 360</span>
               </h2>
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-3 sm:space-y-4 w-fit mx-auto lg:w-auto lg:mx-0">
                 {benefits.map((benefit, index) => (
                   <div
                     key={index}
@@ -154,7 +154,7 @@ const FruitsVegetablesStorePage = () => {
               
               <div className="mt-6 sm:mt-8 text-center lg:text-left">
                 <Link to="/join">
-                  <Button size="lg" className="gap-2 w-full sm:w-auto">
+                  <Button size="lg" className="gap-2">
                     Get Started Free
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>

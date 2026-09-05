@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { TrendingUp, IndianRupee, Users, ShoppingBag, BarChart3 } from "lucide-react";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 const growthData = [
   { month: "Month 1", value: 50000, growth: "Baseline" },
@@ -35,9 +36,8 @@ const RevenueGrowthSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <BarChart3 className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Revenue Growth</span>
+          <div className="mb-6">
+            <BizgrowTag icon={BarChart3}>Revenue Growth</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             Watch Your Business
@@ -128,21 +128,21 @@ const RevenueGrowthSection = () => {
           ))}
         </div>
 
-        {/* Metrics - Mobile Carousel (equal-sized cards, no orphan) */}
+        {/* Metrics - Mobile Carousel (enlarged single card with peek) */}
         <div className="sm:hidden">
-          <MobileCarousel slideClassName="w-[46%]">
+          <MobileCarousel slideClassName="w-[80%]">
             {avgMetrics.map((metric) => (
               <div
                 key={metric.label}
-                className="bg-card border border-border rounded-xl p-4 text-center h-full"
+                className="bg-card border border-border/80 rounded-2xl p-6 text-center shadow-sm h-full flex flex-col items-center justify-center"
               >
-                <div className="w-9 h-9 mx-auto mb-2 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <metric.icon className="w-4 h-4 text-primary" />
+                <div className="w-14 h-14 mx-auto mb-3.5 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <metric.icon className="w-6 h-6 text-primary" />
                 </div>
-                <p className="text-xl font-bold text-foreground mb-0.5">{metric.value}</p>
-                <p className="text-xs text-muted-foreground mb-1.5">{metric.label}</p>
-                <span className="inline-flex items-center gap-1 bg-accent/10 text-bizgrow-yellow-dark text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  <TrendingUp className="w-2.5 h-2.5" />
+                <p className="text-3xl font-extrabold text-foreground mb-1 tracking-tight">{metric.value}</p>
+                <p className="text-sm text-muted-foreground mb-3 font-medium">{metric.label}</p>
+                <span className="inline-flex items-center gap-1.5 bg-accent/10 text-bizgrow-yellow-dark text-xs font-bold px-3 py-1 rounded-full border border-accent/20">
+                  <TrendingUp className="w-3.5 h-3.5" />
                   {metric.growth}
                 </span>
               </div>

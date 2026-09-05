@@ -1,4 +1,5 @@
-﻿import { UserPlus, Store, Rocket, ArrowRight } from "lucide-react";
+import { UserPlus, Store, Rocket, ArrowRight } from "lucide-react";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 const steps = [
   {
@@ -27,9 +28,9 @@ const HowItWorksSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium mb-4">
-            Simple & Easy
-          </span>
+          <div className="mb-4">
+            <BizgrowTag icon={Rocket}>Simple & Easy</BizgrowTag>
+          </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 font-display">
             Get Started in
             <span className="text-primary"> 3 Simple Steps</span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, HelpCircle, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Sparkles, ShoppingBag, Layers, BarChart3, MessageSquare, BookOpen, Phone, Store, Shirt, Smartphone, Leaf, Cake, Milk, Zap, Pill, PenTool, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
@@ -83,7 +83,6 @@ const Navbar = () => {
       label: "Resources",
       href: "#",
       dropdown: [
-        { label: "Help Center", href: "/contact", icon: HelpCircle, desc: "FAQs & guides" },
         { label: "WhatsApp Orders", href: "/features/whatsapp-orders", icon: MessageSquare, desc: "Order management" },
         { label: "Contact Us", href: "/contact", icon: Phone, desc: "Get support" },
       ],

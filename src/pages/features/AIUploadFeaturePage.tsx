@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight, Check, Sparkles, Camera, Cpu, Clock, 
-  Target, Zap, Upload, Brain, Scan, Wand2, Pencil, CheckCircle
+  Target, Zap, Upload, Brain, Scan, Wand2, Pencil, CheckCircle, Package
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import aiMockup from "@/assets/feature-ai-upload-mockup.png";
 
 const features = [
   {
@@ -70,6 +70,36 @@ const steps = [
   }
 ];
 
+const heroWorkflowSteps = [
+  { number: 1, title: "Snap or upload", description: "Take a photo or upload from gallery", icon: Camera, color: "from-[#4aa0f5] to-[#2b76c7] shadow-[#378add]/30" },
+  { number: 2, title: "AI analyzes", description: "Detects products and extracts details", icon: Sparkles, color: "from-[#968fe5] to-[#635ac7] shadow-[#7f77dd]/30" },
+  { number: 3, title: "Auto enhance", description: "Clean white backgrounds automatically", icon: Wand2, color: "from-[#d68d25] to-[#9e5e0b] shadow-[#ba7517]/30" },
+  { number: 4, title: "Add to catalogue", description: "Review and add to your store", icon: Package, color: "from-[#78b32f] to-[#4e7c17] shadow-[#639922]/30" },
+];
+
+const HeroWorkflowPreview = () => (
+  <div className="rounded-[22px] border border-[#c9c5f5] bg-gradient-to-br from-[#fbfaff] to-[#f2f1fc] p-5 shadow-[0_18px_35px_-24px_rgba(31,21,81,0.45)] sm:p-8">
+    <div className="relative mb-9 grid grid-cols-2 gap-y-7 sm:mb-12 sm:grid-cols-4 sm:gap-y-0">
+      <div className="absolute left-[12%] right-[12%] top-8 hidden h-0.5 bg-gradient-to-r from-[#378add] via-[#9a75a8] to-[#639922] opacity-30 sm:block" />
+      {heroWorkflowSteps.map((step) => (
+        <div key={step.number} className="relative z-10 flex flex-col items-center px-1 text-center sm:px-2">
+          <div className="relative transition-transform duration-200 hover:-translate-y-0.5">
+            <div className={`flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br shadow-lg ${step.color}`}><step.icon className="h-6 w-6 text-white" strokeWidth={2} /></div>
+            <span className="absolute right-0 top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 border-white bg-[#18072d] text-xs font-semibold text-white">{step.number}</span>
+          </div>
+          <p className="mt-4 text-sm font-semibold text-[#111827] sm:text-[15px]">{step.title}</p>
+          <p className="mt-1 max-w-[145px] text-xs leading-snug text-[#61708a] sm:text-[13px]">{step.description}</p>
+        </div>
+      ))}
+    </div>
+    <div className="grid grid-cols-3 gap-2 sm:gap-4">
+      {[ ["<5 sec", "Instant detection"], ["Clean BG", "Auto enhancement"], ["10x faster", "Time saved"] ].map(([value, label]) => (
+        <div key={label} className="rounded-xl border border-black/[0.04] bg-white px-1 py-4 text-center shadow-[0_6px_14px_rgba(29,25,70,0.06)] sm:rounded-2xl sm:px-4 sm:py-6"><p className="text-base font-bold text-[#111827] sm:text-2xl">{value}</p><p className="mt-1.5 text-[8px] font-medium uppercase tracking-[0.35px] text-[#61708a] sm:mt-2 sm:text-xs sm:tracking-[0.5px]">{label}</p></div>
+      ))}
+    </div>
+  </div>
+);
+
 const AIUploadFeaturePage = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -109,36 +139,40 @@ const AIUploadFeaturePage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="text-center sm:text-left"
             >
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Sparkles className="w-4 h-4" />
-                AI-Powered
+              <div className="mb-6 flex justify-center sm:justify-start">
+                <BizgrowTag icon={Sparkles}>AI-Powered</BizgrowTag>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Add Products with{" "}
                 <span className="text-gradient">AI Magic</span>
               </h1>
-              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
-                Just snap a photo. Our AI extracts product name, price, category, and more - 
+              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl sm:mx-0 mx-auto">
+                Just snap a photo. Our AI extracts product name, price, category, and more -
                 saving you hours of manual data entry.
               </p>
-              
-              <div className="flex flex-wrap gap-4 mb-8">
+
+              <div className="flex flex-wrap gap-4 mb-8 justify-center sm:justify-start">
                 {[
                   { icon: Zap, text: "<5 sec detection" },
                   { icon: Target, text: "95% accuracy" },
                   { icon: Clock, text: "10x faster" },
                 ].map((stat, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <stat.icon className="w-4 h-4 text-accent" />
-                    <span className="text-white text-sm font-medium">{stat.text}</span>
-                  </div>
+                  <BizgrowTag key={i} icon={stat.icon}>
+                    {stat.text}
+                  </BizgrowTag>
                 ))}
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
+
+              {/* Mobile-only workflow preview, positioned directly above the CTA. */}
+              <div className="mb-8 lg:hidden">
+                <HeroWorkflowPreview />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                 <Link to="/join">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base w-full sm:w-auto">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-8 gap-2 h-14 text-base">
                     Try AI Upload Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -150,34 +184,15 @@ const AIUploadFeaturePage = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative hidden lg:block"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src={aiMockup} 
-                  alt="AI Product Upload Interface"
-                  className="w-full h-auto"
-                />
-              </div>
-              
-              {/* Scanning animation overlay */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <motion.div
-                  className="absolute w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent"
-                  animate={{ top: ["0%", "100%", "0%"] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                />
-              </motion.div>
+              <HeroWorkflowPreview />
               
               {/* Floating card */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -bottom-4 -right-4 bg-white rounded-xl p-4 shadow-xl"
+                className="hidden"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
@@ -185,7 +200,7 @@ const AIUploadFeaturePage = () => {
                   </div>
                   <div>
                     <p className="font-bold text-lg">Detected!</p>
-                    <p className="text-sm text-muted-foreground">Tata Salt 1kg â€” â‚¹28</p>
+                    <p className="text-sm text-muted-foreground">Tata Salt 1kg — ₹28</p>
                   </div>
                 </div>
               </motion.div>
@@ -226,7 +241,6 @@ const AIUploadFeaturePage = () => {
                   <div className="w-14 h-14 mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
                     <step.IconComponent className="w-7 h-7 text-primary" />
                   </div>
-                  <div className="text-primary font-bold text-sm mb-2">{step.number}</div>
                   <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
                   <p className="text-muted-foreground text-sm">{step.description}</p>
                 </div>
@@ -239,7 +253,7 @@ const AIUploadFeaturePage = () => {
 
           {/* Steps - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {steps.map((step) => (
                 <div
                   key={step.number}
@@ -248,7 +262,6 @@ const AIUploadFeaturePage = () => {
                   <div className="w-12 h-12 mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
                     <step.IconComponent className="w-6 h-6 text-primary" />
                   </div>
-                  <div className="text-primary font-bold text-xs mb-1.5">{step.number}</div>
                   <h3 className="text-lg font-semibold mb-1.5">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
                 </div>
@@ -294,7 +307,7 @@ const AIUploadFeaturePage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}

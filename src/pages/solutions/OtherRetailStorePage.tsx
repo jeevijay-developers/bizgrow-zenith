@@ -5,8 +5,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import otherRetailMockup from "@/assets/solution-other-retail-mockup.png";
 
 const features = [
   { icon: ShoppingBag, title: "Flexible Inventory", description: "Manage any type of product with custom categories" },
@@ -18,7 +20,7 @@ const features = [
 ];
 
 const benefits = [
-  "Works for any retail category â€” gifts, toys, pet supplies & more",
+  "Works for any retail category — gifts, toys, pet supplies & more",
   "Fully customizable product categories and attributes",
   "Quick billing with barcode and product search",
   "Digital catalogue to share with customers",
@@ -41,22 +43,21 @@ const OtherRetailStorePage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
-                <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                All Retail Stores
+            <div className="contents text-center sm:block sm:text-left">
+              <div className="mb-4 sm:mb-6">
+                <BizgrowTag icon={Store}>All Retail Stores</BizgrowTag>
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                 Digitize{" "}
                 <span className="text-gradient">Any Retail Store</span>
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/70 mb-6 sm:mb-8 max-w-xl">
-                Whether you sell gifts, toys, pet supplies, or anything else â€” 
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/70 mb-6 sm:mb-8 max-w-xl sm:mx-0 mx-auto">
+                Whether you sell gifts, toys, pet supplies, or anything else —
                 BizGrow 360 adapts to your unique retail needs.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link to="/join" className="w-full sm:w-auto">
-                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base w-full sm:w-auto">
+              <div className="order-12 flex flex-col items-center gap-3 sm:order-none sm:flex-row sm:items-start sm:gap-4">
+                <Link to="/join">
+                  <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-6 sm:px-8 gap-2 h-11 sm:h-12 md:h-14 text-sm sm:text-base">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
@@ -64,13 +65,9 @@ const OtherRetailStorePage = () => {
               </div>
             </div>
             
-            <div className="relative mt-6 lg:mt-0">
-              <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-gradient-to-br from-primary/20 to-accent/20 p-8 sm:p-12 flex items-center justify-center min-h-[200px] sm:min-h-[300px]">
-                <div className="text-center">
-                  <Store className="w-16 h-16 sm:w-24 sm:h-24 text-accent mx-auto mb-4" />
-                  <p className="text-white/80 text-lg sm:text-xl font-semibold">Your Store Dashboard</p>
-                  <p className="text-white/50 text-sm mt-2">Manage products, orders & customers</p>
-                </div>
+            <div className="order-10 relative mt-6 sm:order-none lg:mt-0">
+              <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <img src={otherRetailMockup} alt="Other Retail Store Dashboard" className="w-full h-auto" />
               </div>
               
               <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-white rounded-lg sm:rounded-xl p-2.5 sm:p-4 shadow-xl hidden sm:block">
@@ -119,7 +116,7 @@ const OtherRetailStorePage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="sm:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}
@@ -141,25 +138,25 @@ const OtherRetailStorePage = () => {
       <section className="py-12 sm:py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div>
+            <div className="text-center sm:text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                 Why Retailers Love{" "}
                 <span className="text-gradient">BizGrow 360</span>
               </h2>
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-3 sm:space-y-4 w-fit mx-auto sm:w-auto sm:mx-0">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-2.5 sm:gap-3">
                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 sm:w-4 sm:h-4 text-success" />
                     </div>
-                    <span className="text-sm sm:text-base md:text-lg">{benefit}</span>
+                    <span className="text-sm sm:text-base md:text-lg text-left">{benefit}</span>
                   </div>
                 ))}
               </div>
               
               <div className="mt-6 sm:mt-8">
-                <Link to="/join" className="inline-block w-full sm:w-auto">
-                  <Button size="lg" className="gap-2 w-full sm:w-auto h-11 sm:h-12 text-sm sm:text-base">
+                <Link to="/join" className="inline-block">
+                  <Button size="lg" className="gap-2 h-11 sm:h-12 text-sm sm:text-base">
                     Get Started Free
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>

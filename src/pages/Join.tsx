@@ -72,7 +72,7 @@ const plans = [
   { 
     id: "free", 
     name: "Free", 
-    price: "â‚¹0", 
+    price: "₹0", 
     period: "/forever",
     features: ["Up to 10 products", "Basic catalogue", "Email support", "Mobile app access"],
     Icon: Zap,
@@ -80,7 +80,7 @@ const plans = [
   { 
     id: "starter", 
     name: "Starter", 
-    price: "â‚¹999", 
+    price: "₹999", 
     period: "/month",
     features: ["Up to 100 products", "Basic catalogue", "WhatsApp orders", "Email support", "Mobile app access"],
     Icon: Sparkles,
@@ -88,7 +88,7 @@ const plans = [
   { 
     id: "pro", 
     name: "Pro", 
-    price: "â‚¹1,499", 
+    price: "₹1,499", 
     period: "/month",
     features: ["Unlimited products", "AI Photo Upload", "Analytics dashboard", "Priority support", "Custom domain"],
     popular: true,
@@ -502,7 +502,7 @@ const Join = () => {
               }
             });
 
-            // Timeout after 8 seconds â€” likely email confirmation required
+            // Timeout after 8 seconds — likely email confirmation required
             setTimeout(() => doResolve(null, subscription), 8000);
           });
         };
@@ -1261,7 +1261,7 @@ const Join = () => {
                   <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/20">
                     <BadgeCheck className="w-4 h-4 text-success shrink-0" />
                     <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">No card required</span> â€” Start free today
+                      <span className="font-medium text-foreground">No card required</span> — Start free today
                     </p>
                   </div>
                 </motion.div>

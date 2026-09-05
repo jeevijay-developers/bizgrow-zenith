@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 // Import mockup images
 import aiUploadMockup from "@/assets/feature-ai-upload-mockup.png";
@@ -102,9 +103,8 @@ const USPSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-4xl mx-auto mb-16 md:mb-24"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Powerful Features</span>
+          <div className="mb-6">
+            <BizgrowTag icon={Sparkles}>Powerful Features</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-display">
             Built for the Modern

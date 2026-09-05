@@ -25,7 +25,6 @@ const Footer = () => {
       { label: "Hardware", href: "/solutions/hardware" },
     ],
     Resources: [
-      { label: "Help Center", href: "/contact" },
       { label: "WhatsApp Orders", href: "/features/whatsapp-orders" },
       { label: "Analytics", href: "/features/analytics" },
     ],

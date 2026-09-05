@@ -216,6 +216,61 @@ body[data-scroll-locked] {
     font-weight: 800;
   }
 
+  /* Refined Bizgrow Tag Component (Sitewide) */
+  .bizgrow-tag,
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 1px solid rgba(59, 10, 68, 0.14);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #3B0A44;
+    box-shadow: 0 1px 2px rgba(59, 10, 68, 0.05);
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                border-color 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+  }
+
+  .bizgrow-tag:hover,
+  .tag:hover,
+  .bizgrow-tag:focus-visible,
+  .tag:focus-visible {
+    transform: translateY(-2px);
+    border-color: #A88900;
+    box-shadow: 0 6px 16px rgba(168, 137, 0, 0.16), 0 2px 4px rgba(59, 10, 68, 0.06);
+    outline: none;
+  }
+
+  .bizgrow-tag .tag-icon,
+  .bizgrow-tag svg,
+  .tag .icon,
+  .tag svg {
+    display: inline-flex;
+    color: #7A2B87;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    transition: color 220ms ease, transform 220ms ease;
+  }
+
+  .bizgrow-tag:hover .tag-icon,
+  .bizgrow-tag:hover svg,
+  .bizgrow-tag:focus-visible .tag-icon,
+  .bizgrow-tag:focus-visible svg,
+  .tag:hover .icon,
+  .tag:hover svg,
+  .tag:focus-visible .icon,
+  .tag:focus-visible svg {
+    color: #A88900;
+    transform: scale(1.08);
+  }
+
   .shadow-glow {
     box-shadow: 0 0 40px hsl(284 100% 15% / 0.3);
   }

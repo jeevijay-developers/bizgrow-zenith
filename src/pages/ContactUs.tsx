@@ -89,8 +89,8 @@ const ContactUs = () => {
                 </p>
               </div>
 
-              <div className="space-y-5">
-                <a href="tel:+919876543210" className="flex items-start gap-4 group">
+              <div className="grid grid-cols-2 gap-3 sm:block sm:space-y-5 sm:gap-0">
+                <a href="tel:+919876543210" className="flex flex-col items-center text-center gap-2 rounded-xl border border-border p-3 sm:border-0 sm:p-0 sm:flex-row sm:items-start sm:text-left sm:gap-4 group">
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
@@ -99,16 +99,16 @@ const ContactUs = () => {
                     <p className="text-muted-foreground text-sm">+91 98765 43210</p>
                   </div>
                 </a>
-                <a href="mailto:support@bizgrow360.com" className="flex items-start gap-4 group">
+                <a href="mailto:support@bizgrow360.com" className="flex flex-col items-center text-center gap-2 rounded-xl border border-border p-3 sm:border-0 sm:p-0 sm:flex-row sm:items-start sm:text-left sm:gap-4 group">
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground text-sm">support@bizgrow360.com</p>
+                    <p className="text-muted-foreground text-sm break-all sm:break-normal">support@bizgrow360.com</p>
                   </div>
                 </a>
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col items-center text-center gap-2 rounded-xl border border-border p-3 sm:border-0 sm:p-0 sm:flex-row sm:items-start sm:text-left sm:gap-4">
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
@@ -121,7 +121,7 @@ const ContactUs = () => {
                   href="https://wa.me/919876543210"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-4 group"
+                  className="flex flex-col items-center text-center gap-2 rounded-xl border border-border p-3 sm:border-0 sm:p-0 sm:flex-row sm:items-start sm:text-left sm:gap-4 group"
                 >
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                     <MessageCircle className="w-5 h-5 text-primary" />

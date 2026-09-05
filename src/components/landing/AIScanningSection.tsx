@@ -1,16 +1,9 @@
 import { motion } from "framer-motion";
-import { Camera, Sparkles, Zap, Package, Check, ArrowRight } from "lucide-react";
+import { Sparkles, Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RippleButton } from "@/components/ui/ripple-button";
-import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import aiScanningDemo from "@/assets/ai-scanning-demo.jpg";
-
-const scanSteps = [
-  { step: 1, title: "Point Camera", description: "Open app and point at products", icon: Camera },
-  { step: 2, title: "AI Scans", description: "Instant product detection", icon: Sparkles },
-  { step: 3, title: "Auto-Fill", description: "Name, price, category auto-filled", icon: Zap },
-  { step: 4, title: "Listed!", description: "Products live in seconds", icon: Package },
-];
 
 const detectionFeatures = [
   "Detects 1000+ product types",
@@ -22,70 +15,11 @@ const detectionFeatures = [
 ];
 
 const ScanningVisual = () => (
-  <div className="relative">
-    {/* Main Image */}
-    <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
-      <img 
-        src={aiScanningDemo} 
-        alt="AI Product Scanning Demo"
-        className="w-full aspect-video object-cover"
-      />
-      
-      {/* Scanning Animation Overlay */}
-      <motion.div
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"
-      />
-    </div>
-
-    {/* Floating Product Cards */}
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: 0.3 }}
-      className="absolute top-2 right-2 sm:-right-4 sm:top-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-lg sm:rounded-xl p-1.5 sm:p-4 shadow-xl max-w-[45%] sm:max-w-none"
-    >
-      <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        <div className="flex items-center gap-1.5 sm:gap-3">
-          <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-success/20 flex items-center justify-center shrink-0">
-            <Check className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-success" />
-          </div>
-          <div className="min-w-0">
-            <p className="font-bold text-foreground text-[10px] sm:text-sm truncate">Tata Salt 1kg</p>
-            <p className="text-[9px] sm:text-xs text-muted-foreground truncate">₹28 • Grocery</p>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: 0.5 }}
-      className="absolute bottom-2 left-2 sm:-left-4 sm:bottom-1/4 bg-background/95 backdrop-blur-xl border border-border rounded-lg sm:rounded-xl p-1.5 sm:p-4 shadow-xl max-w-[45%] sm:max-w-none"
-    >
-      <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-      >
-        <div className="flex items-center gap-1.5 sm:gap-3">
-          <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-            <Sparkles className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-primary" />
-          </div>
-          <div className="min-w-0">
-            <p className="font-bold text-foreground text-[10px] sm:text-sm truncate">AI Detecting...</p>
-            <p className="text-[9px] sm:text-xs text-muted-foreground truncate">5 products found</p>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  </div>
+  <img
+    src={aiScanningDemo}
+    alt="AI detecting a product on a store shelf via phone camera"
+    className="w-full h-auto rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]"
+  />
 );
 
 const AIScanningSection = () => {
@@ -116,9 +50,8 @@ const AIScanningSection = () => {
             viewport={{ once: true }}
             className="w-full min-w-0 max-w-full text-center sm:text-left"
           >
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">AI Product Detection</span>
+            <div className="mb-6">
+              <BizgrowTag icon={Sparkles}>AI Product Detection</BizgrowTag>
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display break-words">
@@ -135,41 +68,6 @@ const AIScanningSection = () => {
             {/* Mobile View - Image below section description */}
             <div className="block lg:hidden mb-8 w-full min-w-0">
               <ScanningVisual />
-            </div>
-
-            {/* Process Steps */}
-            <div className="hidden sm:grid sm:grid-cols-4 gap-4 mb-8">
-              {scanSteps.map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 * index }}
-                  className="text-center"
-                >
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
-                    <step.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <p className="text-sm font-bold text-foreground">{step.title}</p>
-                  <p className="text-xs text-muted-foreground">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Process Steps - Mobile Carousel */}
-            <div className="sm:hidden mb-8 w-full min-w-0">
-              <MobileCarousel slideClassName="w-[calc(50%-8px)]" slidesToScroll={2}>
-                {scanSteps.map((step) => (
-                  <div key={step.step} className="text-center">
-                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
-                      <step.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-sm font-bold text-foreground">{step.title}</p>
-                    <p className="text-xs text-muted-foreground">{step.description}</p>
-                  </div>
-                ))}
-              </MobileCarousel>
             </div>
 
             {/* Feature List */}

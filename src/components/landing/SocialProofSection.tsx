@@ -1,43 +1,48 @@
 import { motion } from "framer-motion";
 import { Star, Quote, TrendingUp } from "lucide-react";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
+import reviewerRamesh from "@/assets/reviewer-ramesh.jpg";
+import reviewerSunita from "@/assets/reviewer-sunita.jpg";
+import reviewerIqbal from "@/assets/reviewer-iqbal.jpg";
+import reviewerPriya from "@/assets/reviewer-priya.jpg";
 
 const testimonials = [
   {
     name: "Ramesh Sharma",
     role: "Kirana Store Owner",
     location: "Delhi",
-    image: "RS",
+    image: reviewerRamesh,
     rating: 5,
     text: "The AI product upload is magical! I photographed 200 products and everything was listed in 30 minutes. Earlier it would take me 2 days!",
     highlight: "200 products in 30 mins",
   },
   {
-    name: "Priya Patel",
-    role: "Bakery Owner",
-    location: "Mumbai",
-    image: "PP",
+    name: "Sunita Devi",
+    role: "Clothing Boutique",
+    location: "Jaipur",
+    image: reviewerSunita,
     rating: 5,
-    text: "I use the flyer creator daily. Just select products, pick a template, and boom — professional Diwali offers, Holi specials, everything ready in seconds!",
-    highlight: "Daily flyer creation",
+    text: "My customers love ordering on WhatsApp. No app downloads needed — they just browse and order. My online sales are now 60% of total!",
+    highlight: "60% online sales",
   },
   {
     name: "Mohammed Iqbal",
     role: "Electronics Shop",
     location: "Bangalore",
-    image: "MI",
+    image: reviewerIqbal,
     rating: 5,
     text: "Being able to use the app in Kannada made everything so easy. My staff now manages orders without any confusion. Revenue up 40%!",
     highlight: "40% revenue increase",
   },
   {
-    name: "Sunita Devi",
-    role: "Clothing Boutique",
-    location: "Jaipur",
-    image: "SD",
+    name: "Priya Patel",
+    role: "Dairy & Grocery Store",
+    location: "Mumbai",
+    image: reviewerPriya,
     rating: 5,
-    text: "My customers love ordering on WhatsApp. No app downloads needed — they just browse and order. My online sales are now 60% of total!",
-    highlight: "60% online sales",
+    text: "I use the flyer creator daily. Just select products, pick a template, and boom — professional Diwali offers, Holi specials, everything ready in seconds!",
+    highlight: "Daily flyer creation",
   },
 ];
 
@@ -58,9 +63,8 @@ const SocialProofSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">Success Stories</span>
+          <div className="mb-6">
+            <BizgrowTag icon={TrendingUp}>Success Stories</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Real Results from
@@ -73,7 +77,7 @@ const SocialProofSection = () => {
 
         {/* Mobile Testimonials Carousel */}
         <div className="md:hidden">
-          <MobileCarousel slideClassName="w-[90%]">
+          <MobileCarousel slideClassName="w-[80%]">
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.name}
@@ -82,9 +86,10 @@ const SocialProofSection = () => {
                 <div>
                   <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
 
-                  <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
-                    <TrendingUp className="w-3 h-3" />
-                    {testimonial.highlight}
+                  <div className="mb-4">
+                    <BizgrowTag icon={TrendingUp} className="text-xs">
+                      {testimonial.highlight}
+                    </BizgrowTag>
                   </div>
 
                   <div className="flex gap-1 mb-4">
@@ -99,9 +104,11 @@ const SocialProofSection = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
-                    {testimonial.image}
-                  </div>
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-primary/20 shadow-sm shrink-0"
+                  />
                   <div>
                     <p className="font-semibold text-foreground">{testimonial.name}</p>
                     <p className="text-xs text-muted-foreground">
@@ -129,9 +136,10 @@ const SocialProofSection = () => {
               <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10 group-hover:text-primary/20 transition-colors" />
 
               {/* Highlight Badge */}
-              <div className="inline-flex items-center gap-1 bg-accent/20 text-accent-foreground text-xs font-bold px-3 py-1 rounded-full mb-4">
-                <TrendingUp className="w-3 h-3" />
-                {testimonial.highlight}
+              <div className="mb-4">
+                <BizgrowTag icon={TrendingUp} className="text-xs">
+                  {testimonial.highlight}
+                </BizgrowTag>
               </div>
 
               {/* Rating */}
@@ -148,9 +156,11 @@ const SocialProofSection = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold">
-                  {testimonial.image}
-                </div>
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-primary/20 shadow-sm shrink-0"
+                />
                 <div>
                   <p className="font-semibold text-foreground">{testimonial.name}</p>
                   <p className="text-sm text-muted-foreground">

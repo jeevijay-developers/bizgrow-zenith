@@ -6,6 +6,7 @@ import { HiStar } from "react-icons/hi2";
 import { RippleButton } from "@/components/ui/ripple-button";
 import { Badge } from "@/components/ui/badge";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 
 const plans = [
   {
@@ -92,20 +93,22 @@ const PricingSection = () => {
     <div
       className={`relative rounded-2xl ${fillHeight ? "h-full" : ""} ${
         plan.popular
-          ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-2xl shadow-primary/25"
+          ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-2xl shadow-primary/25 border-2 border-accent/40"
           : "bg-card border border-border"
-      } overflow-hidden`}
+      }`}
     >
-      {/* Popular Badge */}
+      {/* Floating Overlap Popular Badge */}
       {plan.popular && (
-        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 w-max max-w-[90%]">
-          <Badge className="bg-accent text-accent-foreground hover:bg-accent font-bold text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 flex items-center gap-1 whitespace-nowrap shadow-lg">
-            <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> MOST POPULAR <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+        <div className="absolute -top-3.5 sm:-top-4 left-1/2 -translate-x-1/2 z-30 w-max max-w-[95%] pointer-events-none">
+          <Badge className="bg-accent text-accent-foreground hover:bg-accent font-extrabold text-[11px] sm:text-xs px-3 sm:px-3.5 py-1 sm:py-1.5 flex items-center gap-1.5 whitespace-nowrap shadow-xl shadow-black/30 border border-amber-300/60 tracking-wider uppercase">
+            <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent-foreground shrink-0 fill-current" />
+            MOST POPULAR
+            <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent-foreground shrink-0 fill-current" />
           </Badge>
         </div>
       )}
 
-      <div className={`p-6 sm:p-8 ${plan.popular ? "pt-10" : ""}`}>
+      <div className={`p-6 sm:p-8 ${plan.popular ? "pt-7 sm:pt-8" : ""}`}>
         {/* Plan Icon & Name */}
         <div className="flex items-center gap-3 mb-4">
           <div className={`w-12 h-12 rounded-xl ${plan.popular ? "bg-white/20" : "bg-primary/10"} flex items-center justify-center`}>
@@ -172,9 +175,8 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-accent-foreground" />
-            <span className="text-sm font-semibold text-accent-foreground">Simple Pricing</span>
+          <div className="mb-6">
+            <BizgrowTag icon={Sparkles}>Simple Pricing</BizgrowTag>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 font-display">
             Plans That Scale
@@ -225,10 +227,10 @@ const PricingSection = () => {
         </div>
 
         {/* Pricing Cards - Mobile Carousel (same left-to-right order as desktop) */}
-        <div className="sm:hidden max-w-7xl mx-auto">
-          <MobileCarousel slideClassName="w-[85%]">
+        <div className="sm:hidden max-w-7xl mx-auto pt-4">
+          <MobileCarousel slideClassName="w-[80%]" containerClassName="pt-4 pb-2 -mt-4">
             {plans.map((plan) => (
-              <div key={plan.name} className="h-full">{renderPlanCard(plan, true)}</div>
+              <div key={plan.name} className="h-full pt-1">{renderPlanCard(plan, true)}</div>
             ))}
           </MobileCarousel>
         </div>

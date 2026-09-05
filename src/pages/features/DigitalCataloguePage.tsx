@@ -1,14 +1,15 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  ArrowRight, Check, Layers, Search, ShoppingCart, Tag, 
-  Smartphone, Globe, Share2, QrCode, Star, Zap, Heart
+import {
+  ArrowRight, Check, Layers, Search, ShoppingCart, Tag,
+  Smartphone, Globe, QrCode, Star, Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MobileCarousel } from "@/components/ui/mobile-carousel";
+import { BizgrowTag } from "@/components/ui/bizgrow-tag";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import catalogueMockup from "@/assets/feature-catalogue-mockup.png";
+import CatalogueHeroVisual from "@/components/landing/CatalogueHeroVisual";
 
 const features = [
   {
@@ -71,19 +72,25 @@ const DigitalCataloguePage = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className="text-center sm:text-left"
             >
-              <div className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Layers className="w-4 h-4" />
-                Digital Catalogue
+              <div className="mb-6 flex justify-center sm:justify-start">
+                <BizgrowTag icon={Layers}>Digital Catalogue</BizgrowTag>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Your Store,{" "}
                 <span className="text-gradient">Now Online</span>
               </h1>
-              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl">
-                Create a beautiful, shareable product catalogue in minutes. No coding, no app 
+              <p className="text-lg md:text-xl text-white/70 mb-8 max-w-xl sm:mx-0 mx-auto">
+                Create a beautiful, shareable product catalogue in minutes. No coding, no app
                 development - just your products, beautifully displayed.
               </p>
+
+              {/* Mobile View - Image above the buttons */}
+              <div className="block lg:hidden mb-16">
+                <CatalogueHeroVisual />
+              </div>
+
               <div className="flex flex-row gap-3 sm:gap-4">
                 <Link to="/join" className="flex-1 sm:flex-none">
                   <Button size="lg" className="btn-gradient-accent text-accent-foreground font-bold px-4 sm:px-8 gap-2 h-12 sm:h-14 text-sm sm:text-base w-full sm:w-auto">
@@ -103,44 +110,9 @@ const DigitalCataloguePage = () => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="relative hidden lg:block"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                <img 
-                  src={catalogueMockup} 
-                  alt="Digital Catalogue Dashboard"
-                  className="w-full h-auto"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
-              </div>
-              
-              {/* Floating elements */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-xl"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Live Store</p>
-                    <p className="text-xs text-muted-foreground">bizgrow.link/store</p>
-                  </div>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-xl"
-              >
-                <div className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-destructive fill-destructive" />
-                  <span className="font-semibold">1.2k Visitors Today</span>
-                </div>
-              </motion.div>
+              <CatalogueHeroVisual />
             </motion.div>
           </div>
         </div>
@@ -186,7 +158,7 @@ const DigitalCataloguePage = () => {
 
           {/* Features - Mobile Carousel */}
           <div className="md:hidden">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {features.map((feature) => (
                 <div
                   key={feature.title}
@@ -247,7 +219,7 @@ const DigitalCataloguePage = () => {
 
           {/* Steps - Mobile Carousel */}
           <div className="md:hidden max-w-sm mx-auto">
-            <MobileCarousel slideClassName="w-[85%]">
+            <MobileCarousel slideClassName="w-[80%]">
               {[
                 { step: "1", title: "Add Products", desc: "Upload photos, set prices, and organize by categories" },
                 { step: "2", title: "Customize Store", desc: "Add your logo, choose colors, and set up your profile" },
@@ -277,12 +249,13 @@ const DigitalCataloguePage = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="text-center sm:text-left"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Why Retailers Love{" "}
                 <span className="text-gradient">Digital Catalogue</span>
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-4 w-fit mx-auto sm:w-auto sm:mx-0">
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -295,7 +268,7 @@ const DigitalCataloguePage = () => {
                     <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
                       <Check className="w-4 h-4 text-success" />
                     </div>
-                    <span className="text-lg">{benefit}</span>
+                    <span className="text-lg text-left">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
